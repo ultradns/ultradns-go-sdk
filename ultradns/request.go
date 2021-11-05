@@ -28,6 +28,7 @@ func (c *Client) Do(method, path string, payload, target interface{}) (*http.Res
 
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Add("Accept", "application/json")
+	req.Header.Add("UserAgent", c.userAgent)
 
 	res, err := httpClient.Do(req)
 	if err != nil {
