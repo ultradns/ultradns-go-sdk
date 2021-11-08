@@ -46,5 +46,5 @@ func (c *Client) Do(method, path string, payload, target interface{}) (*http.Res
 		}
 	}
 
-	return res, err
+	return res, nil
 }

@@ -30,7 +30,7 @@ func NewClient(username, password, hostUrl, apiVersion, userAgent string) (*Clie
 	if err := validateParameter("Api Version", apiVersion); err != nil {
 		return nil, err
 	}
-	if err := validateParameter("User Agent", apiVersion); err != nil {
+	if err := validateParameter("User Agent", userAgent); err != nil {
 		return nil, err
 	}
 

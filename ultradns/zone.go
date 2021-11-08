@@ -1,11 +1,13 @@
 package ultradns
 
+import "net/http"
+
 type Zone struct {
-	Properties          ZoneProperties `json:"properties"`
-	PrimaryCreateInfo   PrimaryZone    `json:"primaryCreateInfo,omitempty"`
-	SecondaryCreateInfo SecondaryZone  `json:"secondaryCreateInfo,omitempty"`
-	AliasCreateInfo     AliasZone      `json:"aliasCreateInfo,omitempty"`
-	ChangeComment       string         `json:"changeComment,omitempty"`
+	Properties          *ZoneProperties `json:"properties"`
+	PrimaryCreateInfo   *PrimaryZone    `json:"primaryCreateInfo,omitempty"`
+	SecondaryCreateInfo *SecondaryZone  `json:"secondaryCreateInfo,omitempty"`
+	AliasCreateInfo     *AliasZone      `json:"aliasCreateInfo,omitempty"`
+	ChangeComment       string          `json:"changeComment,omitempty"`
 }
 
 type ZoneProperties struct {
@@ -47,27 +49,42 @@ type NameServerIp struct {
 }
 
 type NameServerIpList struct {
-	NameServerIp1 NameServerIp `json:"nameServerIp1"`
-	NameServerIp2 NameServerIp `json:"nameServerIp2"`
-	NameServerIp3 NameServerIp `json:"nameServerIp3"`
+	NameServerIp1 *NameServerIp `json:"nameServerIp1"`
+	NameServerIp2 *NameServerIp `json:"nameServerIp2"`
+	NameServerIp3 *NameServerIp `json:"nameServerIp3"`
 }
 
 type PrimaryZone struct {
-	ForceImport      bool            `json:"forceImport" default:"true"`
-	CreateType       string          `json:"createType"`
-	NameServer       NameServerIp    `json:"nameServer,omitempty"`
-	Tsig             Tsig            `json:"tsig,omitempty"`
-	OriginalZoneName string          `json:"originalZoneName,omitempty"`
-	RestrictIPList   []RestrictIp    `json:"restrictIPList,omitempty"`
-	NotifyAddresses  []NotifyAddress `json:"notifyAddresses,omitempty"`
-	Inherit          string          `json:"inherit,omitempty"`
+	ForceImport      bool             `json:"forceImport" default:"true"`
+	CreateType       string           `json:"createType"`
+	NameServer       *NameServerIp    `json:"nameServer,omitempty"`
+	Tsig             *Tsig            `json:"tsig,omitempty"`
+	OriginalZoneName string           `json:"originalZoneName,omitempty"`
+	RestrictIPList   *[]RestrictIp    `json:"restrictIPList,omitempty"`
+	NotifyAddresses  *[]NotifyAddress `json:"notifyAddresses,omitempty"`
+	Inherit          string           `json:"inherit,omitempty"`
 }
 
 type SecondaryZone struct {
-	PrimaryNameServers       NameServerIpList `json:"primaryNameServers"`
-	NotificationEmailAddress string           `json:"notificationEmailAddress,omitempty"`
+	PrimaryNameServers       *NameServerIpList `json:"primaryNameServers"`
+	NotificationEmailAddress string            `json:"notificationEmailAddress,omitempty"`
 }
 
 type AliasZone struct {
 	OriginalZoneName string `json:"originalZoneName"`
+}
+
+//create zone
+func (c *Client) CreateZone(zone Zone, target interface{}) (*http.Response, error) {
+	return c.Do("POST", "zones", zone, target)
+}
+
+//read zone
+func (c *Client) ReadZone(zoneName string, target interface{}) (*http.Response, error) {
+	return c.Do("GET", "zones/"+zoneName, nil, target)
+}
+
+//delete zone
+func (c *Client) DeleteZone(zoneName string, target interface{}) (*http.Response, error) {
+	return c.Do("DELETE", "zones/"+zoneName, nil, target)
 }
