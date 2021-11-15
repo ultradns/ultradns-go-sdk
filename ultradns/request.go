@@ -1,3 +1,8 @@
+/**
+ * Copyright 2012-2013 NeuStar, Inc. All rights reserved. NeuStar, the Neustar logo and related names and logos are
+ * registered trademarks, service marks or tradenames of NeuStar, Inc. All other product names, company names, marks,
+ * logos and symbols may be trademarks of their respective owners.
+ */
 package ultradns
 
 import (
@@ -28,7 +33,7 @@ func (c *Client) Do(method, path string, payload, target interface{}) (*http.Res
 
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Add("Accept", "application/json")
-	req.Header.Add("UserAgent", c.userAgent)
+	req.Header.Add("User-Agent", c.userAgent)
 
 	res, err := httpClient.Do(req)
 	if err != nil {

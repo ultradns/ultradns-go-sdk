@@ -1,3 +1,8 @@
+/**
+ * Copyright 2012-2013 NeuStar, Inc. All rights reserved. NeuStar, the Neustar logo and related names and logos are
+ * registered trademarks, service marks or tradenames of NeuStar, Inc. All other product names, company names, marks,
+ * logos and symbols may be trademarks of their respective owners.
+ */
 package ultradns_test
 
 import (
@@ -10,8 +15,8 @@ import (
 var (
 	testUsername  = os.Getenv("ULTRADNS_USERNAME")
 	testPassword  = os.Getenv("ULTRADNS_PASSWORD")
-	testHost      = os.Getenv("ULTRADNS_HOST")
-	testVersion   = os.Getenv("ULTRADNS_VERSION")
+	testHost      = os.Getenv("ULTRADNS_HOST_URL")
+	testVersion   = os.Getenv("ULTRADNS_API_VERSION")
 	testUserAgent = os.Getenv("ULTRADNS_USER_AGENT")
 )
 

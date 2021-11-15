@@ -1,3 +1,8 @@
+/**
+ * Copyright 2012-2013 NeuStar, Inc. All rights reserved. NeuStar, the Neustar logo and related names and logos are
+ * registered trademarks, service marks or tradenames of NeuStar, Inc. All other product names, company names, marks,
+ * logos and symbols may be trademarks of their respective owners.
+ */
 package ultradns
 
 import "net/http"
@@ -82,6 +87,11 @@ func (c *Client) CreateZone(zone Zone, target interface{}) (*http.Response, erro
 //read zone
 func (c *Client) ReadZone(zoneName string, target interface{}) (*http.Response, error) {
 	return c.Do("GET", "zones/"+zoneName, nil, target)
+}
+
+//update zone
+func (c *Client) UpdateZone(zoneName string, zone Zone, target interface{}) (*http.Response, error) {
+	return c.Do("PUT", "zones/"+zoneName, zone, target)
 }
 
 //delete zone
