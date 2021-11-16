@@ -71,10 +71,9 @@ func TestDoInvalidMethod(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	res, err := testClient.Do("()", "zones", nil, nil)
-	_ = res
+	_, er := testClient.Do("()", "zones", nil, nil)
 
-	if err.Error() != "net/http: invalid method \"()\"" {
-		t.Error(err)
+	if er.Error() != "net/http: invalid method \"()\"" {
+		t.Error(er)
 	}
 }

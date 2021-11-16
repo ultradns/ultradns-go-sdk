@@ -18,6 +18,7 @@ var (
 	testHost      = os.Getenv("ULTRADNS_HOST_URL")
 	testVersion   = os.Getenv("ULTRADNS_API_VERSION")
 	testUserAgent = os.Getenv("ULTRADNS_USER_AGENT")
+	testZoneName  = "go_sdk_unit_testing.com"
 )
 
 func TestNewClientWithCredentials(t *testing.T) {

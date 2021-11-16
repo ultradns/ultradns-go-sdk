@@ -5,7 +5,10 @@
  */
 package ultradns
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+)
 
 type Zone struct {
 	Properties          *ZoneProperties `json:"properties"`
@@ -48,15 +51,19 @@ type NotifyAddress struct {
 
 type NameServerIp struct {
 	Ip            string `json:"ip"`
-	TsigKey       string `json:"tsigKey"`
-	TsigKeyValue  string `json:"tsigKeyValue"`
-	TsigAlgorithm string `json:"tsigAlgorithm"`
+	TsigKey       string `json:"tsigKey,omitempty"`
+	TsigKeyValue  string `json:"tsigKeyValue,omitempty"`
+	TsigAlgorithm string `json:"tsigAlgorithm,omitempty"`
 }
 
 type NameServerIpList struct {
 	NameServerIp1 *NameServerIp `json:"nameServerIp1"`
 	NameServerIp2 *NameServerIp `json:"nameServerIp2"`
 	NameServerIp3 *NameServerIp `json:"nameServerIp3"`
+}
+
+type PrimaryNameServers struct {
+	NameServerIpList *NameServerIpList `json:"nameServerIpList"`
 }
 
 type PrimaryZone struct {
@@ -71,30 +78,104 @@ type PrimaryZone struct {
 }
 
 type SecondaryZone struct {
-	PrimaryNameServers       *NameServerIpList `json:"primaryNameServers"`
-	NotificationEmailAddress string            `json:"notificationEmailAddress,omitempty"`
+	PrimaryNameServers       *PrimaryNameServers `json:"primaryNameServers"`
+	NotificationEmailAddress string              `json:"notificationEmailAddress,omitempty"`
 }
 
 type AliasZone struct {
 	OriginalZoneName string `json:"originalZoneName"`
 }
 
+type NameServersList struct {
+	Ok        []string `json:"ok,omitempty"`
+	Unknown   []string `json:"unknown,omitempty"`
+	Missing   []string `json:"missing,omitempty"`
+	Incorrect []string `json:"incorrect,omitempty"`
+}
+
+type RegistrarInfo struct {
+	Registrar       string           `json:"registrar,omitempty"`
+	WhoIsExpiration string           `json:"whoisExpiration,omitempty"`
+	NameServers     *NameServersList `json:"nameServers,omitempty"`
+}
+
+type TransferStatusDetails struct {
+	LastRefresh              string `json:"lastRefresh"`
+	NextRefresh              string `json:"nextRefresh"`
+	LastRefreshStatus        string `json:"lastRefreshStatus"`
+	LastRefreshStatusMessage string `json:"lastRefreshStatusMessage"`
+}
+
 //create zone
-func (c *Client) CreateZone(zone Zone, target interface{}) (*http.Response, error) {
-	return c.Do("POST", "zones", zone, target)
+func (c *Client) CreateZone(zone Zone) (*http.Response, error) {
+	target := Target(&SuccessResponse{})
+	res, err := c.Do("POST", "zones", zone, target)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if res.StatusCode < 200 || res.StatusCode > 299 {
+		errDataListPtr := target.Error.(*[]ErrorResponse)
+		errDataList := *errDataListPtr
+		return res, fmt.Errorf("Error while creating a zone (%v) - Error code : %v - Error Message : %v", zone.Properties.Name, errDataList[0].ErrorCode, errDataList[0].ErrorMessage)
+	}
+
+	return res, nil
 }
 
 //read zone
-func (c *Client) ReadZone(zoneName string, target interface{}) (*http.Response, error) {
-	return c.Do("GET", "zones/"+zoneName, nil, target)
+func (c *Client) ReadZone(zoneName string) (*http.Response, string, *ZoneResponse, error) {
+	target := Target(&ZoneResponse{})
+	res, err := c.Do("GET", "zones/"+zoneName, nil, target)
+
+	if err != nil {
+		return nil, "", nil, err
+	}
+
+	if res.StatusCode < 200 || res.StatusCode > 299 {
+		errDataListPtr := target.Error.(*[]ErrorResponse)
+		errDataList := *errDataListPtr
+		return res, "", nil, fmt.Errorf("Error while reading a zone (%v) - Error code : %v - Error Message : %v", zoneName, errDataList[0].ErrorCode, errDataList[0].ErrorMessage)
+	}
+	zoneResponse := target.Data.(*ZoneResponse)
+	zoneType := zoneResponse.Properties.Type
+
+	return res, zoneType, zoneResponse, nil
 }
 
 //update zone
-func (c *Client) UpdateZone(zoneName string, zone Zone, target interface{}) (*http.Response, error) {
-	return c.Do("PUT", "zones/"+zoneName, zone, target)
+func (c *Client) UpdateZone(zoneName string, zone Zone) (*http.Response, error) {
+	target := Target(&SuccessResponse{})
+	res, err := c.Do("PUT", "zones/"+zoneName, zone, target)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if res.StatusCode < 200 || res.StatusCode > 299 {
+		errDataListPtr := target.Error.(*[]ErrorResponse)
+		errDataList := *errDataListPtr
+		return res, fmt.Errorf("Error while updating a zone (%v) - Error code : %v - Error Message : %v", zoneName, errDataList[0].ErrorCode, errDataList[0].ErrorMessage)
+	}
+
+	return res, nil
 }
 
 //delete zone
-func (c *Client) DeleteZone(zoneName string, target interface{}) (*http.Response, error) {
-	return c.Do("DELETE", "zones/"+zoneName, nil, target)
+func (c *Client) DeleteZone(zoneName string) (*http.Response, error) {
+	target := Target(&SuccessResponse{})
+	res, err := c.Do("DELETE", "zones/"+zoneName, nil, target)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if res.StatusCode < 200 || res.StatusCode > 299 {
+		errDataListPtr := target.Error.(*[]ErrorResponse)
+		errDataList := *errDataListPtr
+		return res, fmt.Errorf("Error while Deleting a zone (%v) - Error code : %v - Error Message : %v", zoneName, errDataList[0].ErrorCode, errDataList[0].ErrorMessage)
+	}
+
+	return res, nil
 }

@@ -13,11 +13,33 @@ type Response struct {
 type ErrorResponse struct {
 	ErrorCode        int    `json:"errorCode"`
 	ErrorMessage     string `json:"errorMessage"`
-	ErrorString      string `json:"error"`
-	ErrorDescription string `json:"error_description"`
+	ErrorString      string `json:"error,omitempty"`
+	ErrorDescription string `json:"error_description,omitempty"`
+}
+
+type SuccessResponse struct {
+	Message string `json:"message"`
+}
+
+type ZoneResponse struct {
+	Properties *ZoneProperties `json:"properties"`
+
+	//Primary Zone Response
+	RegistrarInfo   *RegistrarInfo   `json:"registrarInfo,omitempty"`
+	Tsig            *Tsig            `json:"tsig,omitempty"`
+	RestrictIPList  *[]RestrictIp    `json:"restrictIPList,omitempty"`
+	NotifyAddresses *[]NotifyAddress `json:"notifyAddresses,omitempty"`
+
+	//Secondary Zone Response
+	PrimaryNameServers    *PrimaryNameServers    `json:"primaryNameServers,omitempty"`
+	TransferStatusDetails *TransferStatusDetails `json:"transferStatusDetails,omitempty"`
+
+	//Alias Zone Response
+	OriginalZoneName string `json:"originalZoneName,omitempty"`
 }
 
 type QueryInfo struct {
+	Query   string `json:"q,omitempty"`
 	Sort    string `json:"sort,omitempty"`
 	Reverse bool   `json:"reverse,omitempty"`
 	Limit   int    `json:"limit,omitempty"`

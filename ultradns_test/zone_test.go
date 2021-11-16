@@ -6,17 +6,18 @@
 package ultradns_test
 
 import (
+	"fmt"
 	"testing"
 	"ultradns-go-sdk/ultradns"
 )
 
-func TestCreateZone(t *testing.T) {
+func TestCreateZoneSuccess(t *testing.T) {
 	testClient, err := ultradns.NewClient(testUsername, testPassword, testHost, testVersion, testUserAgent)
 	if err != nil {
 		t.Fatal(err)
 	}
 	zoneProp := ultradns.ZoneProperties{
-		Name:        "go_sdk_unit_testing.com",
+		Name:        testZoneName,
 		AccountName: testUsername,
 		Type:        "PRIMARY",
 	}
@@ -28,7 +29,7 @@ func TestCreateZone(t *testing.T) {
 		PrimaryCreateInfo: &PrimaryZone,
 	}
 
-	res, err := testClient.CreateZone(zone, nil)
+	res, err := testClient.CreateZone(zone)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -37,48 +38,99 @@ func TestCreateZone(t *testing.T) {
 	}
 }
 
-func TestReadZone(t *testing.T) {
-	testClient, err := ultradns.NewClient(testUsername, testPassword, testHost, testVersion, testUserAgent)
+func TestCreateZoneFailure(t *testing.T) {
+	testClient, err := ultradns.NewClient(testUsername, testPassword, "testHost", testVersion, testUserAgent)
 	if err != nil {
 		t.Fatal(err)
 	}
-	type result struct {
-		Properties ultradns.ZoneProperties `json:"properties,omitempty"`
+	zoneProp := ultradns.ZoneProperties{
+		Name:        testZoneName,
+		AccountName: testUsername,
+		Type:        "PRIMARY",
 	}
-	target := ultradns.Target(&result{})
-	res, err := testClient.ReadZone("go_sdk_unit_testing.com", target)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if res.StatusCode != 200 {
-		t.Errorf("Not a Successful response : returned response code - %v", res.StatusCode)
-	}
-	resData := target.Data.(*result)
-	if resData.Properties.Name != "go_sdk_unit_testing.com." {
-		t.Errorf("Zone name mismatched : returned zone name - %v", resData.Properties.Name)
+	zone := ultradns.Zone{
+		Properties: &zoneProp,
 	}
 
-	if resData.Properties.Type != "PRIMARY" {
-		t.Errorf("Zone type mismatched : returned zone type - %v", resData.Properties.Type)
-	}
+	_, er := testClient.CreateZone(zone)
 
-	if resData.Properties.Status != "ACTIVE" {
-		t.Errorf("Zone status not active : returned zone status - %v", resData.Properties.Status)
+	if er.Error() != "Post \"testHostv2/zones\": Post \"testHostv2/authorization/token\": unsupported protocol scheme \"\"" {
+		t.Error(er)
 	}
-
-	if resData.Properties.AccountName != testUsername {
-		t.Errorf("Zone account name mismatched : returned account name - %v", resData.Properties.AccountName)
-	}
-
 }
 
-func TestUpdateZone(t *testing.T) {
+func TestCreateZoneFailureResponse(t *testing.T) {
 	testClient, err := ultradns.NewClient(testUsername, testPassword, testHost, testVersion, testUserAgent)
 	if err != nil {
 		t.Fatal(err)
 	}
 	zoneProp := ultradns.ZoneProperties{
-		Name:        "go_sdk_unit_testing.com",
+		Name:        testZoneName,
+		AccountName: testUsername,
+		Type:        "PRIMARY",
+	}
+	zone := ultradns.Zone{
+		Properties: &zoneProp,
+	}
+
+	_, er := testClient.CreateZone(zone)
+
+	if er.Error() != fmt.Sprintf("Error while creating a zone (%v) - Error code : 55001 - Error Message : zone.primaryCreateInfo is required field.", testZoneName) {
+		t.Error(er)
+	}
+
+}
+
+func TestReadZoneSuccess(t *testing.T) {
+	testClient, err := ultradns.NewClient(testUsername, testPassword, testHost, testVersion, testUserAgent)
+	if err != nil {
+		t.Fatal(err)
+	}
+	res, zoneType, zoneResponse, er := testClient.ReadZone(testZoneName)
+	if er != nil {
+		t.Fatal(er)
+	}
+	if res.StatusCode != 200 {
+		t.Errorf("Not a Successful response : returned response code - %v", res.StatusCode)
+	}
+
+	if zoneResponse.Properties.Name != testZoneName+"." {
+		t.Errorf("Zone name mismatched expected - %v. : returned zone name - %v", testZoneName, zoneResponse.Properties.Name)
+	}
+
+	if zoneType != "PRIMARY" {
+		t.Errorf("Zone type mismatched expected - PRIMARY : returned zone type - %v", zoneType)
+	}
+
+	if zoneResponse.Properties.Status != "ACTIVE" {
+		t.Errorf("Zone status not active : returned zone status - %v", zoneResponse.Properties.Status)
+	}
+
+	if zoneResponse.Properties.AccountName != testUsername {
+		t.Errorf("Zone account name mismatched : returned account name - %v", zoneResponse.Properties.AccountName)
+	}
+
+}
+
+func TestReadZoneFailure(t *testing.T) {
+	testClient, err := ultradns.NewClient(testUsername, testPassword, "testHost", testVersion, testUserAgent)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, _, _, er := testClient.ReadZone(testZoneName)
+
+	if er.Error() != fmt.Sprintf("Get \"testHostv2/zones/%v\": Post \"testHostv2/authorization/token\": unsupported protocol scheme \"\"", testZoneName) {
+		t.Error(er)
+	}
+}
+
+func TestUpdateZoneSuccess(t *testing.T) {
+	testClient, err := ultradns.NewClient(testUsername, testPassword, testHost, testVersion, testUserAgent)
+	if err != nil {
+		t.Fatal(err)
+	}
+	zoneProp := ultradns.ZoneProperties{
+		Name:        testZoneName,
 		AccountName: testUsername,
 		Type:        "PRIMARY",
 	}
@@ -90,7 +142,7 @@ func TestUpdateZone(t *testing.T) {
 		PrimaryCreateInfo: &PrimaryZone,
 	}
 
-	res, err := testClient.UpdateZone("go_sdk_unit_testing.com", zone, nil)
+	res, err := testClient.UpdateZone(testZoneName, zone)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -99,12 +151,54 @@ func TestUpdateZone(t *testing.T) {
 	}
 }
 
-func TestDeleteZone(t *testing.T) {
+func TestUpdateZoneFailure(t *testing.T) {
+	testClient, err := ultradns.NewClient(testUsername, testPassword, "testHost", testVersion, testUserAgent)
+	if err != nil {
+		t.Fatal(err)
+	}
+	zoneProp := ultradns.ZoneProperties{
+		Name:        testZoneName,
+		AccountName: testUsername,
+		Type:        "PRIMARY",
+	}
+	zone := ultradns.Zone{
+		Properties: &zoneProp,
+	}
+
+	_, er := testClient.UpdateZone(testZoneName, zone)
+
+	if er.Error() != fmt.Sprintf("Put \"testHostv2/zones/%v\": Post \"testHostv2/authorization/token\": unsupported protocol scheme \"\"", testZoneName) {
+		t.Error(er)
+	}
+}
+
+func TestUpdateZoneFailureResponse(t *testing.T) {
 	testClient, err := ultradns.NewClient(testUsername, testPassword, testHost, testVersion, testUserAgent)
 	if err != nil {
 		t.Fatal(err)
 	}
-	res, err := testClient.DeleteZone("go_sdk_unit_testing.com", nil)
+	zoneProp := ultradns.ZoneProperties{
+		Name:        testZoneName,
+		AccountName: testUsername,
+		Type:        "PRIMARY",
+	}
+	zone := ultradns.Zone{
+		Properties: &zoneProp,
+	}
+
+	_, er := testClient.UpdateZone(testZoneName, zone)
+
+	if er.Error() != fmt.Sprintf("Error while updating a zone (%v) - Error code : 55001 - Error Message : zone.primaryCreateInfo is required field.", testZoneName) {
+		t.Error(er)
+	}
+}
+
+func TestDeleteZoneSuccess(t *testing.T) {
+	testClient, err := ultradns.NewClient(testUsername, testPassword, testHost, testVersion, testUserAgent)
+	if err != nil {
+		t.Fatal(err)
+	}
+	res, err := testClient.DeleteZone("go_sdk_unit_testing.com")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -112,4 +206,41 @@ func TestDeleteZone(t *testing.T) {
 		t.Errorf("Zone not Deleted : returned response code - %v", res.StatusCode)
 	}
 
+}
+
+func TestDeleteZoneFailure(t *testing.T) {
+	testClient, err := ultradns.NewClient(testUsername, testPassword, "testHost", testVersion, testUserAgent)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, er := testClient.DeleteZone("errortestingzone")
+
+	if er.Error() != "Delete \"testHostv2/zones/errortestingzone\": Post \"testHostv2/authorization/token\": unsupported protocol scheme \"\"" {
+		t.Error(er)
+	}
+
+}
+
+func TestDeleteZoneFailureResponse(t *testing.T) {
+	testClient, err := ultradns.NewClient(testUsername, testPassword, testHost, testVersion, testUserAgent)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, er := testClient.DeleteZone("errortestingzone")
+
+	if er.Error() != "Error while Deleting a zone (errortestingzone) - Error code : 1801 - Error Message : Zone does not exist in the system." {
+		t.Error(er)
+	}
+
+}
+
+func TestReadZoneFailureResponse(t *testing.T) {
+	testClient, err := ultradns.NewClient(testUsername, testPassword, testHost, testVersion, testUserAgent)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, _, _, er := testClient.ReadZone(testZoneName)
+	if er.Error() != fmt.Sprintf("Error while reading a zone (%v) - Error code : 1801 - Error Message : Zone does not exist in the system.", testZoneName) {
+		t.Error(er)
+	}
 }
