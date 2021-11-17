@@ -118,7 +118,7 @@ func (c *Client) CreateZone(zone Zone) (*http.Response, error) {
 	if res.StatusCode < 200 || res.StatusCode > 299 {
 		errDataListPtr := target.Error.(*[]ErrorResponse)
 		errDataList := *errDataListPtr
-		return res, fmt.Errorf("Error while creating a zone (%v) - Error code : %v - Error Message : %v", zone.Properties.Name, errDataList[0].ErrorCode, errDataList[0].ErrorMessage)
+		return res, fmt.Errorf("error while creating a zone (%v) - error code : %v - error message : %v", zone.Properties.Name, errDataList[0].ErrorCode, errDataList[0].ErrorMessage)
 	}
 
 	return res, nil
@@ -136,7 +136,7 @@ func (c *Client) ReadZone(zoneName string) (*http.Response, string, *ZoneRespons
 	if res.StatusCode < 200 || res.StatusCode > 299 {
 		errDataListPtr := target.Error.(*[]ErrorResponse)
 		errDataList := *errDataListPtr
-		return res, "", nil, fmt.Errorf("Error while reading a zone (%v) - Error code : %v - Error Message : %v", zoneName, errDataList[0].ErrorCode, errDataList[0].ErrorMessage)
+		return res, "", nil, fmt.Errorf("error while reading a zone (%v) - error code : %v - error message : %v", zoneName, errDataList[0].ErrorCode, errDataList[0].ErrorMessage)
 	}
 	zoneResponse := target.Data.(*ZoneResponse)
 	zoneType := zoneResponse.Properties.Type
@@ -156,7 +156,7 @@ func (c *Client) UpdateZone(zoneName string, zone Zone) (*http.Response, error) 
 	if res.StatusCode < 200 || res.StatusCode > 299 {
 		errDataListPtr := target.Error.(*[]ErrorResponse)
 		errDataList := *errDataListPtr
-		return res, fmt.Errorf("Error while updating a zone (%v) - Error code : %v - Error Message : %v", zoneName, errDataList[0].ErrorCode, errDataList[0].ErrorMessage)
+		return res, fmt.Errorf("error while updating a zone (%v) - error code : %v - error message : %v", zoneName, errDataList[0].ErrorCode, errDataList[0].ErrorMessage)
 	}
 
 	return res, nil
@@ -174,7 +174,7 @@ func (c *Client) DeleteZone(zoneName string) (*http.Response, error) {
 	if res.StatusCode < 200 || res.StatusCode > 299 {
 		errDataListPtr := target.Error.(*[]ErrorResponse)
 		errDataList := *errDataListPtr
-		return res, fmt.Errorf("Error while Deleting a zone (%v) - Error code : %v - Error Message : %v", zoneName, errDataList[0].ErrorCode, errDataList[0].ErrorMessage)
+		return res, fmt.Errorf("error while Deleting a zone (%v) - error code : %v - error message : %v", zoneName, errDataList[0].ErrorCode, errDataList[0].ErrorMessage)
 	}
 
 	return res, nil
