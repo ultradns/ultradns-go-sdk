@@ -27,7 +27,7 @@ type ZoneResponse struct {
 	//Primary Zone Response
 	RegistrarInfo   *RegistrarInfo   `json:"registrarInfo,omitempty"`
 	Tsig            *Tsig            `json:"tsig,omitempty"`
-	RestrictIPList  *[]RestrictIp    `json:"restrictIPList,omitempty"`
+	RestrictIPList  *[]RestrictIp    `json:"restrictIpList,omitempty"`
 	NotifyAddresses *[]NotifyAddress `json:"notifyAddresses,omitempty"`
 
 	//Secondary Zone Response
@@ -49,6 +49,12 @@ type ResultInfo struct {
 	TotalCount    int `json:"totalCount,omitempty"`
 	Offset        int `json:"offset,omitempty"`
 	ReturnedCount int `json:"returnedCount,omitempty"`
+}
+
+type ZoneListResponse struct {
+	QueryInfo  *QueryInfo      `json:"queryInfo"`
+	ResultInfo *ResultInfo     `json:"resultInfo"`
+	Zones      *[]ZoneResponse `json:"zones"`
 }
 
 func Target(i interface{}) *Response {

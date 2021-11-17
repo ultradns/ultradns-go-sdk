@@ -27,6 +27,7 @@ type ZoneProperties struct {
 	DnsSecStatus         string `json:"dnssecStatus,omitempty"`
 	LastModifiedDateTime string `json:"lastModifiedDateTime,omitempty"`
 	ResourceRecordCount  int    `json:"resourceRecordCount,omitempty"`
+	ChangeComment        string `json:"changeComment,omitempty"`
 }
 
 type Tsig struct {
