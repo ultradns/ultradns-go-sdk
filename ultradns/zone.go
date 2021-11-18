@@ -180,3 +180,22 @@ func (c *Client) DeleteZone(zoneName string) (*http.Response, error) {
 
 	return res, nil
 }
+
+//list Zones
+func (c *Client) ListZone(query string) (*http.Response, *ZoneListResponse, error) {
+	target := Target(&ZoneListResponse{})
+	res, err := c.Do("GET", "zones/"+query, nil, target)
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if res.StatusCode < 200 || res.StatusCode > 299 {
+		errDataListPtr := target.Error.(*[]ErrorResponse)
+		errDataList := *errDataListPtr
+		return res, nil, fmt.Errorf("error while listing zones - error code : %v - error message : %v", errDataList[0].ErrorCode, errDataList[0].ErrorMessage)
+	}
+	zoneListResponse := target.Data.(*ZoneListResponse)
+
+	return res, zoneListResponse, nil
+}

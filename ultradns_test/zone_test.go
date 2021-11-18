@@ -75,7 +75,7 @@ func TestCreateZoneFailureResponse(t *testing.T) {
 
 	_, er := testClient.CreateZone(zone)
 
-	if er.Error() != fmt.Sprintf("Error while creating a zone (%v) - Error code : 55001 - Error Message : zone.primaryCreateInfo is required field.", testZoneName) {
+	if er.Error() != fmt.Sprintf("error while creating a zone (%v) - error code : 55001 - error message : zone.primaryCreateInfo is required field.", testZoneName) {
 		t.Error(er)
 	}
 
@@ -188,7 +188,7 @@ func TestUpdateZoneFailureResponse(t *testing.T) {
 
 	_, er := testClient.UpdateZone(testZoneName, zone)
 
-	if er.Error() != fmt.Sprintf("Error while updating a zone (%v) - Error code : 55001 - Error Message : zone.primaryCreateInfo is required field.", testZoneName) {
+	if er.Error() != fmt.Sprintf("error while updating a zone (%v) - error code : 55001 - error message : zone.primaryCreateInfo is required field.", testZoneName) {
 		t.Error(er)
 	}
 }
@@ -228,7 +228,7 @@ func TestDeleteZoneFailureResponse(t *testing.T) {
 	}
 	_, er := testClient.DeleteZone("errortestingzone")
 
-	if er.Error() != "Error while Deleting a zone (errortestingzone) - Error code : 1801 - Error Message : Zone does not exist in the system." {
+	if er.Error() != "error while Deleting a zone (errortestingzone) - error code : 1801 - error message : Zone does not exist in the system." {
 		t.Error(er)
 	}
 
@@ -240,7 +240,48 @@ func TestReadZoneFailureResponse(t *testing.T) {
 		t.Fatal(err)
 	}
 	_, _, _, er := testClient.ReadZone(testZoneName)
-	if er.Error() != fmt.Sprintf("Error while reading a zone (%v) - Error code : 1801 - Error Message : Zone does not exist in the system.", testZoneName) {
+	if er.Error() != fmt.Sprintf("error while reading a zone (%v) - error code : 1801 - error message : Zone does not exist in the system.", testZoneName) {
+		t.Error(er)
+	}
+}
+
+func TestListZoneSuccess(t *testing.T) {
+	testClient, err := ultradns.NewClient(testUsername, testPassword, testHost, testVersion, testUserAgent)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, zoneListResponse, err := testClient.ListZone("?&limit=1")
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if zoneListResponse.ResultInfo.ReturnedCount != 1 {
+		t.Errorf("zone returned count mismatched expected : 1 - returned count : %v", zoneListResponse.ResultInfo.ReturnedCount)
+	}
+}
+
+func TestListZoneFailure(t *testing.T) {
+	testClient, err := ultradns.NewClient(testUsername, testPassword, "testHost", testVersion, testUserAgent)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, _, er := testClient.ListZone("?&limit=1")
+
+	if er.Error() != "Get \"testHostv2/zones/?&limit=1\": Post \"testHostv2/authorization/token\": unsupported protocol scheme \"\"" {
+		t.Error(er)
+	}
+}
+
+func TestListZoneFailureResponse(t *testing.T) {
+	testClient, err := ultradns.NewClient(testUsername, testPassword, testHost, testVersion, testUserAgent)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, _, er := testClient.ListZone("?&limit=k")
+
+	if er.Error() != "error while listing zones - error code : 400 - error message : Invalid value for query parameter 'limit'" {
 		t.Error(er)
 	}
 }
