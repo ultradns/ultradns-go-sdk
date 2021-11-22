@@ -1,4 +1,4 @@
-module ultradns-go-sdk
+module github.com/ultradns/ultradns-go-sdk
 
 go 1.17
 

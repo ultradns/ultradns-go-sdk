@@ -9,7 +9,8 @@ import (
 	"fmt"
 	"os"
 	"testing"
-	"ultradns-go-sdk/ultradns"
+
+	"github.com/ultradns/ultradns-go-sdk/ultradns"
 )
 
 var (

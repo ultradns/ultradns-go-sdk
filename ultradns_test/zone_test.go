@@ -8,7 +8,8 @@ package ultradns_test
 import (
 	"fmt"
 	"testing"
-	"ultradns-go-sdk/ultradns"
+
+	"github.com/ultradns/ultradns-go-sdk/ultradns"
 )
 
 func TestCreateZoneSuccess(t *testing.T) {
@@ -94,8 +95,8 @@ func TestReadZoneSuccess(t *testing.T) {
 		t.Errorf("Not a Successful response : returned response code - %v", res.StatusCode)
 	}
 
-	if zoneResponse.Properties.Name != testZoneName+"." {
-		t.Errorf("Zone name mismatched expected - %v. : returned zone name - %v", testZoneName, zoneResponse.Properties.Name)
+	if zoneResponse.Properties.Name != testZoneName {
+		t.Errorf("Zone name mismatched expected - %v : returned zone name - %v", testZoneName, zoneResponse.Properties.Name)
 	}
 
 	if zoneType != "PRIMARY" {

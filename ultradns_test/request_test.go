@@ -7,7 +7,8 @@ package ultradns_test
 
 import (
 	"testing"
-	"ultradns-go-sdk/ultradns"
+
+	"github.com/ultradns/ultradns-go-sdk/ultradns"
 )
 
 func TestDoSuccess(t *testing.T) {
