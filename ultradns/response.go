@@ -5,6 +5,8 @@
  */
 package ultradns
 
+import "fmt"
+
 type Response struct {
 	Data  interface{}
 	Error interface{}
@@ -21,23 +23,6 @@ type SuccessResponse struct {
 	Message string `json:"message"`
 }
 
-type ZoneResponse struct {
-	Properties *ZoneProperties `json:"properties"`
-
-	//Primary Zone Response
-	RegistrarInfo   *RegistrarInfo   `json:"registrarInfo,omitempty"`
-	Tsig            *Tsig            `json:"tsig,omitempty"`
-	RestrictIPList  *[]RestrictIp    `json:"restrictIpList,omitempty"`
-	NotifyAddresses *[]NotifyAddress `json:"notifyAddresses,omitempty"`
-
-	//Secondary Zone Response
-	PrimaryNameServers    *PrimaryNameServers    `json:"primaryNameServers,omitempty"`
-	TransferStatusDetails *TransferStatusDetails `json:"transferStatusDetails,omitempty"`
-
-	//Alias Zone Response
-	OriginalZoneName string `json:"originalZoneName,omitempty"`
-}
-
 type QueryInfo struct {
 	Query   string `json:"q,omitempty"`
 	Sort    string `json:"sort,omitempty"`
@@ -51,10 +36,8 @@ type ResultInfo struct {
 	ReturnedCount int `json:"returnedCount,omitempty"`
 }
 
-type ZoneListResponse struct {
-	QueryInfo  *QueryInfo      `json:"queryInfo"`
-	ResultInfo *ResultInfo     `json:"resultInfo"`
-	Zones      *[]ZoneResponse `json:"zones"`
+func (e ErrorResponse) String() string {
+	return fmt.Sprintf("error code : %v - error message : %v", e.ErrorCode, e.ErrorMessage)
 }
 
 func Target(i interface{}) *Response {

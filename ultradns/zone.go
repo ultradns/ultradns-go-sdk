@@ -81,6 +81,7 @@ type PrimaryZone struct {
 type SecondaryZone struct {
 	PrimaryNameServers       *PrimaryNameServers `json:"primaryNameServers"`
 	NotificationEmailAddress string              `json:"notificationEmailAddress,omitempty"`
+	AllowUnResponsiveNs      bool                `json:"allowUnresponsiveNS,omitempty"`
 }
 
 type AliasZone struct {
@@ -107,6 +108,29 @@ type TransferStatusDetails struct {
 	LastRefreshStatusMessage string `json:"lastRefreshStatusMessage"`
 }
 
+type ZoneResponse struct {
+	Properties *ZoneProperties `json:"properties"`
+
+	//Primary Zone Response
+	RegistrarInfo   *RegistrarInfo   `json:"registrarInfo,omitempty"`
+	Tsig            *Tsig            `json:"tsig,omitempty"`
+	RestrictIPList  *[]RestrictIp    `json:"restrictIpList,omitempty"`
+	NotifyAddresses *[]NotifyAddress `json:"notifyAddresses,omitempty"`
+
+	//Secondary Zone Response
+	PrimaryNameServers    *PrimaryNameServers    `json:"primaryNameServers,omitempty"`
+	TransferStatusDetails *TransferStatusDetails `json:"transferStatusDetails,omitempty"`
+
+	//Alias Zone Response
+	OriginalZoneName string `json:"originalZoneName,omitempty"`
+}
+
+type ZoneListResponse struct {
+	QueryInfo  *QueryInfo      `json:"queryInfo"`
+	ResultInfo *ResultInfo     `json:"resultInfo"`
+	Zones      *[]ZoneResponse `json:"zones"`
+}
+
 //create zone
 func (c *Client) CreateZone(zone Zone) (*http.Response, error) {
 	target := Target(&SuccessResponse{})
@@ -119,7 +143,16 @@ func (c *Client) CreateZone(zone Zone) (*http.Response, error) {
 	if res.StatusCode < 200 || res.StatusCode > 299 {
 		errDataListPtr := target.Error.(*[]ErrorResponse)
 		errDataList := *errDataListPtr
-		return res, fmt.Errorf("error while creating a zone (%v) - error code : %v - error message : %v", zone.Properties.Name, errDataList[0].ErrorCode, errDataList[0].ErrorMessage)
+		return res, fmt.Errorf("error while creating a zone (%v) - %s", zone.Properties.Name, errDataList[0])
+	}
+
+	if res.StatusCode == 202 {
+		taskId := res.Header.Get("X-Task-Id")
+		er := c.ZoneTaskWait(taskId)
+
+		if er != nil {
+			return res, er
+		}
 	}
 
 	return res, nil
@@ -137,7 +170,7 @@ func (c *Client) ReadZone(zoneName string) (*http.Response, string, *ZoneRespons
 	if res.StatusCode < 200 || res.StatusCode > 299 {
 		errDataListPtr := target.Error.(*[]ErrorResponse)
 		errDataList := *errDataListPtr
-		return res, "", nil, fmt.Errorf("error while reading a zone (%v) - error code : %v - error message : %v", zoneName, errDataList[0].ErrorCode, errDataList[0].ErrorMessage)
+		return res, "", nil, fmt.Errorf("error while reading a zone (%v) - %s", zoneName, errDataList[0])
 	}
 	zoneResponse := target.Data.(*ZoneResponse)
 	zoneType := zoneResponse.Properties.Type
@@ -157,7 +190,7 @@ func (c *Client) UpdateZone(zoneName string, zone Zone) (*http.Response, error) 
 	if res.StatusCode < 200 || res.StatusCode > 299 {
 		errDataListPtr := target.Error.(*[]ErrorResponse)
 		errDataList := *errDataListPtr
-		return res, fmt.Errorf("error while updating a zone (%v) - error code : %v - error message : %v", zoneName, errDataList[0].ErrorCode, errDataList[0].ErrorMessage)
+		return res, fmt.Errorf("error while updating a zone (%v) - %s", zoneName, errDataList[0])
 	}
 
 	return res, nil
@@ -175,7 +208,7 @@ func (c *Client) DeleteZone(zoneName string) (*http.Response, error) {
 	if res.StatusCode < 200 || res.StatusCode > 299 {
 		errDataListPtr := target.Error.(*[]ErrorResponse)
 		errDataList := *errDataListPtr
-		return res, fmt.Errorf("error while Deleting a zone (%v) - error code : %v - error message : %v", zoneName, errDataList[0].ErrorCode, errDataList[0].ErrorMessage)
+		return res, fmt.Errorf("error while Deleting a zone (%v) - %s", zoneName, errDataList[0])
 	}
 
 	return res, nil
@@ -193,7 +226,7 @@ func (c *Client) ListZone(query string) (*http.Response, *ZoneListResponse, erro
 	if res.StatusCode < 200 || res.StatusCode > 299 {
 		errDataListPtr := target.Error.(*[]ErrorResponse)
 		errDataList := *errDataListPtr
-		return res, nil, fmt.Errorf("error while listing zones - error code : %v - error message : %v", errDataList[0].ErrorCode, errDataList[0].ErrorMessage)
+		return res, nil, fmt.Errorf("error while listing zones - %s", errDataList[0])
 	}
 	zoneListResponse := target.Data.(*ZoneListResponse)
 

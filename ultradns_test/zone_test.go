@@ -199,7 +199,7 @@ func TestDeleteZoneSuccess(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	res, err := testClient.DeleteZone("go_sdk_unit_testing.com")
+	res, err := testClient.DeleteZone(testZoneName)
 	if err != nil {
 		t.Fatal(err)
 	}
