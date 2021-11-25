@@ -14,11 +14,11 @@ import (
 )
 
 var (
-	testUsername  = os.Getenv("ULTRADNS_USERNAME")
-	testPassword  = os.Getenv("ULTRADNS_PASSWORD")
-	testHost      = os.Getenv("ULTRADNS_HOST_URL")
-	testVersion   = os.Getenv("ULTRADNS_API_VERSION")
-	testUserAgent = os.Getenv("ULTRADNS_USER_AGENT")
+	testUsername  = os.Getenv("ULTRADNS_UNIT_TEST_USERNAME")
+	testPassword  = os.Getenv("ULTRADNS_UNIT_TEST_PASSWORD")
+	testHost      = os.Getenv("ULTRADNS_UNIT_TEST_HOST_URL")
+	testVersion   = os.Getenv("ULTRADNS_UNIT_TEST_API_VERSION")
+	testUserAgent = os.Getenv("ULTRADNS_UNIT_TEST_USER_AGENT")
 	testZoneName  = os.Getenv("ULTRADNS_UNIT_TEST_ZONE_NAME")
 )
 

@@ -148,7 +148,7 @@ func (c *Client) CreateZone(zone Zone) (*http.Response, error) {
 
 	if res.StatusCode == 202 {
 		taskId := res.Header.Get("X-Task-Id")
-		er := c.ZoneTaskWait(taskId)
+		er := c.TaskWait(taskId, 3, 10)
 
 		if er != nil {
 			return res, er
@@ -159,23 +159,22 @@ func (c *Client) CreateZone(zone Zone) (*http.Response, error) {
 }
 
 //read zone
-func (c *Client) ReadZone(zoneName string) (*http.Response, string, *ZoneResponse, error) {
+func (c *Client) ReadZone(zoneName string) (*http.Response, *ZoneResponse, error) {
 	target := Target(&ZoneResponse{})
 	res, err := c.Do("GET", "zones/"+zoneName, nil, target)
 
 	if err != nil {
-		return nil, "", nil, err
+		return nil, nil, err
 	}
 
 	if res.StatusCode < 200 || res.StatusCode > 299 {
 		errDataListPtr := target.Error.(*[]ErrorResponse)
 		errDataList := *errDataListPtr
-		return res, "", nil, fmt.Errorf("error while reading a zone (%v) - %s", zoneName, errDataList[0])
+		return res, nil, fmt.Errorf("error while reading a zone (%v) - %s", zoneName, errDataList[0])
 	}
 	zoneResponse := target.Data.(*ZoneResponse)
-	zoneType := zoneResponse.Properties.Type
 
-	return res, zoneType, zoneResponse, nil
+	return res, zoneResponse, nil
 }
 
 //update zone

@@ -42,7 +42,7 @@ func TestZoneTaskWaitFailure(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	er := testClient.ZoneTaskWait("a")
+	er := testClient.TaskWait("a", 1, 10)
 
 	if er.Error() != "error while getting task status - error code : 54001 - error message : Cannot find the task status for the input taskId" {
 		t.Error(er)
@@ -88,7 +88,7 @@ func TestZoneTaskWaitCreatingSecondaryZoneFailure(t *testing.T) {
 
 }
 
-func TestZoneTaskWaitCreatingSecondaryZoneSuccess(t *testing.T) {
+func testZoneTaskWaitCreatingSecondaryZoneSuccess(t *testing.T) {
 	testClient, err := ultradns.NewClient(testUsername, testPassword, testHost, testVersion, testUserAgent)
 	if err != nil {
 		t.Fatal(err)

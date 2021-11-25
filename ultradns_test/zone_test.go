@@ -87,7 +87,7 @@ func TestReadZoneSuccess(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	res, zoneType, zoneResponse, er := testClient.ReadZone(testZoneName)
+	res, zoneResponse, er := testClient.ReadZone(testZoneName)
 	if er != nil {
 		t.Fatal(er)
 	}
@@ -99,8 +99,8 @@ func TestReadZoneSuccess(t *testing.T) {
 		t.Errorf("Zone name mismatched expected - %v : returned zone name - %v", testZoneName, zoneResponse.Properties.Name)
 	}
 
-	if zoneType != "PRIMARY" {
-		t.Errorf("Zone type mismatched expected - PRIMARY : returned zone type - %v", zoneType)
+	if zoneResponse.Properties.Type != "PRIMARY" {
+		t.Errorf("Zone type mismatched expected - PRIMARY : returned zone type - %v", zoneResponse.Properties.Type)
 	}
 
 	if zoneResponse.Properties.Status != "ACTIVE" {
@@ -118,7 +118,7 @@ func TestReadZoneFailure(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, _, _, er := testClient.ReadZone(testZoneName)
+	_, _, er := testClient.ReadZone(testZoneName)
 
 	if er.Error() != fmt.Sprintf("Get \"testHostv2/zones/%v\": Post \"testHostv2/authorization/token\": unsupported protocol scheme \"\"", testZoneName) {
 		t.Error(er)
@@ -240,7 +240,7 @@ func TestReadZoneFailureResponse(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, _, _, er := testClient.ReadZone(testZoneName)
+	_, _, er := testClient.ReadZone(testZoneName)
 	if er.Error() != fmt.Sprintf("error while reading a zone (%v) - error code : 1801 - error message : Zone does not exist in the system.", testZoneName) {
 		t.Error(er)
 	}

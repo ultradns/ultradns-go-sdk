@@ -47,10 +47,10 @@ func (c *Client) GetTaskStatus(taskId string) (*http.Response, *Task, error) {
 	return res, task, nil
 }
 
-func (c *Client) ZoneTaskWait(taskId string) error {
+func (c *Client) TaskWait(taskId string, retries, timegap int) error {
 	var taskStatus *Task
-	for i := 0; i < 3; i++ {
-		time.Sleep(10 * time.Second)
+	for i := 0; i < retries; i++ {
+		time.Sleep(time.Duration(timegap) * time.Second)
 		_, task, err := c.GetTaskStatus(taskId)
 
 		if err != nil {
@@ -67,5 +67,5 @@ func (c *Client) ZoneTaskWait(taskId string) error {
 		}
 		taskStatus = task
 	}
-	return fmt.Errorf("Timeout for zone task - Last returned task status : %s", taskStatus)
+	return fmt.Errorf("timeout for checking task status - last returned task status : %s", taskStatus)
 }
