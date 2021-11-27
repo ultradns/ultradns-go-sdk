@@ -55,14 +55,13 @@ func TestDoNonExistingZone(t *testing.T) {
 		t.Errorf("Not a 404 response : returned response code - %v", res.StatusCode)
 	}
 
-	errDataArr := target.Error.(*[]ultradns.ErrorResponse)
-	errData := *errDataArr
-	if errData[0].ErrorCode != 1801 {
-		t.Errorf("Error code mismatch : returned error code - %v", errData[0].ErrorCode)
+	errDataList := target.Error
+	if errDataList[0].ErrorCode != 1801 {
+		t.Errorf("Error code mismatch : returned error code - %v", errDataList[0].ErrorCode)
 	}
 
-	if errData[0].ErrorMessage != "Zone does not exist in the system." {
-		t.Errorf("Error message mismatch : returned error message - %v", errData[0].ErrorMessage)
+	if errDataList[0].ErrorMessage != "Zone does not exist in the system." {
+		t.Errorf("Error message mismatch : returned error message - %v", errDataList[0].ErrorMessage)
 	}
 
 }

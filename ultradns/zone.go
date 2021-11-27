@@ -73,8 +73,8 @@ type PrimaryZone struct {
 	NameServer       *NameServerIp    `json:"nameServer,omitempty"`
 	Tsig             *Tsig            `json:"tsig,omitempty"`
 	OriginalZoneName string           `json:"originalZoneName,omitempty"`
-	RestrictIPList   *[]RestrictIp    `json:"restrictIPList,omitempty"`
-	NotifyAddresses  *[]NotifyAddress `json:"notifyAddresses,omitempty"`
+	RestrictIPList   []*RestrictIp    `json:"restrictIPList,omitempty"`
+	NotifyAddresses  []*NotifyAddress `json:"notifyAddresses,omitempty"`
 	Inherit          string           `json:"inherit,omitempty"`
 }
 
@@ -114,8 +114,8 @@ type ZoneResponse struct {
 	//Primary Zone Response
 	RegistrarInfo   *RegistrarInfo   `json:"registrarInfo,omitempty"`
 	Tsig            *Tsig            `json:"tsig,omitempty"`
-	RestrictIPList  *[]RestrictIp    `json:"restrictIpList,omitempty"`
-	NotifyAddresses *[]NotifyAddress `json:"notifyAddresses,omitempty"`
+	RestrictIPList  []*RestrictIp    `json:"restrictIpList,omitempty"`
+	NotifyAddresses []*NotifyAddress `json:"notifyAddresses,omitempty"`
 
 	//Secondary Zone Response
 	PrimaryNameServers    *PrimaryNameServers    `json:"primaryNameServers,omitempty"`
@@ -128,7 +128,7 @@ type ZoneResponse struct {
 type ZoneListResponse struct {
 	QueryInfo  *QueryInfo      `json:"queryInfo"`
 	ResultInfo *ResultInfo     `json:"resultInfo"`
-	Zones      *[]ZoneResponse `json:"zones"`
+	Zones      []*ZoneResponse `json:"zones"`
 }
 
 //create zone
@@ -141,8 +141,7 @@ func (c *Client) CreateZone(zone Zone) (*http.Response, error) {
 	}
 
 	if res.StatusCode < 200 || res.StatusCode > 299 {
-		errDataListPtr := target.Error.(*[]ErrorResponse)
-		errDataList := *errDataListPtr
+		errDataList := target.Error
 		return res, fmt.Errorf("error while creating a zone (%v) - %s", zone.Properties.Name, errDataList[0])
 	}
 
@@ -168,8 +167,7 @@ func (c *Client) ReadZone(zoneName string) (*http.Response, *ZoneResponse, error
 	}
 
 	if res.StatusCode < 200 || res.StatusCode > 299 {
-		errDataListPtr := target.Error.(*[]ErrorResponse)
-		errDataList := *errDataListPtr
+		errDataList := target.Error
 		return res, nil, fmt.Errorf("error while reading a zone (%v) - %s", zoneName, errDataList[0])
 	}
 	zoneResponse := target.Data.(*ZoneResponse)
@@ -187,8 +185,7 @@ func (c *Client) UpdateZone(zoneName string, zone Zone) (*http.Response, error) 
 	}
 
 	if res.StatusCode < 200 || res.StatusCode > 299 {
-		errDataListPtr := target.Error.(*[]ErrorResponse)
-		errDataList := *errDataListPtr
+		errDataList := target.Error
 		return res, fmt.Errorf("error while updating a zone (%v) - %s", zoneName, errDataList[0])
 	}
 
@@ -205,8 +202,7 @@ func (c *Client) DeleteZone(zoneName string) (*http.Response, error) {
 	}
 
 	if res.StatusCode < 200 || res.StatusCode > 299 {
-		errDataListPtr := target.Error.(*[]ErrorResponse)
-		errDataList := *errDataListPtr
+		errDataList := target.Error
 		return res, fmt.Errorf("error while Deleting a zone (%v) - %s", zoneName, errDataList[0])
 	}
 
@@ -223,8 +219,7 @@ func (c *Client) ListZone(query string) (*http.Response, *ZoneListResponse, erro
 	}
 
 	if res.StatusCode < 200 || res.StatusCode > 299 {
-		errDataListPtr := target.Error.(*[]ErrorResponse)
-		errDataList := *errDataListPtr
+		errDataList := target.Error
 		return res, nil, fmt.Errorf("error while listing zones - %s", errDataList[0])
 	}
 	zoneListResponse := target.Data.(*ZoneListResponse)

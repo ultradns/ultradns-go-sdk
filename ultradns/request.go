@@ -45,9 +45,9 @@ func (c *Client) Do(method, path string, payload, target interface{}) (*http.Res
 	if target != nil {
 		target := target.(*Response)
 		if res.StatusCode >= 200 && res.StatusCode <= 299 {
-			json.NewDecoder(res.Body).Decode(target.Data)
+			json.NewDecoder(res.Body).Decode(&target.Data)
 		} else {
-			json.NewDecoder(res.Body).Decode(target.Error)
+			json.NewDecoder(res.Body).Decode(&target.Error)
 		}
 	}
 

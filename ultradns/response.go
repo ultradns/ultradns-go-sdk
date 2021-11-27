@@ -9,7 +9,7 @@ import "fmt"
 
 type Response struct {
 	Data  interface{}
-	Error interface{}
+	Error []*ErrorResponse
 }
 
 type ErrorResponse struct {
@@ -41,8 +41,5 @@ func (e ErrorResponse) String() string {
 }
 
 func Target(i interface{}) *Response {
-	return &Response{
-		Data:  i,
-		Error: &[]ErrorResponse{},
-	}
+	return &Response{Data: i}
 }

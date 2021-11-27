@@ -18,12 +18,6 @@ type Task struct {
 	ResultUri string `json:"resultUri,omitempty"`
 }
 
-type TaskList struct {
-	QueryInfo  *QueryInfo  `json:"queryInfo"`
-	ResultInfo *ResultInfo `json:"resultInfo"`
-	Tasks      *[]Task     `json:"tasks"`
-}
-
 func (t Task) String() string {
 	return fmt.Sprintf("taskId : %v - code : %v - message : %v", t.TaskId, t.Code, t.Message)
 }
@@ -37,8 +31,7 @@ func (c *Client) GetTaskStatus(taskId string) (*http.Response, *Task, error) {
 	}
 
 	if res.StatusCode < 200 || res.StatusCode > 299 {
-		errDataListPtr := target.Error.(*[]ErrorResponse)
-		errDataList := *errDataListPtr
+		errDataList := target.Error
 		return res, nil, fmt.Errorf("error while getting task status - %s", errDataList[0])
 	}
 
