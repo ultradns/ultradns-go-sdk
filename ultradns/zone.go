@@ -118,8 +118,9 @@ type ZoneResponse struct {
 	NotifyAddresses []*NotifyAddress `json:"notifyAddresses,omitempty"`
 
 	//Secondary Zone Response
-	PrimaryNameServers    *PrimaryNameServers    `json:"primaryNameServers,omitempty"`
-	TransferStatusDetails *TransferStatusDetails `json:"transferStatusDetails,omitempty"`
+	PrimaryNameServers       *PrimaryNameServers    `json:"primaryNameServers,omitempty"`
+	TransferStatusDetails    *TransferStatusDetails `json:"transferStatusDetails,omitempty"`
+	NotificationEmailAddress string                 `json:"notificationEmailAddress,omitempty"`
 
 	//Alias Zone Response
 	OriginalZoneName string `json:"originalZoneName,omitempty"`
