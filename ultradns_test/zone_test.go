@@ -286,3 +286,127 @@ func TestListZoneFailureResponse(t *testing.T) {
 		t.Error(er)
 	}
 }
+
+func TestCreateZoneWithSpecialCharacter(t *testing.T) {
+	testClient, err := ultradns.NewClient(testUsername, testPassword, testHost, testVersion, testUserAgent)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	zoneProp := ultradns.ZoneProperties{
+		Name:        "0/192.168.1.1.in-addr.arpa",
+		AccountName: "teamrest",
+		Type:        "PRIMARY",
+	}
+	primaryZone := ultradns.PrimaryZone{
+		CreateType: "NEW",
+	}
+	zone := ultradns.Zone{
+		Properties:        &zoneProp,
+		PrimaryCreateInfo: &primaryZone,
+	}
+
+	res, er := testClient.CreateZone(zone)
+
+	if er != nil {
+		t.Fatal(er)
+	}
+
+	if res.StatusCode != 201 {
+		t.Errorf("Zone with special character not created : returned response code - %v", res.StatusCode)
+	}
+}
+
+func TestReadZoneWithSpecialCharacter(t *testing.T) {
+	testClient, err := ultradns.NewClient(testUsername, testPassword, testHost, testVersion, testUserAgent)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	res, zoneResponse, er := testClient.ReadZone("0/192.168.1.1.in-addr.arpa")
+	if er != nil {
+		t.Fatal(er)
+	}
+
+	if res.StatusCode != 200 {
+		t.Errorf("Not a Successful response : returned response code - %v", res.StatusCode)
+	}
+
+	if zoneResponse.Properties.Name != "0/192.168.1.1.in-addr.arpa." {
+		t.Errorf("Zone name mismatched expected - %v : returned zone name - %v", "0/192.168.1.1.in-addr.arpa.", zoneResponse.Properties.Name)
+	}
+
+	if zoneResponse.Properties.Type != "PRIMARY" {
+		t.Errorf("Zone type mismatched expected - PRIMARY : returned zone type - %v", zoneResponse.Properties.Type)
+	}
+
+	if zoneResponse.Properties.Status != "ACTIVE" {
+		t.Errorf("Zone status not active : returned zone status - %v", zoneResponse.Properties.Status)
+	}
+
+	if zoneResponse.Properties.AccountName != testUsername {
+		t.Errorf("Zone account name mismatched : returned account name - %v", zoneResponse.Properties.AccountName)
+	}
+}
+
+func TestUpdateZoneWithSpecialCharacter(t *testing.T) {
+	testClient, err := ultradns.NewClient(testUsername, testPassword, testHost, testVersion, testUserAgent)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	zoneProp := ultradns.ZoneProperties{
+		Name:        "0/192.168.1.1.in-addr.arpa",
+		AccountName: testUsername,
+		Type:        "PRIMARY",
+	}
+	PrimaryZone := ultradns.PrimaryZone{
+		CreateType: "NEW",
+	}
+	zone := ultradns.Zone{
+		Properties:        &zoneProp,
+		PrimaryCreateInfo: &PrimaryZone,
+	}
+
+	res, err := testClient.UpdateZone("0/192.168.1.1.in-addr.arpa", zone)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if res.StatusCode != 200 {
+		t.Errorf("Zone with special character is not updated : returned response code - %v", res.StatusCode)
+	}
+
+}
+
+func TestListZoneWithSpecialCharacter(t *testing.T) {
+	testClient, err := ultradns.NewClient(testUsername, testPassword, testHost, testVersion, testUserAgent)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, zoneListResponse, err := testClient.ListZone("?&q=name:0/192.168.1.1.in-addr.arpa&limit=1")
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if zoneListResponse.ResultInfo.ReturnedCount != 1 {
+		t.Errorf("zone returned count mismatched expected : 1 - returned count : %v", zoneListResponse.ResultInfo.ReturnedCount)
+	}
+}
+
+func TestDeleteZoneWithSpecialCharacter(t *testing.T) {
+	testClient, err := ultradns.NewClient(testUsername, testPassword, testHost, testVersion, testUserAgent)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	res, err := testClient.DeleteZone("0/192.168.1.1.in-addr.arpa.")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if res.StatusCode != 204 {
+		t.Errorf("Zone with special character not Deleted : returned response code - %v", res.StatusCode)
+	}
+}

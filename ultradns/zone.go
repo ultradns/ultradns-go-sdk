@@ -8,6 +8,7 @@ package ultradns
 import (
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 type Zone struct {
@@ -148,7 +149,7 @@ func (c *Client) CreateZone(zone Zone) (*http.Response, error) {
 
 	if res.StatusCode == 202 {
 		taskId := res.Header.Get("X-Task-Id")
-		er := c.TaskWait(taskId, 3, 10)
+		er := c.TaskWait(taskId, 5, 10)
 
 		if er != nil {
 			return res, er
@@ -161,6 +162,7 @@ func (c *Client) CreateZone(zone Zone) (*http.Response, error) {
 //read zone
 func (c *Client) ReadZone(zoneName string) (*http.Response, *ZoneResponse, error) {
 	target := Target(&ZoneResponse{})
+	zoneName = strings.Replace(zoneName, "/", "%2F", 1)
 	res, err := c.Do("GET", "zones/"+zoneName, nil, target)
 
 	if err != nil {
@@ -179,6 +181,7 @@ func (c *Client) ReadZone(zoneName string) (*http.Response, *ZoneResponse, error
 //update zone
 func (c *Client) UpdateZone(zoneName string, zone Zone) (*http.Response, error) {
 	target := Target(&SuccessResponse{})
+	zoneName = strings.Replace(zoneName, "/", "%2F", 1)
 	res, err := c.Do("PUT", "zones/"+zoneName, zone, target)
 
 	if err != nil {
@@ -196,6 +199,7 @@ func (c *Client) UpdateZone(zoneName string, zone Zone) (*http.Response, error) 
 //delete zone
 func (c *Client) DeleteZone(zoneName string) (*http.Response, error) {
 	target := Target(&SuccessResponse{})
+	zoneName = strings.Replace(zoneName, "/", "%2F", 1)
 	res, err := c.Do("DELETE", "zones/"+zoneName, nil, target)
 
 	if err != nil {
@@ -213,6 +217,7 @@ func (c *Client) DeleteZone(zoneName string) (*http.Response, error) {
 //list Zones
 func (c *Client) ListZone(query string) (*http.Response, *ZoneListResponse, error) {
 	target := Target(&ZoneListResponse{})
+	query = strings.Replace(query, "/", "%2F", 1)
 	res, err := c.Do("GET", "zones/"+query, nil, target)
 
 	if err != nil {

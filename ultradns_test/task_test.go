@@ -88,7 +88,7 @@ func TestZoneTaskWaitCreatingSecondaryZoneFailure(t *testing.T) {
 
 }
 
-func testZoneTaskWaitCreatingSecondaryZoneSuccess(t *testing.T) {
+func TestZoneTaskWaitCreatingSecondaryZoneSuccess(t *testing.T) {
 	testClient, err := ultradns.NewClient(testUsername, testPassword, testHost, testVersion, testUserAgent)
 	if err != nil {
 		t.Fatal(err)
@@ -96,13 +96,13 @@ func testZoneTaskWaitCreatingSecondaryZoneSuccess(t *testing.T) {
 
 	defer testClient.DeleteZone(testZoneName)
 	zoneProp := ultradns.ZoneProperties{
-		Name:        testZoneName,
+		Name:        "d100-permission.com.",
 		AccountName: testUsername,
 		Type:        "SECONDARY",
 	}
 
 	nameserverIp := ultradns.NameServerIp{
-		Ip: "ultradn.net.",
+		Ip: "e2e-bind-useast1a01-01.dev.ultradns.net",
 	}
 	nameserverIpList := ultradns.NameServerIpList{
 		NameServerIp1: &nameserverIp,
