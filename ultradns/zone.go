@@ -134,26 +134,22 @@ type ZoneListResponse struct {
 }
 
 //create zone
-func (c *Client) CreateZone(zone Zone) (*http.Response, error) {
+func (c *Client) CreateZone(zone *Zone) (*http.Response, error) {
 	target := Target(&SuccessResponse{})
-	res, err := c.Do("POST", "zones", zone, target)
+	res, err := c.Do(http.MethodPost, "zones", zone, target)
 
 	if err != nil {
 		return nil, err
 	}
 
-	if res.StatusCode < 200 || res.StatusCode > 299 {
-		errDataList := target.Error
-		return res, fmt.Errorf("error while creating a zone (%v) - %s", zone.Properties.Name, errDataList[0])
+	if res.StatusCode < http.StatusOK || res.StatusCode > http.StatusIMUsed {
+		return res, fmt.Errorf("error while creating a zone (%v) - %s", zone.Properties.Name, target.Error[0])
 	}
 
-	if res.StatusCode == 202 {
-		taskId := res.Header.Get("X-Task-Id")
-		er := c.TaskWait(taskId, 5, 10)
+	er := c.checkZoneTask(res)
 
-		if er != nil {
-			return res, er
-		}
+	if er != nil {
+		return res, er
 	}
 
 	return res, nil
@@ -163,15 +159,14 @@ func (c *Client) CreateZone(zone Zone) (*http.Response, error) {
 func (c *Client) ReadZone(zoneName string) (*http.Response, *ZoneResponse, error) {
 	target := Target(&ZoneResponse{})
 	zoneName = strings.Replace(zoneName, "/", "%2F", 1)
-	res, err := c.Do("GET", "zones/"+zoneName, nil, target)
+	res, err := c.Do(http.MethodGet, "zones/"+zoneName, nil, target)
 
 	if err != nil {
 		return nil, nil, err
 	}
 
-	if res.StatusCode < 200 || res.StatusCode > 299 {
-		errDataList := target.Error
-		return res, nil, fmt.Errorf("error while reading a zone (%v) - %s", zoneName, errDataList[0])
+	if res.StatusCode < http.StatusOK || res.StatusCode > http.StatusIMUsed {
+		return res, nil, fmt.Errorf("error while reading a zone (%v) - %s", zoneName, target.Error[0])
 	}
 	zoneResponse := target.Data.(*ZoneResponse)
 
@@ -179,18 +174,34 @@ func (c *Client) ReadZone(zoneName string) (*http.Response, *ZoneResponse, error
 }
 
 //update zone
-func (c *Client) UpdateZone(zoneName string, zone Zone) (*http.Response, error) {
+func (c *Client) UpdateZone(zoneName string, zone *Zone) (*http.Response, error) {
 	target := Target(&SuccessResponse{})
 	zoneName = strings.Replace(zoneName, "/", "%2F", 1)
-	res, err := c.Do("PUT", "zones/"+zoneName, zone, target)
+	res, err := c.Do(http.MethodPut, "zones/"+zoneName, zone, target)
 
 	if err != nil {
 		return nil, err
 	}
 
-	if res.StatusCode < 200 || res.StatusCode > 299 {
-		errDataList := target.Error
-		return res, fmt.Errorf("error while updating a zone (%v) - %s", zoneName, errDataList[0])
+	if res.StatusCode < http.StatusOK || res.StatusCode > http.StatusIMUsed {
+		return res, fmt.Errorf("error while updating a zone (%v) - %s", zoneName, target.Error[0])
+	}
+
+	return res, nil
+}
+
+//partial update zone
+func (c *Client) PatchUpdateZone(zoneName string, jsonPatch []*JsonPatch) (*http.Response, error) {
+	target := Target(&SuccessResponse{})
+	zoneName = strings.Replace(zoneName, "/", "%2F", 1)
+	res, err := c.Do(http.MethodPatch, "zones/"+zoneName, jsonPatch, target)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if res.StatusCode < http.StatusOK || res.StatusCode > http.StatusIMUsed {
+		return res, fmt.Errorf("error while updating a zone (%v) - %s", zoneName, target.Error[0])
 	}
 
 	return res, nil
@@ -200,15 +211,14 @@ func (c *Client) UpdateZone(zoneName string, zone Zone) (*http.Response, error) 
 func (c *Client) DeleteZone(zoneName string) (*http.Response, error) {
 	target := Target(&SuccessResponse{})
 	zoneName = strings.Replace(zoneName, "/", "%2F", 1)
-	res, err := c.Do("DELETE", "zones/"+zoneName, nil, target)
+	res, err := c.Do(http.MethodDelete, "zones/"+zoneName, nil, target)
 
 	if err != nil {
 		return nil, err
 	}
 
-	if res.StatusCode < 200 || res.StatusCode > 299 {
-		errDataList := target.Error
-		return res, fmt.Errorf("error while Deleting a zone (%v) - %s", zoneName, errDataList[0])
+	if res.StatusCode < http.StatusOK || res.StatusCode > http.StatusIMUsed {
+		return res, fmt.Errorf("error while Deleting a zone (%v) - %s", zoneName, target.Error[0])
 	}
 
 	return res, nil
@@ -218,17 +228,28 @@ func (c *Client) DeleteZone(zoneName string) (*http.Response, error) {
 func (c *Client) ListZone(query string) (*http.Response, *ZoneListResponse, error) {
 	target := Target(&ZoneListResponse{})
 	query = strings.Replace(query, "/", "%2F", 1)
-	res, err := c.Do("GET", "zones/"+query, nil, target)
+	res, err := c.Do(http.MethodGet, "zones/"+query, nil, target)
 
 	if err != nil {
 		return nil, nil, err
 	}
 
-	if res.StatusCode < 200 || res.StatusCode > 299 {
-		errDataList := target.Error
-		return res, nil, fmt.Errorf("error while listing zones - %s", errDataList[0])
+	if res.StatusCode < http.StatusOK || res.StatusCode > http.StatusIMUsed {
+		return res, nil, fmt.Errorf("error while listing zones - %s", target.Error[0])
 	}
 	zoneListResponse := target.Data.(*ZoneListResponse)
 
 	return res, zoneListResponse, nil
+}
+
+func (c *Client) checkZoneTask(res *http.Response) error {
+	if res.StatusCode == http.StatusAccepted {
+		taskId := res.Header.Get("X-Task-Id")
+		err := c.TaskWait(taskId, 5, 10)
+
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

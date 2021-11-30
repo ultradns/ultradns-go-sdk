@@ -6,6 +6,7 @@
 package ultradns_test
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/ultradns/ultradns-go-sdk/ultradns"
@@ -25,7 +26,7 @@ func TestDoSuccess(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if res.StatusCode != 200 {
+	if res.StatusCode != http.StatusOK {
 		t.Errorf("Not a Successful response : returned response code - %v", res.StatusCode)
 	}
 	resData := target.Data.(*result)
@@ -51,7 +52,7 @@ func TestDoNonExistingZone(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if res.StatusCode != 404 {
+	if res.StatusCode != http.StatusNotFound {
 		t.Errorf("Not a 404 response : returned response code - %v", res.StatusCode)
 	}
 

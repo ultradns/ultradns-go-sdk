@@ -14,12 +14,13 @@ import (
 )
 
 var (
-	testUsername  = os.Getenv("ULTRADNS_UNIT_TEST_USERNAME")
-	testPassword  = os.Getenv("ULTRADNS_UNIT_TEST_PASSWORD")
-	testHost      = os.Getenv("ULTRADNS_UNIT_TEST_HOST_URL")
-	testVersion   = os.Getenv("ULTRADNS_UNIT_TEST_API_VERSION")
-	testUserAgent = os.Getenv("ULTRADNS_UNIT_TEST_USER_AGENT")
-	testZoneName  = os.Getenv("ULTRADNS_UNIT_TEST_ZONE_NAME")
+	testUsername          = os.Getenv("ULTRADNS_UNIT_TEST_USERNAME")
+	testPassword          = os.Getenv("ULTRADNS_UNIT_TEST_PASSWORD")
+	testHost              = os.Getenv("ULTRADNS_UNIT_TEST_HOST_URL")
+	testVersion           = os.Getenv("ULTRADNS_UNIT_TEST_API_VERSION")
+	testUserAgent         = os.Getenv("ULTRADNS_UNIT_TEST_USER_AGENT")
+	testZoneName          = os.Getenv("ULTRADNS_UNIT_TEST_ZONE_NAME")
+	testZoneNameSecondary = "d100-permission.com."
 )
 
 func TestNewClientWithCredentials(t *testing.T) {

@@ -22,12 +22,12 @@ func TestCreateZoneSuccess(t *testing.T) {
 		AccountName: testUsername,
 		Type:        "PRIMARY",
 	}
-	PrimaryZone := ultradns.PrimaryZone{
+	primaryZone := ultradns.PrimaryZone{
 		CreateType: "NEW",
 	}
-	zone := ultradns.Zone{
+	zone := &ultradns.Zone{
 		Properties:        &zoneProp,
-		PrimaryCreateInfo: &PrimaryZone,
+		PrimaryCreateInfo: &primaryZone,
 	}
 
 	res, err := testClient.CreateZone(zone)
@@ -49,7 +49,7 @@ func TestCreateZoneFailure(t *testing.T) {
 		AccountName: testUsername,
 		Type:        "PRIMARY",
 	}
-	zone := ultradns.Zone{
+	zone := &ultradns.Zone{
 		Properties: &zoneProp,
 	}
 
@@ -70,7 +70,7 @@ func TestCreateZoneFailureResponse(t *testing.T) {
 		AccountName: testUsername,
 		Type:        "PRIMARY",
 	}
-	zone := ultradns.Zone{
+	zone := &ultradns.Zone{
 		Properties: &zoneProp,
 	}
 
@@ -135,12 +135,16 @@ func TestUpdateZoneSuccess(t *testing.T) {
 		AccountName: testUsername,
 		Type:        "PRIMARY",
 	}
-	PrimaryZone := ultradns.PrimaryZone{
-		CreateType: "NEW",
+	var restrictIPList []*ultradns.RestrictIp
+	restrictIp := &ultradns.RestrictIp{SingleIp: "192.168.1.1"}
+	restrictIPList = append(restrictIPList, restrictIp)
+	primaryZone := ultradns.PrimaryZone{
+		CreateType:     "NEW",
+		RestrictIPList: restrictIPList,
 	}
-	zone := ultradns.Zone{
+	zone := &ultradns.Zone{
 		Properties:        &zoneProp,
-		PrimaryCreateInfo: &PrimaryZone,
+		PrimaryCreateInfo: &primaryZone,
 	}
 
 	res, err := testClient.UpdateZone(testZoneName, zone)
@@ -162,7 +166,7 @@ func TestUpdateZoneFailure(t *testing.T) {
 		AccountName: testUsername,
 		Type:        "PRIMARY",
 	}
-	zone := ultradns.Zone{
+	zone := &ultradns.Zone{
 		Properties: &zoneProp,
 	}
 
@@ -183,13 +187,83 @@ func TestUpdateZoneFailureResponse(t *testing.T) {
 		AccountName: testUsername,
 		Type:        "PRIMARY",
 	}
-	zone := ultradns.Zone{
+	zone := &ultradns.Zone{
 		Properties: &zoneProp,
 	}
 
 	_, er := testClient.UpdateZone(testZoneName, zone)
 
 	if er.Error() != fmt.Sprintf("error while updating a zone (%v) - error code : 55001 - error message : zone.primaryCreateInfo is required field.", testZoneName) {
+		t.Error(er)
+	}
+}
+
+func TestPatchUpdateZoneSuccess(t *testing.T) {
+	testClient, err := ultradns.NewClient(testUsername, testPassword, testHost, testVersion, testUserAgent)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+	var jsonPatchList []*ultradns.JsonPatch
+
+	jsonPatch := &ultradns.JsonPatch{
+		Op:    "replace",
+		Path:  "/restrictIpList/0/singleIP",
+		Value: "192.168.1.6",
+	}
+
+	jsonPatchList = append(jsonPatchList, jsonPatch)
+
+	res, er := testClient.PatchUpdateZone(testZoneName, jsonPatchList)
+
+	if er != nil {
+		t.Fatal(er)
+	}
+
+	if res.StatusCode != 200 {
+		t.Errorf("Zone not updated via json patch: returned response code - %v", res.StatusCode)
+	}
+}
+
+func TestPatchUpdateZoneFailure(t *testing.T) {
+	testClient, err := ultradns.NewClient(testUsername, testPassword, "testHost", testVersion, testUserAgent)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var jsonPatchList []*ultradns.JsonPatch
+
+	jsonPatch := &ultradns.JsonPatch{
+		Op:    "replace",
+		Path:  "/restrictIpList/0/singleIP",
+		Value: "192.168.1.6",
+	}
+
+	jsonPatchList = append(jsonPatchList, jsonPatch)
+
+	_, er := testClient.PatchUpdateZone(testZoneName, jsonPatchList)
+
+	if er.Error() != fmt.Sprintf("Patch \"testHostv2/zones/%v\": Post \"testHostv2/authorization/token\": unsupported protocol scheme \"\"", testZoneName) {
+		t.Error(er)
+	}
+}
+
+func TestPatchUpdateZoneFailureResponse(t *testing.T) {
+	testClient, err := ultradns.NewClient(testUsername, testPassword, testHost, testVersion, testUserAgent)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+	var jsonPatchList []*ultradns.JsonPatch
+
+	jsonPatch := &ultradns.JsonPatch{}
+
+	jsonPatchList = append(jsonPatchList, jsonPatch)
+
+	_, er := testClient.PatchUpdateZone(testZoneName, jsonPatchList)
+
+	if er.Error() != fmt.Sprintf("error while updating a zone (%v) - error code : 55001 - error message : op is required field.", testZoneName) {
 		t.Error(er)
 	}
 }
@@ -301,7 +375,7 @@ func TestCreateZoneWithSpecialCharacter(t *testing.T) {
 	primaryZone := ultradns.PrimaryZone{
 		CreateType: "NEW",
 	}
-	zone := ultradns.Zone{
+	zone := &ultradns.Zone{
 		Properties:        &zoneProp,
 		PrimaryCreateInfo: &primaryZone,
 	}
@@ -361,12 +435,12 @@ func TestUpdateZoneWithSpecialCharacter(t *testing.T) {
 		AccountName: testUsername,
 		Type:        "PRIMARY",
 	}
-	PrimaryZone := ultradns.PrimaryZone{
+	primaryZone := ultradns.PrimaryZone{
 		CreateType: "NEW",
 	}
-	zone := ultradns.Zone{
+	zone := &ultradns.Zone{
 		Properties:        &zoneProp,
-		PrimaryCreateInfo: &PrimaryZone,
+		PrimaryCreateInfo: &primaryZone,
 	}
 
 	res, err := testClient.UpdateZone("0/192.168.1.1.in-addr.arpa", zone)

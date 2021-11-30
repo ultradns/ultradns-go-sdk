@@ -75,7 +75,7 @@ func TestZoneTaskWaitCreatingSecondaryZoneFailure(t *testing.T) {
 		PrimaryNameServers:  &primaryNameServer,
 		AllowUnResponsiveNs: true,
 	}
-	zone := ultradns.Zone{
+	zone := &ultradns.Zone{
 		Properties:          &zoneProp,
 		SecondaryCreateInfo: &secondaryZone,
 	}
@@ -94,9 +94,9 @@ func TestZoneTaskWaitCreatingSecondaryZoneSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	defer testClient.DeleteZone(testZoneName)
+	defer testClient.DeleteZone(testZoneNameSecondary)
 	zoneProp := ultradns.ZoneProperties{
-		Name:        "d100-permission.com.",
+		Name:        testZoneNameSecondary,
 		AccountName: testUsername,
 		Type:        "SECONDARY",
 	}
@@ -114,7 +114,7 @@ func TestZoneTaskWaitCreatingSecondaryZoneSuccess(t *testing.T) {
 		PrimaryNameServers:  &primaryNameServer,
 		AllowUnResponsiveNs: true,
 	}
-	zone := ultradns.Zone{
+	zone := &ultradns.Zone{
 		Properties:          &zoneProp,
 		SecondaryCreateInfo: &secondaryZone,
 	}

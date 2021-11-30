@@ -24,15 +24,14 @@ func (t Task) String() string {
 
 func (c *Client) GetTaskStatus(taskId string) (*http.Response, *Task, error) {
 	target := Target(&Task{})
-	res, err := c.Do("GET", "tasks/"+taskId, nil, target)
+	res, err := c.Do(http.MethodGet, "tasks/"+taskId, nil, target)
 
 	if err != nil {
 		return nil, nil, err
 	}
 
-	if res.StatusCode < 200 || res.StatusCode > 299 {
-		errDataList := target.Error
-		return res, nil, fmt.Errorf("error while getting task status - %s", errDataList[0])
+	if res.StatusCode < http.StatusOK || res.StatusCode > http.StatusIMUsed {
+		return res, nil, fmt.Errorf("error while getting task status - %s", target.Error[0])
 	}
 
 	task := target.Data.(*Task)

@@ -27,12 +27,12 @@ func main() {
 		AccountName: "account_name",
 		Type:        "PRIMARY",
 	}
-	PrimaryZone := ultradns.PrimaryZone{
+	primaryZone := ultradns.PrimaryZone{
 		CreateType: "NEW",
 	}
 	zone := ultradns.Zone{
 		Properties:        &zoneProp,
-		PrimaryCreateInfo: &PrimaryZone,
+		PrimaryCreateInfo: &primaryZone,
 	}
 
 	res, err := client.CreateZone(zone)

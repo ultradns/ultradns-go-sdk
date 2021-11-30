@@ -12,6 +12,13 @@ import (
 	"net/http"
 )
 
+type JsonPatch struct {
+	Op    string `json:"op,omitempty"`
+	Path  string `json:"path,omitempty"`
+	Value string `json:"value,omitempty"`
+	From  string `json:"from,omitempty"`
+}
+
 //sends http request to the provided path of ultradns api
 //return http response
 func (c *Client) Do(method, path string, payload, target interface{}) (*http.Response, error) {
@@ -35,6 +42,10 @@ func (c *Client) Do(method, path string, payload, target interface{}) (*http.Res
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("User-Agent", c.userAgent)
 
+	if method == http.MethodPatch {
+		req.Header.Set("Content-Type", "application/json-patch+json")
+	}
+
 	res, err := httpClient.Do(req)
 	if err != nil {
 		return nil, err
@@ -44,10 +55,18 @@ func (c *Client) Do(method, path string, payload, target interface{}) (*http.Res
 
 	if target != nil {
 		target := target.(*Response)
-		if res.StatusCode >= 200 && res.StatusCode <= 299 {
-			json.NewDecoder(res.Body).Decode(&target.Data)
+		if res.StatusCode >= http.StatusOK && res.StatusCode <= http.StatusIMUsed {
+			er := json.NewDecoder(res.Body).Decode(&target.Data)
+			if er != nil && er.Error() == "EOF" {
+				return res, nil
+			} else if er != nil {
+				return res, er
+			}
 		} else {
-			json.NewDecoder(res.Body).Decode(&target.Error)
+			er := json.NewDecoder(res.Body).Decode(&target.Error)
+			if er != nil {
+				return res, er
+			}
 		}
 	}
 
