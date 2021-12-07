@@ -2,7 +2,7 @@ package task
 
 import "fmt"
 
-// Task
+// Task wraps the structure of task.
 type Task struct {
 	TaskID    string `json:"taskId,omitempty"`
 	Code      string `json:"code,omitempty"`

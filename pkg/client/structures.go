@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-//Config struct wraps the credential info for the Client
+// Config struct wraps the credential info for the Client.
 type Config struct {
 	Username   string
 	Password   string
@@ -14,20 +14,20 @@ type Config struct {
 	UserAgent  string
 }
 
-//client struct wraps the http client, config and ultradns api base url
+// Client struct wraps the http client, config and ultradns api base url.
 type Client struct {
 	httpClient *http.Client
 	baseURL    string
 	userAgent  string
 }
 
-// Response
+// Response wraps the success and error response data.
 type Response struct {
 	Data  interface{}
 	Error []*ErrorResponse
 }
 
-// ErrorResponse
+// ErrorResponse wraps the structure ultradns error response.
 type ErrorResponse struct {
 	ErrorCode        int    `json:"errorCode,omitempty"`
 	ErrorMessage     string `json:"errorMessage,omitempty"`
@@ -35,7 +35,7 @@ type ErrorResponse struct {
 	ErrorDescription string `json:"error_description,omitempty"`
 }
 
-// SuccessResponse
+// SuccessResponse wraps the structure ultradns success response.
 type SuccessResponse struct {
 	Message string `json:"message,omitempty"`
 }

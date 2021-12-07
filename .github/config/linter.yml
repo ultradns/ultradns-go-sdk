@@ -1,0 +1,26 @@
+linters:
+  enable:
+    - gofumpt
+  # enable-all: true
+  disable:
+    # deprecated linters
+    - golint
+    - interfacer
+    - scopelint
+    - maligned
+
+    # to suppress the errors in struct tags
+    - tagliatelle
+    # suppress type assertion warnings since we assert the same we passed
+    - forcetypeassert
+    # all struct has omitempty, so all fields in struct are not required
+    - exhaustivestruct
+
+    #later check
+    - goerr113 # https://stackoverflow.com/questions/62291709/linter-err113-do-not-define-dynamic-errors-use-wrapped-static-errors-instead
+    - gochecknoglobals
+    - bodyclose
+    - lll # should reduce line length or configure max length of line
+    - wrapcheck
+
+  fast: false

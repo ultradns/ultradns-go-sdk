@@ -2,79 +2,79 @@ package token
 
 import (
 	"context"
+	"os"
 	"strings"
 	"testing"
 
-	"github.com/ultradns/ultradns-go-sdk/internal/util"
 	"golang.org/x/oauth2"
 )
 
+var (
+	testUsername = os.Getenv("ULTRADNS_UNIT_TEST_USERNAME")
+	testPassword = os.Getenv("ULTRADNS_UNIT_TEST_PASSWORD")
+	testHost     = os.Getenv("ULTRADNS_UNIT_TEST_HOST_URL")
+)
+
 func TestTokenSuccessWithPasswordCredentials(t *testing.T) {
-	ts := getTokenSource()
-	token, err := ts.Token()
+	tokenSource := getTokenSource()
+	token, err := tokenSource.Token()
 
 	if err != nil {
 		t.Fatal(err)
 	}
-	validateTokenType(token.TokenType, t)
+
+	if token.TokenType != "Bearer" {
+		t.Errorf("token type mismatched : expected - Bearer : found - %v", token.TokenType)
+	}
 }
 
 func TestTokenSuccessWithRefreshTokenFailure(t *testing.T) {
-	ts := getTokenSource()
-	_, err := ts.Token()
+	tokenSource := getTokenSource()
+	_, err := tokenSource.Token()
 
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	ts.Ctx = nil
+	tokenSource.Ctx = nil
 
-	token, er := ts.Token()
+	token, er := tokenSource.Token()
 
 	if er != nil {
 		t.Fatal(er)
 	}
-	validateTokenType(token.TokenType, t)
 
+	if token.TokenType != "Bearer" {
+		t.Errorf("token type mismatched : expected - Bearer : found - %v", token.TokenType)
+	}
 }
 
 func TestTokenFailureWithPasswordCredentials(t *testing.T) {
-	ts := getTokenSource()
-	ts.Password = ""
-	_, err := ts.Token()
+	tokenSource := getTokenSource()
+	tokenSource.Password = ""
+	_, err := tokenSource.Token()
 
 	if !strings.Contains(err.Error(), "invalid_request:password parameter is required for grant_type=password") {
 		t.Fatal(err)
 	}
-
 }
 
 func TestTokenFailureWithRefreshTokenFailure(t *testing.T) {
-	ts := getTokenSource()
-	ts.Password = ""
-	ts.token = &oauth2.Token{}
-	_, err := ts.Token()
+	tokenSource := getTokenSource()
+	tokenSource.Password = ""
+	tokenSource.token = &oauth2.Token{}
+	_, err := tokenSource.Token()
 
 	if !strings.Contains(err.Error(), "invalid_request:password parameter is required for grant_type=password") {
 		t.Fatal(err)
 	}
-
 }
 
 func getTokenSource() *TokenSource {
 	return &TokenSource{
 		Ctx:      context.TODO(),
-		Username: util.TestUsername,
-		Password: util.TestPassword,
-		BaseURL:  util.TestHost,
-	}
-}
-
-func validateTokenType(tokenType string, t *testing.T) {
-	expected := "Bearer"
-	found := tokenType
-
-	if expected != found {
-		t.Errorf("token type mismatched : expected - %v : found - %v", expected, found)
+		Username: testUsername,
+		Password: testPassword,
+		BaseURL:  testHost,
 	}
 }

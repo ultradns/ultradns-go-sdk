@@ -9,7 +9,7 @@ import (
 
 const tokenURL = "authorization/token"
 
-// TokenSource wraps the credential info
+// TokenSource wraps the credential info to generate token.
 type TokenSource struct {
 	Ctx      context.Context
 	BaseURL  string
@@ -32,12 +32,14 @@ func (ts *TokenSource) Token() (*oauth2.Token, error) {
 	}
 
 	ts.token = token
+
 	return token, err
 }
 
 func (ts *TokenSource) PasswordCredentialsToken(conf *oauth2.Config) (token *oauth2.Token, err error) {
 	token, err = conf.PasswordCredentialsToken(ts.Ctx, ts.Username, ts.Password)
 	ts.token = token
+
 	return token, err
 }
 

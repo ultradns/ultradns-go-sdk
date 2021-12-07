@@ -5,8 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+)
 
-	"github.com/ultradns/ultradns-go-sdk/internal/util"
+const (
+	defaultUserAgent = "golang-sdk-v1"
+	contentType      = "application/json"
 )
 
 func (c *Client) Do(method, path string, payload, target interface{}) (*http.Response, error) {
@@ -26,9 +29,9 @@ func (c *Client) Do(method, path string, payload, target interface{}) (*http.Res
 		return nil, err
 	}
 
-	req.Header.Set("Content-Type", util.ContentType)
-	req.Header.Add("Accept", util.ContentType)
-	req.Header.Add("User-Agent", util.UserAgent)
+	req.Header.Set("Content-Type", contentType)
+	req.Header.Add("Accept", contentType)
+	req.Header.Add("User-Agent", defaultUserAgent)
 	req.Header.Add("User-Agent", c.userAgent)
 
 	res, err := c.httpClient.Do(req)
@@ -70,5 +73,6 @@ func validateResponse(res *http.Response, t interface{}) error {
 			return err
 		}
 	}
+
 	return nil
 }

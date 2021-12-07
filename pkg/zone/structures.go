@@ -2,7 +2,7 @@ package zone
 
 import "github.com/ultradns/ultradns-go-sdk/pkg/helper"
 
-// Zone
+// Zone wraps the structure of zone.
 type Zone struct {
 	Properties          *ZoneProperties `json:"properties,omitempty"`
 	PrimaryCreateInfo   *PrimaryZone    `json:"primaryCreateInfo,omitempty"`
@@ -11,7 +11,7 @@ type Zone struct {
 	ChangeComment       string          `json:"changeComment,omitempty"`
 }
 
-// ZoneProperties
+// ZoneProperties wraps the structure of zone properties.
 type ZoneProperties struct {
 	Name                 string `json:"name,omitempty"`
 	AccountName          string `json:"accountName,omitempty"`
@@ -24,7 +24,7 @@ type ZoneProperties struct {
 	ChangeComment        string `json:"changeComment,omitempty"`
 }
 
-// PrimaryZone
+// PrimaryZone wraps the structure of primary zone.
 type PrimaryZone struct {
 	ForceImport      bool             `json:"forceImport,omitempty"`
 	CreateType       string           `json:"createType,omitempty"`
@@ -36,19 +36,19 @@ type PrimaryZone struct {
 	Inherit          string           `json:"inherit,omitempty"`
 }
 
-// SecondaryZone
+// SecondaryZone wraps the structure of secondary zone.
 type SecondaryZone struct {
 	PrimaryNameServers       *PrimaryNameServers `json:"primaryNameServers,omitempty"`
 	NotificationEmailAddress string              `json:"notificationEmailAddress,omitempty"`
 	AllowUnResponsiveNs      bool                `json:"allowUnresponsiveNS,omitempty"`
 }
 
-// AliasZone
+// AliasZone wraps the structure of alias zone.
 type AliasZone struct {
 	OriginalZoneName string `json:"originalZoneName,omitempty"`
 }
 
-// NameServer
+// NameServer wraps the structure of zone name server.
 type NameServer struct {
 	IP            string `json:"ip,omitempty"`
 	TsigKey       string `json:"tsigKey,omitempty"`
@@ -56,7 +56,7 @@ type NameServer struct {
 	TsigAlgorithm string `json:"tsigAlgorithm,omitempty"`
 }
 
-// Tsig
+// Tsig wraps the structure of zone tsig.
 type Tsig struct {
 	TsigKeyName   string `json:"tsigKeyName,omitempty"`
 	TsigKeyValue  string `json:"tsigKeyValue,omitempty"`
@@ -64,7 +64,7 @@ type Tsig struct {
 	Description   string `json:"description,omitempty"`
 }
 
-// RestrictIP
+// RestrictIP wraps the structure of primary zone restrict ip.
 type RestrictIP struct {
 	StartIP  string `json:"startIP,omitempty"`
 	EndIP    string `json:"endIP,omitempty"`
@@ -73,25 +73,25 @@ type RestrictIP struct {
 	Comment  string `json:"comment,omitempty"`
 }
 
-// NotifyAddress
+// NotifyAddress wraps the structure of primary zone notify address.
 type NotifyAddress struct {
 	NotifyAddress string `json:"notifyAddress,omitempty"`
 	Description   string `json:"description,omitempty"`
 }
 
-// NameServerIPList
+// NameServerIPList  wraps the structure of secondary zone name server list.
 type NameServerIPList struct {
 	NameServerIP1 *NameServer `json:"nameServerIp1,omitempty"`
 	NameServerIP2 *NameServer `json:"nameServerIp2,omitempty"`
 	NameServerIP3 *NameServer `json:"nameServerIp3,omitempty"`
 }
 
-// PrimaryNameServers
+// PrimaryNameServers  wraps the structure of secondary zone primary name server list.
 type PrimaryNameServers struct {
 	NameServerIPList *NameServerIPList `json:"nameServerIpList,omitempty"`
 }
 
-// NameServersList
+// NameServersList  wraps the structure of primary zone registrar info name servers.
 type NameServersList struct {
 	Ok        []string `json:"ok,omitempty"`
 	Unknown   []string `json:"unknown,omitempty"`
@@ -99,14 +99,14 @@ type NameServersList struct {
 	Incorrect []string `json:"incorrect,omitempty"`
 }
 
-// RegistrarInfo
+// RegistrarInfo wraps the structure of primary zone registrar info.
 type RegistrarInfo struct {
 	Registrar       string           `json:"registrar,omitempty"`
 	WhoIsExpiration string           `json:"whoisExpiration,omitempty"`
 	NameServers     *NameServersList `json:"nameServers,omitempty"`
 }
 
-// TransferStatusDetails
+// TransferStatusDetails wraps the structure of secondary zone transfer status details.
 type TransferStatusDetails struct {
 	LastRefresh              string `json:"lastRefresh,omitempty"`
 	NextRefresh              string `json:"nextRefresh,omitempty"`
@@ -114,26 +114,26 @@ type TransferStatusDetails struct {
 	LastRefreshStatusMessage string `json:"lastRefreshStatusMessage,omitempty"`
 }
 
-// ZoneResponse
+// ZoneResponse wraps the structure of zone response.
 type ZoneResponse struct {
 	Properties *ZoneProperties `json:"properties,omitempty"`
 
-	//Primary Zone Response
+	// Primary Zone Response
 	RegistrarInfo   *RegistrarInfo   `json:"registrarInfo,omitempty"`
 	Tsig            *Tsig            `json:"tsig,omitempty"`
 	RestrictIPList  []*RestrictIP    `json:"restrictIpList,omitempty"`
 	NotifyAddresses []*NotifyAddress `json:"notifyAddresses,omitempty"`
 
-	//Secondary Zone Response
+	// Secondary Zone Response
 	PrimaryNameServers       *PrimaryNameServers    `json:"primaryNameServers,omitempty"`
 	TransferStatusDetails    *TransferStatusDetails `json:"transferStatusDetails,omitempty"`
 	NotificationEmailAddress string                 `json:"notificationEmailAddress,omitempty"`
 
-	//Alias Zone Response
+	// Alias Zone Response
 	OriginalZoneName string `json:"originalZoneName,omitempty"`
 }
 
-// ZoneListResponse
+// ZoneListResponse wraps the structure of zone response list.
 type ZoneListResponse struct {
 	QueryInfo  *helper.QueryInfo  `json:"queryInfo,omitempty"`
 	ResultInfo *helper.ResultInfo `json:"resultInfo,omitempty"`

@@ -17,13 +17,14 @@ func NewClient(config Config) (client *Client, err error) {
 	}
 
 	ctx := context.TODO()
-	ts := token.TokenSource{
+	tokenSource := token.TokenSource{
 		Ctx:      ctx,
 		BaseURL:  client.baseURL,
 		Username: config.Username,
 		Password: config.Password,
 	}
-	client.httpClient = oauth2.NewClient(ctx, oauth2.ReuseTokenSource(nil, &ts))
+	client.httpClient = oauth2.NewClient(ctx, oauth2.ReuseTokenSource(nil, &tokenSource))
+
 	return
 }
 

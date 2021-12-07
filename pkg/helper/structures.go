@@ -5,7 +5,7 @@ import (
 	"net/url"
 )
 
-// QueryInfo
+// QueryInfo wraps the structure of ultradns query info.
 type QueryInfo struct {
 	Query   string `json:"q,omitempty"`
 	Sort    string `json:"sort,omitempty"`
@@ -15,14 +15,14 @@ type QueryInfo struct {
 	Offset  int    `json:"offset,omitempty"`
 }
 
-// ResultInfo
+// ResultInfo wraps the structure of ultradns result info.
 type ResultInfo struct {
 	TotalCount    int `json:"totalCount,omitempty"`
 	Offset        int `json:"offset,omitempty"`
 	ReturnedCount int `json:"returnedCount,omitempty"`
 }
 
-// CursorInfo
+// CursorInfo wraps the structure of ultradns cursor info.
 type CursorInfo struct {
 	Limit    int    `json:"limit,omitempty"`
 	Next     string `json:"next,omitempty"`
@@ -35,6 +35,8 @@ func (q *QueryInfo) String() string {
 	if q.Limit == 0 {
 		q.Limit = 100
 	}
+
 	queryInfo := fmt.Sprintf("&q=%v&offset=%v&cursor=%v&limit=%v&sort=%v&reverse=%v", q.Query, q.Offset, q.Cursor, q.Limit, q.Sort, q.Reverse)
+
 	return url.PathEscape(queryInfo)
 }

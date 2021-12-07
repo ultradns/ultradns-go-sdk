@@ -18,6 +18,7 @@ func New(config client.Config) (*TaskService, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return &TaskService{c: client}, nil
 }
 
@@ -25,6 +26,7 @@ func Get(client *client.Client) (*TaskService, error) {
 	if client == nil {
 		return nil, fmt.Errorf("task service is not properly configured")
 	}
+
 	return &TaskService{c: client}, nil
 }
 
@@ -48,8 +50,10 @@ func (ts *TaskService) GetTaskStatus(taskID string) (*http.Response, *Task, erro
 
 func (ts *TaskService) TaskWait(taskID string, retries, timegap int) error {
 	var taskStatus *Task
+
 	for i := 0; i < retries; i++ {
 		time.Sleep(time.Duration(timegap) * time.Second)
+
 		_, task, err := ts.GetTaskStatus(taskID)
 
 		if err != nil {
@@ -64,7 +68,9 @@ func (ts *TaskService) TaskWait(taskID string, retries, timegap int) error {
 				return fmt.Errorf("error - %s", task)
 			}
 		}
+
 		taskStatus = task
 	}
+
 	return fmt.Errorf("timeout for checking task status - last returned task status : %s", taskStatus)
 }

@@ -5,10 +5,15 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/ultradns/ultradns-go-sdk/internal/util"
 	"github.com/ultradns/ultradns-go-sdk/pkg/client"
 	"github.com/ultradns/ultradns-go-sdk/pkg/helper"
 	"github.com/ultradns/ultradns-go-sdk/pkg/task"
+)
+
+const (
+	zoneTaskRetries = 5
+	zoneTaskTimeGap = 10
+	taskHeader      = "X-Task-Id"
 )
 
 type ZoneService struct {
@@ -21,6 +26,7 @@ func New(config client.Config) (*ZoneService, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return &ZoneService{c: client}, nil
 }
 
@@ -28,6 +34,7 @@ func Get(client *client.Client) (*ZoneService, error) {
 	if client == nil {
 		return nil, fmt.Errorf("zone service is not properly configured")
 	}
+
 	return &ZoneService{c: client}, nil
 }
 
@@ -130,7 +137,7 @@ func (zs *ZoneService) ListZone(queryInfo *helper.QueryInfo) (*http.Response, *Z
 		return nil, nil, fmt.Errorf("zone service is not properly configured")
 	}
 
-	res, err := zs.c.Do(http.MethodGet, "v3/zones/"+queryInfo.String(), nil, target)
+	res, err := zs.c.Do(http.MethodGet, "v3/zones/?"+queryInfo.String(), nil, target)
 
 	if err != nil {
 		return nil, nil, err
@@ -143,18 +150,19 @@ func (zs *ZoneService) ListZone(queryInfo *helper.QueryInfo) (*http.Response, *Z
 
 func (zs *ZoneService) checkZoneTask(res *http.Response) error {
 	if res.StatusCode == http.StatusAccepted {
-		taskID := res.Header.Get(util.TaskHeader)
-		ts, err := task.Get(zs.c)
+		taskID := res.Header.Get(taskHeader)
+		taskService, err := task.Get(zs.c)
 
 		if err != nil {
 			return err
 		}
 
-		er := ts.TaskWait(taskID, 5, 10)
+		er := taskService.TaskWait(taskID, zoneTaskRetries, zoneTaskTimeGap)
 
 		if er != nil {
 			return er
 		}
 	}
+
 	return nil
 }
