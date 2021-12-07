@@ -26,7 +26,6 @@ func (ts *TokenSource) Token() (*oauth2.Token, error) {
 	}
 
 	token, err := conf.TokenSource(ts.Ctx, ts.token).Token()
-
 	if err != nil {
 		return ts.PasswordCredentialsToken(conf)
 	}

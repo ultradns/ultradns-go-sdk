@@ -24,7 +24,6 @@ func (c *Client) Do(method, path string, payload, target interface{}) (*http.Res
 	}
 
 	req, err := http.NewRequest(method, url, body)
-
 	if err != nil {
 		return nil, err
 	}

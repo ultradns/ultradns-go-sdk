@@ -22,7 +22,6 @@ type ZoneService struct {
 
 func New(config client.Config) (*ZoneService, error) {
 	client, err := client.NewClient(config)
-
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +45,6 @@ func (zs *ZoneService) CreateZone(zone *Zone) (*http.Response, error) {
 	}
 
 	res, err := zs.c.Do(http.MethodPost, "zones", zone, target)
-
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +67,6 @@ func (zs *ZoneService) ReadZone(zoneName string) (*http.Response, *ZoneResponse,
 	}
 
 	res, err := zs.c.Do(http.MethodGet, "zones/"+zoneName, nil, target)
-
 	if err != nil {
 		return nil, nil, err
 	}
@@ -88,7 +85,6 @@ func (zs *ZoneService) UpdateZone(zoneName string, zone *Zone) (*http.Response, 
 	}
 
 	res, err := zs.c.Do(http.MethodPut, "zones/"+zoneName, zone, target)
-
 	if err != nil {
 		return nil, err
 	}
@@ -105,7 +101,6 @@ func (zs *ZoneService) PatchUpdateZone(zoneName string, zone *Zone) (*http.Respo
 	}
 
 	res, err := zs.c.Do(http.MethodPatch, "zones/"+zoneName, zone, target)
-
 	if err != nil {
 		return nil, err
 	}
@@ -122,7 +117,6 @@ func (zs *ZoneService) DeleteZone(zoneName string) (*http.Response, error) {
 	}
 
 	res, err := zs.c.Do(http.MethodDelete, "zones/"+zoneName, nil, target)
-
 	if err != nil {
 		return nil, err
 	}
@@ -138,7 +132,6 @@ func (zs *ZoneService) ListZone(queryInfo *helper.QueryInfo) (*http.Response, *Z
 	}
 
 	res, err := zs.c.Do(http.MethodGet, "v3/zones/?"+queryInfo.String(), nil, target)
-
 	if err != nil {
 		return nil, nil, err
 	}
@@ -152,7 +145,6 @@ func (zs *ZoneService) checkZoneTask(res *http.Response) error {
 	if res.StatusCode == http.StatusAccepted {
 		taskID := res.Header.Get(taskHeader)
 		taskService, err := task.Get(zs.c)
-
 		if err != nil {
 			return err
 		}

@@ -18,7 +18,6 @@ var (
 func TestTokenSuccessWithPasswordCredentials(t *testing.T) {
 	tokenSource := getTokenSource()
 	token, err := tokenSource.Token()
-
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -31,7 +30,6 @@ func TestTokenSuccessWithPasswordCredentials(t *testing.T) {
 func TestTokenSuccessWithRefreshTokenFailure(t *testing.T) {
 	tokenSource := getTokenSource()
 	_, err := tokenSource.Token()
-
 	if err != nil {
 		t.Fatal(err)
 	}

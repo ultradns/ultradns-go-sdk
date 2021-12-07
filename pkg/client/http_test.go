@@ -12,7 +12,6 @@ import (
 func TestDoSuccess(t *testing.T) {
 	target := client.Target(&zone.ZoneListResponse{})
 	res, err := test.TestClient.Do(http.MethodGet, "zones", nil, target)
-
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -41,7 +40,6 @@ func TestDoWrongTarget(t *testing.T) {
 func TestDoNonExistingZone(t *testing.T) {
 	target := client.Target(&zone.ZoneResponse{})
 	_, err := test.TestClient.Do(http.MethodGet, "zones/unit-test-non-existing-zone.com", nil, target)
-
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -14,7 +14,6 @@ type TaskService struct {
 
 func New(config client.Config) (*TaskService, error) {
 	client, err := client.NewClient(config)
-
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +37,6 @@ func (ts *TaskService) GetTaskStatus(taskID string) (*http.Response, *Task, erro
 	}
 
 	res, err := ts.c.Do(http.MethodGet, "tasks/"+taskID, nil, target)
-
 	if err != nil {
 		return nil, nil, err
 	}
@@ -55,7 +53,6 @@ func (ts *TaskService) TaskWait(taskID string, retries, timegap int) error {
 		time.Sleep(time.Duration(timegap) * time.Second)
 
 		_, task, err := ts.GetTaskStatus(taskID)
-
 		if err != nil {
 			return err
 		}

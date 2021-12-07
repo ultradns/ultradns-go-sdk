@@ -14,7 +14,6 @@ type RecordService struct {
 
 func New(config client.Config) (*RecordService, error) {
 	client, err := client.NewClient(config)
-
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +38,6 @@ func (rs *RecordService) CreateRecord(rrSetKey rrset.RRSetKey, rrSet rrset.RRSet
 	}
 
 	res, err := rs.c.Do(http.MethodPost, rrSetKey.URI(), rrSet, target)
-
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +53,6 @@ func (rs *RecordService) UpdateRecord(rrSetKey rrset.RRSetKey, rrSet rrset.RRSet
 	}
 
 	res, err := rs.c.Do(http.MethodPut, rrSetKey.URI(), rrSet, target)
-
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +68,6 @@ func (rs *RecordService) PartialUpdateRecord(rrSetKey rrset.RRSetKey, rrSet rrse
 	}
 
 	res, err := rs.c.Do(http.MethodPut, rrSetKey.URI(), rrSet, target)
-
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +83,6 @@ func (rs *RecordService) ReadRecord(rrSetKey rrset.RRSetKey) (*http.Response, er
 	}
 
 	res, err := rs.c.Do(http.MethodGet, rrSetKey.URI(), nil, target)
-
 	if err != nil {
 		return nil, err
 	}
@@ -103,7 +98,6 @@ func (rs *RecordService) DeleteRecord(rrSetKey rrset.RRSetKey) (*http.Response, 
 	}
 
 	res, err := rs.c.Do(http.MethodDelete, rrSetKey.URI(), nil, target)
-
 	if err != nil {
 		return nil, err
 	}
