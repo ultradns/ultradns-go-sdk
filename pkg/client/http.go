@@ -18,12 +18,14 @@ func (c *Client) Do(method, path string, payload, target interface{}) (*http.Res
 
 	if payload != nil {
 		err := json.NewEncoder(body).Encode(payload)
+
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	req, err := http.NewRequest(method, url, body)
+
 	if err != nil {
 		return nil, err
 	}
@@ -34,6 +36,7 @@ func (c *Client) Do(method, path string, payload, target interface{}) (*http.Res
 	req.Header.Add("User-Agent", c.userAgent)
 
 	res, err := c.httpClient.Do(req)
+
 	if err != nil {
 		return nil, err
 	}
@@ -51,16 +54,18 @@ func (c *Client) Do(method, path string, payload, target interface{}) (*http.Res
 
 func validateResponse(res *http.Response, t interface{}) error {
 	if t == nil {
-		return fmt.Errorf("response target should not be nil")
+		return ResponseTargetError("<nil>")
 	}
 
 	target, ok := t.(*Response)
+
 	if !ok {
-		return fmt.Errorf("response target mismatched : returned target - %T", target)
+		return ResponseTargetError(fmt.Sprintf("%T", target))
 	}
 
 	if res.StatusCode >= http.StatusOK && res.StatusCode <= http.StatusIMUsed {
 		err := json.NewDecoder(res.Body).Decode(&target.Data)
+
 		if err != nil && err.Error() == "EOF" {
 			return nil
 		} else if err != nil {
@@ -68,6 +73,7 @@ func validateResponse(res *http.Response, t interface{}) error {
 		}
 	} else {
 		err := json.NewDecoder(res.Body).Decode(&target.Error)
+
 		if err != nil {
 			return err
 		}

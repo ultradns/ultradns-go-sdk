@@ -10,6 +10,7 @@ import (
 func TestNewSuccess(t *testing.T) {
 	conf := test.GetConfig()
 	_, err := task.New(conf)
+
 	if err != nil {
 		t.Fatal(err)
 	}

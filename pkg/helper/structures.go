@@ -31,7 +31,7 @@ type CursorInfo struct {
 	Last     string `json:"last,omitempty"`
 }
 
-func (q *QueryInfo) String() string {
+func (q *QueryInfo) URI() string {
 	if q.Limit == 0 {
 		q.Limit = 100
 	}

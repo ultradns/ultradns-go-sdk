@@ -4,15 +4,15 @@ import "github.com/ultradns/ultradns-go-sdk/pkg/helper"
 
 // Zone wraps the structure of zone.
 type Zone struct {
-	Properties          *ZoneProperties `json:"properties,omitempty"`
-	PrimaryCreateInfo   *PrimaryZone    `json:"primaryCreateInfo,omitempty"`
-	SecondaryCreateInfo *SecondaryZone  `json:"secondaryCreateInfo,omitempty"`
-	AliasCreateInfo     *AliasZone      `json:"aliasCreateInfo,omitempty"`
-	ChangeComment       string          `json:"changeComment,omitempty"`
+	Properties          *Properties    `json:"properties,omitempty"`
+	PrimaryCreateInfo   *PrimaryZone   `json:"primaryCreateInfo,omitempty"`
+	SecondaryCreateInfo *SecondaryZone `json:"secondaryCreateInfo,omitempty"`
+	AliasCreateInfo     *AliasZone     `json:"aliasCreateInfo,omitempty"`
+	ChangeComment       string         `json:"changeComment,omitempty"`
 }
 
-// ZoneProperties wraps the structure of zone properties.
-type ZoneProperties struct {
+// Properties wraps the structure of the zone properties.
+type Properties struct {
 	Name                 string `json:"name,omitempty"`
 	AccountName          string `json:"accountName,omitempty"`
 	Type                 string `json:"type,omitempty"`
@@ -115,8 +115,8 @@ type TransferStatusDetails struct {
 }
 
 // ZoneResponse wraps the structure of zone response.
-type ZoneResponse struct {
-	Properties *ZoneProperties `json:"properties,omitempty"`
+type Response struct {
+	Properties *Properties `json:"properties,omitempty"`
 
 	// Primary Zone Response
 	RegistrarInfo   *RegistrarInfo   `json:"registrarInfo,omitempty"`
@@ -134,9 +134,9 @@ type ZoneResponse struct {
 }
 
 // ZoneListResponse wraps the structure of zone response list.
-type ZoneListResponse struct {
+type ResponseList struct {
 	QueryInfo  *helper.QueryInfo  `json:"queryInfo,omitempty"`
 	ResultInfo *helper.ResultInfo `json:"resultInfo,omitempty"`
 	CursorInfo *helper.CursorInfo `json:"cursorInfo,omitempty"`
-	Zones      []*ZoneResponse    `json:"zones,omitempty"`
+	Zones      []*Response        `json:"zones,omitempty"`
 }

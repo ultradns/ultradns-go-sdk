@@ -2,7 +2,6 @@ package client
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	"github.com/ultradns/ultradns-go-sdk/internal/token"
@@ -30,15 +29,15 @@ func NewClient(config Config) (client *Client, err error) {
 
 func validateClientConfig(config Config) (*Client, error) {
 	if ok := validateParameter(config.Username); !ok {
-		return nil, fmt.Errorf("username is required to create a client")
+		return nil, ConfigError("username")
 	}
 
 	if ok := validateParameter(config.Password); !ok {
-		return nil, fmt.Errorf("password is required to create a client")
+		return nil, ConfigError("password")
 	}
 
 	if ok := validateParameter(config.HostURL); !ok {
-		return nil, fmt.Errorf("host url is required to create a client")
+		return nil, ConfigError("host url")
 	}
 
 	hostURL := strings.TrimSuffix(config.HostURL, "/")

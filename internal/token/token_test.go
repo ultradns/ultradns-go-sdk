@@ -1,4 +1,4 @@
-package token
+package token_test
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/ultradns/ultradns-go-sdk/internal/token"
 	"golang.org/x/oauth2"
 )
 
@@ -18,6 +19,7 @@ var (
 func TestTokenSuccessWithPasswordCredentials(t *testing.T) {
 	tokenSource := getTokenSource()
 	token, err := tokenSource.Token()
+
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -30,6 +32,7 @@ func TestTokenSuccessWithPasswordCredentials(t *testing.T) {
 func TestTokenSuccessWithRefreshTokenFailure(t *testing.T) {
 	tokenSource := getTokenSource()
 	_, err := tokenSource.Token()
+
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -60,7 +63,7 @@ func TestTokenFailureWithPasswordCredentials(t *testing.T) {
 func TestTokenFailureWithRefreshTokenFailure(t *testing.T) {
 	tokenSource := getTokenSource()
 	tokenSource.Password = ""
-	tokenSource.token = &oauth2.Token{}
+	tokenSource.T = &oauth2.Token{}
 	_, err := tokenSource.Token()
 
 	if !strings.Contains(err.Error(), "invalid_request:password parameter is required for grant_type=password") {
@@ -68,8 +71,8 @@ func TestTokenFailureWithRefreshTokenFailure(t *testing.T) {
 	}
 }
 
-func getTokenSource() *TokenSource {
-	return &TokenSource{
+func getTokenSource() *token.TokenSource {
+	return &token.TokenSource{
 		Ctx:      context.TODO(),
 		Username: testUsername,
 		Password: testPassword,

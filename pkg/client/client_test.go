@@ -11,6 +11,7 @@ func TestNewClientWithCredentials(t *testing.T) {
 	conf := test.GetConfig()
 	conf.APIVersion = "v2"
 	_, err := client.NewClient(conf)
+
 	if err != nil {
 		t.Error(err)
 	}

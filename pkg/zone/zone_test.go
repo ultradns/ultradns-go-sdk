@@ -9,8 +9,8 @@ import (
 
 func TestNewSuccess(t *testing.T) {
 	conf := test.GetConfig()
-	_, err := zone.New(conf)
-	if err != nil {
+
+	if _, err := zone.New(conf); err != nil {
 		t.Fatal(err)
 	}
 }

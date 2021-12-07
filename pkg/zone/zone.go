@@ -1,7 +1,6 @@
 package zone
 
 import (
-	"fmt"
 	"net/http"
 	"net/url"
 
@@ -11,45 +10,50 @@ import (
 )
 
 const (
+	serviceName     = "Zone"
+	basePath        = "zones/"
+	basePathForList = "v3/zones/?"
 	zoneTaskRetries = 5
 	zoneTaskTimeGap = 10
 	taskHeader      = "X-Task-Id"
 )
 
-type ZoneService struct {
+type Service struct {
 	c *client.Client
 }
 
-func New(config client.Config) (*ZoneService, error) {
-	client, err := client.NewClient(config)
+func New(cnf client.Config) (*Service, error) {
+	c, err := client.NewClient(cnf)
+
 	if err != nil {
-		return nil, err
+		return nil, client.ServiceConfigError(serviceName, err)
 	}
 
-	return &ZoneService{c: client}, nil
+	return &Service{c}, nil
 }
 
-func Get(client *client.Client) (*ZoneService, error) {
-	if client == nil {
-		return nil, fmt.Errorf("zone service is not properly configured")
+func Get(c *client.Client) (*Service, error) {
+	if c == nil {
+		return nil, client.ServiceError(serviceName)
 	}
 
-	return &ZoneService{c: client}, nil
+	return &Service{c}, nil
 }
 
-func (zs *ZoneService) CreateZone(zone *Zone) (*http.Response, error) {
+func (s *Service) CreateZone(zone *Zone) (*http.Response, error) {
 	target := client.Target(&client.SuccessResponse{})
 
-	if zs.c == nil {
-		return nil, fmt.Errorf("zone service is not properly configured")
+	if s.c == nil {
+		return nil, client.ServiceError(serviceName)
 	}
 
-	res, err := zs.c.Do(http.MethodPost, "zones", zone, target)
+	res, err := s.c.Do(http.MethodPost, basePath, zone, target)
+
 	if err != nil {
-		return nil, err
+		return nil, CreateZoneError(zone.Properties.Name, err)
 	}
 
-	er := zs.checkZoneTask(res)
+	er := s.checkZoneTask(res)
 
 	if er != nil {
 		return nil, er
@@ -58,93 +62,99 @@ func (zs *ZoneService) CreateZone(zone *Zone) (*http.Response, error) {
 	return res, nil
 }
 
-func (zs *ZoneService) ReadZone(zoneName string) (*http.Response, *ZoneResponse, error) {
-	target := client.Target(&ZoneResponse{})
+func (s *Service) ReadZone(zoneName string) (*http.Response, *Response, error) {
+	target := client.Target(&Response{})
 	zoneName = url.PathEscape(zoneName)
 
-	if zs.c == nil {
-		return nil, nil, fmt.Errorf("zone service is not properly configured")
+	if s.c == nil {
+		return nil, nil, client.ServiceError(serviceName)
 	}
 
-	res, err := zs.c.Do(http.MethodGet, "zones/"+zoneName, nil, target)
+	res, err := s.c.Do(http.MethodGet, basePath+zoneName, nil, target)
+
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, ReadZoneError(zoneName, err)
 	}
 
-	zoneResponse := target.Data.(*ZoneResponse)
+	zoneResponse := target.Data.(*Response)
 
 	return res, zoneResponse, nil
 }
 
-func (zs *ZoneService) UpdateZone(zoneName string, zone *Zone) (*http.Response, error) {
+func (s *Service) UpdateZone(zoneName string, zone *Zone) (*http.Response, error) {
 	target := client.Target(&client.SuccessResponse{})
 	zoneName = url.PathEscape(zoneName)
 
-	if zs.c == nil {
-		return nil, fmt.Errorf("zone service is not properly configured")
+	if s.c == nil {
+		return nil, client.ServiceError(serviceName)
 	}
 
-	res, err := zs.c.Do(http.MethodPut, "zones/"+zoneName, zone, target)
+	res, err := s.c.Do(http.MethodPut, basePath+zoneName, zone, target)
+
 	if err != nil {
-		return nil, err
+		return nil, UpdateZoneError(zoneName, err)
 	}
 
 	return res, nil
 }
 
-func (zs *ZoneService) PatchUpdateZone(zoneName string, zone *Zone) (*http.Response, error) {
+func (s *Service) PatchUpdateZone(zoneName string, zone *Zone) (*http.Response, error) {
 	target := client.Target(&client.SuccessResponse{})
 	zoneName = url.PathEscape(zoneName)
 
-	if zs.c == nil {
-		return nil, fmt.Errorf("zone service is not properly configured")
+	if s.c == nil {
+		return nil, client.ServiceError(serviceName)
 	}
 
-	res, err := zs.c.Do(http.MethodPatch, "zones/"+zoneName, zone, target)
+	res, err := s.c.Do(http.MethodPatch, basePath+zoneName, zone, target)
+
 	if err != nil {
-		return nil, err
+		return nil, PartialUpdateZoneError(zoneName, err)
 	}
 
 	return res, nil
 }
 
-func (zs *ZoneService) DeleteZone(zoneName string) (*http.Response, error) {
+func (s *Service) DeleteZone(zoneName string) (*http.Response, error) {
 	target := client.Target(&client.SuccessResponse{})
 	zoneName = url.PathEscape(zoneName)
 
-	if zs.c == nil {
-		return nil, fmt.Errorf("zone service is not properly configured")
+	if s.c == nil {
+		return nil, client.ServiceError(serviceName)
 	}
 
-	res, err := zs.c.Do(http.MethodDelete, "zones/"+zoneName, nil, target)
+	res, err := s.c.Do(http.MethodDelete, basePath+zoneName, nil, target)
+
 	if err != nil {
-		return nil, err
+		return nil, DeleteZoneError(zoneName, err)
 	}
 
 	return res, nil
 }
 
-func (zs *ZoneService) ListZone(queryInfo *helper.QueryInfo) (*http.Response, *ZoneListResponse, error) {
-	target := client.Target(&ZoneListResponse{})
+func (s *Service) ListZone(queryInfo *helper.QueryInfo) (*http.Response, *ResponseList, error) {
+	target := client.Target(&ResponseList{})
 
-	if zs.c == nil {
-		return nil, nil, fmt.Errorf("zone service is not properly configured")
+	if s.c == nil {
+		return nil, nil, client.ServiceError(serviceName)
 	}
 
-	res, err := zs.c.Do(http.MethodGet, "v3/zones/?"+queryInfo.String(), nil, target)
+	res, err := s.c.Do(http.MethodGet, basePathForList+queryInfo.URI(), nil, target)
+
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, ListZoneError(basePathForList+queryInfo.URI(), err)
 	}
 
-	zoneListResponse := target.Data.(*ZoneListResponse)
+	zoneListResponse := target.Data.(*ResponseList)
 
 	return res, zoneListResponse, nil
 }
 
-func (zs *ZoneService) checkZoneTask(res *http.Response) error {
+func (s *Service) checkZoneTask(res *http.Response) error {
 	if res.StatusCode == http.StatusAccepted {
 		taskID := res.Header.Get(taskHeader)
-		taskService, err := task.Get(zs.c)
+		taskService, err := task.Get(s.c)
+
 		if err != nil {
 			return err
 		}

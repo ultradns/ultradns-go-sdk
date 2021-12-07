@@ -1,44 +1,48 @@
 package task
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/ultradns/ultradns-go-sdk/pkg/client"
 )
 
-type TaskService struct {
+const (
+	serviceName = "Task"
+	basePath    = "tasks/"
+)
+
+type Service struct {
 	c *client.Client
 }
 
-func New(config client.Config) (*TaskService, error) {
-	client, err := client.NewClient(config)
+func New(cnf client.Config) (*Service, error) {
+	c, err := client.NewClient(cnf)
 	if err != nil {
-		return nil, err
+		return nil, client.ServiceConfigError(serviceName, err)
 	}
 
-	return &TaskService{c: client}, nil
+	return &Service{c}, nil
 }
 
-func Get(client *client.Client) (*TaskService, error) {
-	if client == nil {
-		return nil, fmt.Errorf("task service is not properly configured")
+func Get(c *client.Client) (*Service, error) {
+	if c == nil {
+		return nil, client.ServiceError(serviceName)
 	}
 
-	return &TaskService{c: client}, nil
+	return &Service{c}, nil
 }
 
-func (ts *TaskService) GetTaskStatus(taskID string) (*http.Response, *Task, error) {
+func (s *Service) GetTaskStatus(taskID string) (*http.Response, *Task, error) {
 	target := client.Target(&Task{})
 
-	if ts.c == nil {
-		return nil, nil, fmt.Errorf("task service is not properly configured")
+	if s.c == nil {
+		return nil, nil, client.ServiceError(serviceName)
 	}
 
-	res, err := ts.c.Do(http.MethodGet, "tasks/"+taskID, nil, target)
+	res, err := s.c.Do(http.MethodGet, basePath+taskID, nil, target)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, StatusError(taskID, err)
 	}
 
 	task := target.Data.(*Task)
@@ -46,13 +50,13 @@ func (ts *TaskService) GetTaskStatus(taskID string) (*http.Response, *Task, erro
 	return res, task, nil
 }
 
-func (ts *TaskService) TaskWait(taskID string, retries, timegap int) error {
+func (s *Service) TaskWait(taskID string, retries, timegap int) error {
 	var taskStatus *Task
 
 	for i := 0; i < retries; i++ {
 		time.Sleep(time.Duration(timegap) * time.Second)
 
-		_, task, err := ts.GetTaskStatus(taskID)
+		_, task, err := s.GetTaskStatus(taskID)
 		if err != nil {
 			return err
 		}
@@ -62,12 +66,12 @@ func (ts *TaskService) TaskWait(taskID string, retries, timegap int) error {
 			case "COMPLETE":
 				return nil
 			case "ERROR":
-				return fmt.Errorf("error - %s", task)
+				return FailedTaskError(task)
 			}
 		}
 
 		taskStatus = task
 	}
 
-	return fmt.Errorf("timeout for checking task status - last returned task status : %s", taskStatus)
+	return TimeoutError(taskStatus)
 }

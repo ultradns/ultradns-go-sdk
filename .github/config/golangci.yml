@@ -1,0 +1,39 @@
+linters:
+  # enable:
+  #    - revive
+  enable-all: true
+  disable:
+    # deprecated linters
+    - golint
+    - interfacer
+    - scopelint
+    - maligned
+
+    # to suppress the errors in struct tags
+    - tagliatelle
+    # suppress type assertion warnings since we assert the same we passed
+    - forcetypeassert
+    # all struct has omitempty, so all fields in struct are not required
+    - exhaustivestruct
+    # disable gofumpt since it has conflict with wsl(white space letter) linter
+    - gofumpt
+    # integration tests need to done in sequential manner
+    - paralleltest
+    # need to allow single character variable name
+    - varnamelen
+    # return the error need not to wrap
+    - wrapcheck
+
+    #later check
+    - gochecknoglobals
+    - bodyclose
+    - lll # should reduce line length or configure max length of line
+    - noctx
+    - ifshort
+
+  fast: false
+
+issues:
+  exclude:
+    - type name will be used as rrset.RRsetKey.*$
+    - type name will be used as token.TokenSource.*$
