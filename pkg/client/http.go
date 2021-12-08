@@ -71,12 +71,15 @@ func validateResponse(res *http.Response, t interface{}) error {
 		} else if err != nil {
 			return err
 		}
+
 	} else {
 		err := json.NewDecoder(res.Body).Decode(&target.Error)
 
 		if err != nil {
 			return err
 		}
+
+		return ResponseError(target.Error)
 	}
 
 	return nil

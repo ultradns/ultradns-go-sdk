@@ -26,3 +26,7 @@ func ServiceConfigError(service string, err error) error {
 func ResponseTargetError(key string) error {
 	return fmt.Errorf("%w - %s", errResponseTarget, key)
 }
+
+func ResponseError(errResponseList []*ErrorResponse) error {
+	return fmt.Errorf("%s", errResponseList[0])
+}

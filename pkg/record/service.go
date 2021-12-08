@@ -31,8 +31,7 @@ func Get(c *client.Client) (*Service, error) {
 	return &Service{c}, nil
 }
 
-// Create record with provided rrset.
-func (rs *Service) CreateRecord(rrSetKey rrset.RRSetKey, rrSet rrset.RRSet) (*http.Response, error) {
+func (rs *Service) CreateRecord(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*http.Response, error) {
 	target := client.Target(&client.SuccessResponse{})
 
 	if rs.c == nil {
@@ -42,13 +41,13 @@ func (rs *Service) CreateRecord(rrSetKey rrset.RRSetKey, rrSet rrset.RRSet) (*ht
 	res, err := rs.c.Do(http.MethodPost, rrSetKey.URI(), rrSet, target)
 
 	if err != nil {
-		return nil, CreateRecordError(rrSetKey, err)
+		return nil, CreateRecordError(rrSetKey.ID(), err)
 	}
 
 	return res, nil
 }
 
-func (rs *Service) UpdateRecord(rrSetKey rrset.RRSetKey, rrSet rrset.RRSet) (*http.Response, error) {
+func (rs *Service) UpdateRecord(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*http.Response, error) {
 	target := client.Target(&client.SuccessResponse{})
 
 	if rs.c == nil {
@@ -58,45 +57,47 @@ func (rs *Service) UpdateRecord(rrSetKey rrset.RRSetKey, rrSet rrset.RRSet) (*ht
 	res, err := rs.c.Do(http.MethodPut, rrSetKey.URI(), rrSet, target)
 
 	if err != nil {
-		return nil, UpdateRecordError(rrSetKey, err)
+		return nil, UpdateRecordError(rrSetKey.ID(), err)
 	}
 
 	return res, nil
 }
 
-func (rs *Service) PartialUpdateRecord(rrSetKey rrset.RRSetKey, rrSet rrset.RRSet) (*http.Response, error) {
+func (rs *Service) PartialUpdateRecord(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*http.Response, error) {
 	target := client.Target(&client.SuccessResponse{})
 
 	if rs.c == nil {
 		return nil, client.ServiceError(serviceName)
 	}
 
-	res, err := rs.c.Do(http.MethodPut, rrSetKey.URI(), rrSet, target)
+	res, err := rs.c.Do(http.MethodPatch, rrSetKey.URI(), rrSet, target)
 
 	if err != nil {
-		return nil, PartialUpdateRecordError(rrSetKey, err)
+		return nil, PartialUpdateRecordError(rrSetKey.ID(), err)
 	}
 
 	return res, nil
 }
 
-func (rs *Service) ReadRecord(rrSetKey rrset.RRSetKey) (*http.Response, error) {
-	target := client.Target(&client.SuccessResponse{})
+func (rs *Service) ReadRecord(rrSetKey *rrset.RRSetKey) (*http.Response, *rrset.ResponseList, error) {
+	target := client.Target(&rrset.ResponseList{})
 
 	if rs.c == nil {
-		return nil, client.ServiceError(serviceName)
+		return nil, nil, client.ServiceError(serviceName)
 	}
 
 	res, err := rs.c.Do(http.MethodGet, rrSetKey.URI(), nil, target)
 
 	if err != nil {
-		return nil, ReadRecordError(rrSetKey, err)
+		return nil, nil, ReadRecordError(rrSetKey.ID(), err)
 	}
 
-	return res, nil
+	rrsetList := target.Data.(*rrset.ResponseList)
+
+	return res, rrsetList, nil
 }
 
-func (rs *Service) DeleteRecord(rrSetKey rrset.RRSetKey) (*http.Response, error) {
+func (rs *Service) DeleteRecord(rrSetKey *rrset.RRSetKey) (*http.Response, error) {
 	target := client.Target(&client.SuccessResponse{})
 
 	if rs.c == nil {
@@ -106,7 +107,7 @@ func (rs *Service) DeleteRecord(rrSetKey rrset.RRSetKey) (*http.Response, error)
 	res, err := rs.c.Do(http.MethodDelete, rrSetKey.URI(), nil, target)
 
 	if err != nil {
-		return nil, DeleteRecordError(rrSetKey, err)
+		return nil, DeleteRecordError(rrSetKey.ID(), err)
 	}
 
 	return res, nil

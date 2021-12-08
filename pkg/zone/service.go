@@ -50,7 +50,11 @@ func (s *Service) CreateZone(zone *Zone) (*http.Response, error) {
 	res, err := s.c.Do(http.MethodPost, basePath, zone, target)
 
 	if err != nil {
-		return nil, CreateZoneError(zone.Properties.Name, err)
+		zoneName := ""
+		if zone.Properties != nil {
+			zoneName = zone.Properties.Name
+		}
+		return nil, CreateZoneError(zoneName, err)
 	}
 
 	er := s.checkZoneTask(res)
@@ -98,7 +102,7 @@ func (s *Service) UpdateZone(zoneName string, zone *Zone) (*http.Response, error
 	return res, nil
 }
 
-func (s *Service) PatchUpdateZone(zoneName string, zone *Zone) (*http.Response, error) {
+func (s *Service) PartialUpdateZone(zoneName string, zone *Zone) (*http.Response, error) {
 	target := client.Target(&client.SuccessResponse{})
 	zoneName = url.PathEscape(zoneName)
 

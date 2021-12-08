@@ -25,7 +25,7 @@ func TestDoSuccess(t *testing.T) {
 func TestDoNilTarget(t *testing.T) {
 	_, err := test.TestClient.Do(http.MethodGet, "zones", nil, nil)
 
-	if err.Error() != "response target should not be nil" {
+	if err.Error() != "response target type mismatched : returned type - <nil>" {
 		t.Fatal(err)
 	}
 }
@@ -33,7 +33,7 @@ func TestDoNilTarget(t *testing.T) {
 func TestDoWrongTarget(t *testing.T) {
 	_, err := test.TestClient.Do(http.MethodGet, "zones", nil, &zone.Zone{})
 
-	if err.Error() != "response target mismatched : returned target - *client.Response" {
+	if err.Error() != "response target type mismatched : returned type - *client.Response" {
 		t.Fatal(err)
 	}
 }
@@ -42,12 +42,8 @@ func TestDoNonExistingZone(t *testing.T) {
 	target := client.Target(&zone.Response{})
 	_, err := test.TestClient.Do(http.MethodGet, "zones/unit-test-non-existing-zone.com", nil, target)
 
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if target.Error[0].String() != "error code : 1801 - error message : Zone does not exist in the system." {
-		t.Error(target.Error[0].String())
+	if err.Error() != "error code : 1801 - error message : Zone does not exist in the system." {
+		t.Error(err)
 	}
 }
 

@@ -3,6 +3,8 @@ package rrset
 import (
 	"fmt"
 	"net/url"
+
+	"github.com/ultradns/ultradns-go-sdk/pkg/helper"
 )
 
 type RRSet struct {
@@ -19,9 +21,20 @@ type RRSetKey struct {
 	Name string
 }
 
+type ResponseList struct {
+	ZoneName   string             `json:"zoneName,omitempty"`
+	QueryInfo  *helper.QueryInfo  `json:"queryInfo,omitempty"`
+	ResultInfo *helper.ResultInfo `json:"resultInfo,omitempty"`
+	RRSets     []*RRSet           `json:"rrSets,omitempty"`
+}
+
 func (r RRSetKey) URI() string {
 	r.Name = url.PathEscape(r.Name)
 	r.Zone = url.PathEscape(r.Zone)
+
+	if r.Type == "" {
+		r.Type = "ANY"
+	}
 
 	return fmt.Sprintf("zones/%s/rrsets/%s/%s", r.Zone, r.Type, r.Name)
 }

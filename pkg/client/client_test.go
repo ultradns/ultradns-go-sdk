@@ -22,7 +22,7 @@ func TestNewClientWithoutUsername(t *testing.T) {
 	conf.Username = ""
 	_, err := client.NewClient(conf)
 
-	if err.Error() != "username is required to create a client" {
+	if err.Error() != "config validation failure: username is missing" {
 		t.Error(err)
 	}
 }
@@ -32,7 +32,7 @@ func TestNewClientWithoutPassword(t *testing.T) {
 	conf.Password = ""
 	_, err := client.NewClient(conf)
 
-	if err.Error() != "password is required to create a client" {
+	if err.Error() != "config validation failure: password is missing" {
 		t.Error(err)
 	}
 }
@@ -42,7 +42,7 @@ func TestNewClientWithoutHost(t *testing.T) {
 	conf.HostURL = ""
 	_, err := client.NewClient(conf)
 
-	if err.Error() != "host url is required to create a client" {
+	if err.Error() != "config validation failure: host url is missing" {
 		t.Error(err)
 	}
 }

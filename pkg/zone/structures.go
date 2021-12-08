@@ -114,7 +114,7 @@ type TransferStatusDetails struct {
 	LastRefreshStatusMessage string `json:"lastRefreshStatusMessage,omitempty"`
 }
 
-// ZoneResponse wraps the structure of zone response.
+// Zone Response wraps the structure of zone response.
 type Response struct {
 	Properties *Properties `json:"properties,omitempty"`
 
@@ -133,7 +133,7 @@ type Response struct {
 	OriginalZoneName string `json:"originalZoneName,omitempty"`
 }
 
-// ZoneListResponse wraps the structure of zone response list.
+// Zone ResponseList wraps the structure of zone response list.
 type ResponseList struct {
 	QueryInfo  *helper.QueryInfo  `json:"queryInfo,omitempty"`
 	ResultInfo *helper.ResultInfo `json:"resultInfo,omitempty"`
