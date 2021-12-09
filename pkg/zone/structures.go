@@ -123,6 +123,7 @@ type Response struct {
 	Tsig            *Tsig            `json:"tsig,omitempty"`
 	RestrictIPList  []*RestrictIP    `json:"restrictIpList,omitempty"`
 	NotifyAddresses []*NotifyAddress `json:"notifyAddresses,omitempty"`
+	Inherit         string           `json:"inherit,omitempty"`
 
 	// Secondary Zone Response
 	PrimaryNameServers       *PrimaryNameServers    `json:"primaryNameServers,omitempty"`
