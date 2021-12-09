@@ -8,23 +8,6 @@ import (
 	"github.com/ultradns/ultradns-go-sdk/pkg/helper"
 )
 
-var rrTypes = map[string]string{
-	"A":     "A (1)",
-	"1":     "A (1)",
-	"AAAA":  "AAAA (28)",
-	"28":    "AAAA (28)",
-	"CNAME": "CNAME (5)",
-	"5":     "CNAME (5)",
-	"MX":    "MX (15)",
-	"15":    "MX (15)",
-	"SRV":   "SRV (33)",
-	"33":    "SRV (33)",
-	"TXT":   "TXT (16)",
-	"16":    "TXT (16)",
-	"PTR":   "PTR (12)",
-	"12":    "PTR (12)",
-}
-
 type RRSet struct {
 	OwnerName string      `json:"ownerName,omitempty"`
 	RRType    string      `json:"rrtype,omitempty"`
@@ -58,11 +41,31 @@ func (r RRSetKey) URI() string {
 }
 
 func (r RRSetKey) ID() string {
-	r.Type = rrTypes[r.Type]
+	r.Type = GetRRTypeFullString(r.Type)
 
 	if !strings.Contains(r.Name, r.Zone) {
 		r.Name += "." + r.Zone
 	}
 
 	return fmt.Sprintf("%s:%s:%s", r.Name, r.Zone, r.Type)
+}
+
+func GetRRTypeFullString(key string) string {
+	var rrTypes = map[string]string{
+		"A":     "A (1)",
+		"1":     "A (1)",
+		"AAAA":  "AAAA (28)",
+		"28":    "AAAA (28)",
+		"CNAME": "CNAME (5)",
+		"5":     "CNAME (5)",
+		"MX":    "MX (15)",
+		"15":    "MX (15)",
+		"SRV":   "SRV (33)",
+		"33":    "SRV (33)",
+		"TXT":   "TXT (16)",
+		"16":    "TXT (16)",
+		"PTR":   "PTR (12)",
+		"12":    "PTR (12)",
+	}
+	return rrTypes[key]
 }
