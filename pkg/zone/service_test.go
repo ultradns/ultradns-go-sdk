@@ -1,22 +1,28 @@
 package zone_test
 
 import (
+	"fmt"
 	"testing"
 
+	"github.com/ultradns/ultradns-go-sdk/internal/test"
 	"github.com/ultradns/ultradns-go-sdk/pkg/helper"
-	"github.com/ultradns/ultradns-go-sdk/pkg/test"
+	"github.com/ultradns/ultradns-go-sdk/pkg/record"
+	"github.com/ultradns/ultradns-go-sdk/pkg/rrset"
 	"github.com/ultradns/ultradns-go-sdk/pkg/zone"
 )
 
 const (
-	primaryZoneType   = "PRIMARY"
-	aliasZoneType     = "ALIAS"
-	newZoneCreateType = "NEW"
+	primaryZoneType    = "PRIMARY"
+	aliasZoneType      = "ALIAS"
+	newZoneCreateType  = "NEW"
+	serviceErrorString = "Zone service is not properly configured"
 )
 
 var (
 	testPrimaryZoneName = ""
 	testAliasZoneName   = ""
+	testOwnerName       = ""
+	testRRSetKeyA       *rrset.RRSetKey
 )
 
 func TestNewSuccess(t *testing.T) {
@@ -30,25 +36,20 @@ func TestNewSuccess(t *testing.T) {
 func TestNewError(t *testing.T) {
 	conf := test.GetConfig()
 	conf.Password = ""
-	_, err := zone.New(conf)
 
-	if err.Error() != "config error while creating Zone service : config validation failure: password is missing" {
+	if _, err := zone.New(conf); err.Error() != "config error while creating Zone service : config validation failure: password is missing" {
 		t.Fatal(err)
 	}
 }
 
 func TestGetSuccess(t *testing.T) {
-	_, err := zone.Get(test.TestClient)
-
-	if err != nil {
+	if _, err := zone.Get(test.TestClient); err != nil {
 		t.Fatal(err)
 	}
 }
 
 func TestGetError(t *testing.T) {
-	_, err := zone.Get(nil)
-
-	if err.Error() != "Zone service is not properly configured" {
+	if _, err := zone.Get(nil); err.Error() != serviceErrorString {
 		t.Fatal(err)
 	}
 }
@@ -63,9 +64,149 @@ func TestCreateZoneSuccessWithPrimaryZone(t *testing.T) {
 	testPrimaryZoneName = test.GetRandomZoneName()
 	zone := getPrimaryZone(testPrimaryZoneName)
 
-	_, er := zoneService.CreateZone(zone)
+	if _, er := zoneService.CreateZone(zone); er != nil {
+		t.Fatal(er)
+	}
+}
+
+func TestCreateRecordSuccess(t *testing.T) {
+	recordService, err := record.Get(test.TestClient)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	testOwnerName = test.GetRandomString()
+	rrSet := test.GetRRSetTypeA(testOwnerName)
+	testRRSetKeyA = test.GetRRSetKey(testOwnerName, testPrimaryZoneName, rrSet.RRType)
+
+	if _, er := recordService.CreateRecord(testRRSetKeyA, rrSet); er != nil {
+		t.Fatal(er)
+	}
+}
+
+func TestCreateRecordFailure(t *testing.T) {
+	recordService, err := record.Get(test.TestClient)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if _, er := recordService.CreateRecord(testRRSetKeyA, &rrset.RRSet{}); er.Error() != fmt.Sprintf("error while creating record - %s : error code : 70005 - error message : At least one field must be specified: rdata or profile", testRRSetKeyA.ID()) {
+		t.Fatal(er)
+	}
+}
+
+func TestUpdateRecordSuccess(t *testing.T) {
+	recordService, err := record.Get(test.TestClient)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rrSet := test.GetRRSetTypeA(testOwnerName)
+	rrSet.RData = []string{"192.168.1.2"}
+
+	if _, er := recordService.UpdateRecord(testRRSetKeyA, rrSet); er != nil {
+		t.Fatal(er)
+	}
+}
+
+func TestUpdateRecordFailure(t *testing.T) {
+	recordService, err := record.Get(test.TestClient)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if _, er := recordService.UpdateRecord(testRRSetKeyA, &rrset.RRSet{}); er.Error() != fmt.Sprintf("error while updating record - %s : error code : 70005 - error message : At least one field must be specified: rdata or profile", testRRSetKeyA.ID()) {
+		t.Fatal(er)
+	}
+}
+
+func TestPartialUpdateRecordSuccess(t *testing.T) {
+	recordService, err := record.Get(test.TestClient)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rrSet := test.GetRRSetTypeA(testOwnerName)
+	rrSet.RData = []string{"192.168.1.2"}
+
+	if _, er := recordService.PartialUpdateRecord(testRRSetKeyA, rrSet); er != nil {
+		t.Fatal(er)
+	}
+}
+
+func TestPartialUpdateRecordFailure(t *testing.T) {
+	recordService, err := record.Get(test.TestClient)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if _, er := recordService.PartialUpdateRecord(testRRSetKeyA, &rrset.RRSet{TTL: -1}); er.Error() != fmt.Sprintf("error while partial updating record - %s : error code : 1000 - error message : Invalid TTL Format.", testRRSetKeyA.ID()) {
+		t.Fatal(er)
+	}
+}
+
+func TestReadRecordSuccess(t *testing.T) {
+	recordService, err := record.Get(test.TestClient)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, rrsetList, er := recordService.ReadRecord(testRRSetKeyA)
 
 	if er != nil {
+		t.Fatal(er)
+	}
+
+	if rrsetList != nil && rrsetList.ResultInfo != nil && rrsetList.ResultInfo.ReturnedCount != 1 {
+		t.Fatalf("rrset returned count mismatched expected - %v : found - %v", 1, rrsetList.ResultInfo.ReturnedCount)
+	}
+
+	if rrsetList.ZoneName != testPrimaryZoneName {
+		t.Fatalf("zone name mismatched expected - %v : found - %v", testPrimaryZoneName, rrsetList.ZoneName)
+	}
+}
+
+func TestReadRecordFailure(t *testing.T) {
+	recordService, err := record.Get(test.TestClient)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rrSetKey := test.GetRRSetKey(test.GetRandomString(), testPrimaryZoneName, "")
+
+	if _, _, er := recordService.ReadRecord(rrSetKey); er.Error() != fmt.Sprintf("error while reading record - %s : error code : 70002 - error message : Data not found.", rrSetKey.ID()) {
+		t.Fatal(er)
+	}
+}
+
+func TestDeleteRecordSuccess(t *testing.T) {
+	recordService, err := record.Get(test.TestClient)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if _, er := recordService.DeleteRecord(testRRSetKeyA); er != nil {
+		t.Fatal(er)
+	}
+}
+
+func TestDeleteRecordFailure(t *testing.T) {
+	recordService, err := record.Get(test.TestClient)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if _, er := recordService.DeleteRecord(testRRSetKeyA); er.Error() != fmt.Sprintf("error while deleting record - %s : error code : 56001 - error message : Cannot find resource record data for the input zone, record type and owner combination.", testRRSetKeyA.ID()) {
 		t.Fatal(er)
 	}
 }
@@ -80,18 +221,15 @@ func TestCreateZoneSuccessWithAliasZone(t *testing.T) {
 	testAliasZoneName = test.GetRandomZoneName()
 	zone := getAliasZone(testAliasZoneName)
 
-	_, er := zoneService.CreateZone(zone)
-
-	if er != nil {
+	if _, er := zoneService.CreateZone(zone); er != nil {
 		t.Fatal(er)
 	}
 }
 
 func TestCreateZoneWithConfigError(t *testing.T) {
 	zoneService := zone.Service{}
-	_, err := zoneService.CreateZone(&zone.Zone{})
 
-	if err.Error() != "Zone service is not properly configured" {
+	if _, err := zoneService.CreateZone(&zone.Zone{}); err.Error() != serviceErrorString {
 		t.Fatal(err)
 	}
 }
@@ -102,9 +240,8 @@ func TestCreateZoneFailure(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, er := zoneService.CreateZone(&zone.Zone{})
 
-	if er.Error() != "error while creating zone -  : error code : 55001 - error message : properties is required field." {
+	if _, er := zoneService.CreateZone(&zone.Zone{}); er.Error() != "error while creating zone -  : error code : 55001 - error message : properties is required field." {
 		t.Fatal(er)
 	}
 }
@@ -119,18 +256,15 @@ func TestUpdateZoneSuccess(t *testing.T) {
 	zone := getPrimaryZone(testPrimaryZoneName)
 	zone.PrimaryCreateInfo.RestrictIPList[0].SingleIP = "192.168.1.2"
 
-	_, er := zoneService.UpdateZone(testPrimaryZoneName, zone)
-
-	if er != nil {
+	if _, er := zoneService.UpdateZone(testPrimaryZoneName, zone); er != nil {
 		t.Fatal(er)
 	}
 }
 
 func TestUpdateZoneWithConfigError(t *testing.T) {
 	zoneService := zone.Service{}
-	_, err := zoneService.UpdateZone("", &zone.Zone{})
 
-	if err.Error() != "Zone service is not properly configured" {
+	if _, err := zoneService.UpdateZone("", &zone.Zone{}); err.Error() != serviceErrorString {
 		t.Fatal(err)
 	}
 }
@@ -141,9 +275,8 @@ func TestUpdateZoneFailure(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, er := zoneService.UpdateZone("non-existing-zone", &zone.Zone{})
 
-	if er.Error() != "error while updating zone - non-existing-zone : error code : 1801 - error message : Zone does not exist in the system." {
+	if _, er := zoneService.UpdateZone("non-existing-zone", &zone.Zone{}); er.Error() != "error while updating zone - non-existing-zone : error code : 1801 - error message : Zone does not exist in the system." {
 		t.Fatal(er)
 	}
 }
@@ -159,18 +292,15 @@ func TestPartialUpdateZoneSuccess(t *testing.T) {
 	zone.PrimaryCreateInfo.RestrictIPList[0].SingleIP = "192.168.1.3"
 	zone.PrimaryCreateInfo.NotifyAddresses[0].NotifyAddress = "192.168.1.13"
 
-	_, er := zoneService.PartialUpdateZone(testPrimaryZoneName, zone)
-
-	if er != nil {
+	if _, er := zoneService.PartialUpdateZone(testPrimaryZoneName, zone); er != nil {
 		t.Fatal(er)
 	}
 }
 
 func TestPartialUpdateZoneWithConfigError(t *testing.T) {
 	zoneService := zone.Service{}
-	_, err := zoneService.PartialUpdateZone("", &zone.Zone{})
 
-	if err.Error() != "Zone service is not properly configured" {
+	if _, err := zoneService.PartialUpdateZone("", &zone.Zone{}); err.Error() != serviceErrorString {
 		t.Fatal(err)
 	}
 }
@@ -181,9 +311,8 @@ func TestPartialUpdateZoneFailure(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, er := zoneService.PartialUpdateZone("non-existing-zone", &zone.Zone{})
 
-	if er.Error() != "error while partial updating zone - non-existing-zone : error code : 1801 - error message : Zone does not exist in the system." {
+	if _, er := zoneService.PartialUpdateZone("non-existing-zone", &zone.Zone{}); er.Error() != "error while partial updating zone - non-existing-zone : error code : 1801 - error message : Zone does not exist in the system." {
 		t.Fatal(er)
 	}
 }
@@ -208,9 +337,8 @@ func TestReadZoneSuccess(t *testing.T) {
 
 func TestReadZoneWithConfigError(t *testing.T) {
 	zoneService := zone.Service{}
-	_, _, err := zoneService.ReadZone(testPrimaryZoneName)
 
-	if err.Error() != "Zone service is not properly configured" {
+	if _, _, err := zoneService.ReadZone(testPrimaryZoneName); err.Error() != serviceErrorString {
 		t.Fatal(err)
 	}
 }
@@ -221,9 +349,8 @@ func TestReadZoneFailure(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, _, er := zoneService.ReadZone("non-existing-zone")
 
-	if er.Error() != "error while reading zone - non-existing-zone : error code : 1801 - error message : Zone does not exist in the system." {
+	if _, _, er := zoneService.ReadZone("non-existing-zone"); er.Error() != "error while reading zone - non-existing-zone : error code : 1801 - error message : Zone does not exist in the system." {
 		t.Fatal(er)
 	}
 }
@@ -241,10 +368,6 @@ func TestListZoneSuccess(t *testing.T) {
 		t.Fatal(er)
 	}
 
-	if zoneListRes != nil && zoneListRes.ResultInfo != nil && zoneListRes.ResultInfo.ReturnedCount != 1 {
-		t.Fatalf("zone returned count mismatched expected - %v : found - %v", 1, zoneListRes.ResultInfo.ReturnedCount)
-	}
-
 	if zoneListRes != nil && len(zoneListRes.Zones) > 0 && zoneListRes.Zones[0].Properties.Name != testPrimaryZoneName {
 		t.Fatalf("zone name mismatched expected - %v : found - %v", testPrimaryZoneName, zoneListRes.Zones[0].Properties.Name)
 	}
@@ -252,9 +375,8 @@ func TestListZoneSuccess(t *testing.T) {
 
 func TestListZoneWithConfigError(t *testing.T) {
 	zoneService := zone.Service{}
-	_, _, err := zoneService.ListZone(&helper.QueryInfo{})
 
-	if err.Error() != "Zone service is not properly configured" {
+	if _, _, err := zoneService.ListZone(&helper.QueryInfo{}); err.Error() != serviceErrorString {
 		t.Fatal(err)
 	}
 }
@@ -265,9 +387,8 @@ func TestListZoneFailure(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, _, er := zoneService.ListZone(&helper.QueryInfo{Query: "test:test"})
 
-	if er.Error() != "error while listing zone : path and query params - v3/zones/?&q=test:test&offset=0&cursor=&limit=100&sort=&reverse=false : error code : 53005 - error message : Invalid input: q.test" {
+	if _, _, er := zoneService.ListZone(&helper.QueryInfo{Query: "test:test"}); er.Error() != "error while listing zone : path and query params - v3/zones/?&q=test:test&offset=0&cursor=&limit=100&sort=&reverse=false : error code : 53005 - error message : Invalid input: q.test" {
 		t.Fatal(er)
 	}
 }
@@ -279,24 +400,19 @@ func TestDeleteZoneSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_, er := zoneService.DeleteZone(testAliasZoneName)
-
-	if er != nil {
+	if _, er := zoneService.DeleteZone(testAliasZoneName); er != nil {
 		t.Errorf("error while deleting alias zone : %s", er)
 	}
 
-	_, errr := zoneService.DeleteZone(testPrimaryZoneName)
-
-	if errr != nil {
-		t.Errorf("error while deleting primary zone : %s", errr)
+	if _, er := zoneService.DeleteZone(testPrimaryZoneName); er != nil {
+		t.Errorf("error while deleting primary zone : %s", er)
 	}
 }
 
 func TestDeleteZoneWithConfigError(t *testing.T) {
 	zoneService := zone.Service{}
-	_, err := zoneService.DeleteZone("")
 
-	if err.Error() != "Zone service is not properly configured" {
+	if _, err := zoneService.DeleteZone(""); err.Error() != serviceErrorString {
 		t.Fatal(err)
 	}
 }
@@ -308,23 +424,13 @@ func TestDeleteZoneWithNonExistingZone(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_, er := zoneService.DeleteZone("non-existing-zone")
-
-	if er.Error() != "error while deleting zone - non-existing-zone : error code : 1801 - error message : Zone does not exist in the system." {
+	if _, er := zoneService.DeleteZone("non-existing-zone"); er.Error() != "error while deleting zone - non-existing-zone : error code : 1801 - error message : Zone does not exist in the system." {
 		t.Fatal(er)
 	}
 }
 
-func getZoneProperties(zoneName, zoneType string) *zone.Properties {
-	return &zone.Properties{
-		Name:        zoneName,
-		AccountName: test.TestUsername,
-		Type:        zoneType,
-	}
-}
-
 func getPrimaryZone(zoneName string) *zone.Zone {
-	restrictIp := &zone.RestrictIP{
+	restrictIP := &zone.RestrictIP{
 		SingleIP: "192.168.1.1",
 	}
 	notifyAddress := &zone.NotifyAddress{
@@ -332,12 +438,12 @@ func getPrimaryZone(zoneName string) *zone.Zone {
 	}
 	primaryZone := &zone.PrimaryZone{
 		CreateType:      newZoneCreateType,
-		RestrictIPList:  []*zone.RestrictIP{restrictIp},
+		RestrictIPList:  []*zone.RestrictIP{restrictIP},
 		NotifyAddresses: []*zone.NotifyAddress{notifyAddress},
 	}
 
 	return &zone.Zone{
-		Properties:        getZoneProperties(zoneName, primaryZoneType),
+		Properties:        test.GetZoneProperties(zoneName, primaryZoneType),
 		PrimaryCreateInfo: primaryZone,
 	}
 }
@@ -348,7 +454,7 @@ func getAliasZone(zoneName string) *zone.Zone {
 	}
 
 	return &zone.Zone{
-		Properties:      getZoneProperties(zoneName, aliasZoneType),
+		Properties:      test.GetZoneProperties(zoneName, aliasZoneType),
 		AliasCreateInfo: aliasZone,
 	}
 }

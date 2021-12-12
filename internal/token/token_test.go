@@ -31,9 +31,8 @@ func TestTokenSuccessWithPasswordCredentials(t *testing.T) {
 
 func TestTokenSuccessWithRefreshTokenFailure(t *testing.T) {
 	tokenSource := getTokenSource()
-	_, err := tokenSource.Token()
 
-	if err != nil {
+	if _, err := tokenSource.Token(); err != nil {
 		t.Fatal(err)
 	}
 
@@ -53,9 +52,8 @@ func TestTokenSuccessWithRefreshTokenFailure(t *testing.T) {
 func TestTokenFailureWithPasswordCredentials(t *testing.T) {
 	tokenSource := getTokenSource()
 	tokenSource.Password = ""
-	_, err := tokenSource.Token()
 
-	if !strings.Contains(err.Error(), "invalid_request:password parameter is required for grant_type=password") {
+	if _, err := tokenSource.Token(); !strings.Contains(err.Error(), "invalid_request:password parameter is required for grant_type=password") {
 		t.Fatal(err)
 	}
 }
@@ -64,9 +62,8 @@ func TestTokenFailureWithRefreshTokenFailure(t *testing.T) {
 	tokenSource := getTokenSource()
 	tokenSource.Password = ""
 	tokenSource.T = &oauth2.Token{}
-	_, err := tokenSource.Token()
 
-	if !strings.Contains(err.Error(), "invalid_request:password parameter is required for grant_type=password") {
+	if _, err := tokenSource.Token(); !strings.Contains(err.Error(), "invalid_request:password parameter is required for grant_type=password") {
 		t.Fatal(err)
 	}
 }

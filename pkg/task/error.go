@@ -11,7 +11,7 @@ var (
 )
 
 func TimeoutError(t *Task) error {
-	return fmt.Errorf("%w : last returned task status - %s ", errTaskTimeout, t)
+	return fmt.Errorf("%w : last returned task status - %s", errTaskTimeout, t)
 }
 
 func FailedTaskError(t *Task) error {

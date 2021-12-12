@@ -136,8 +136,8 @@ type Response struct {
 
 // Zone ResponseList wraps the structure of zone response list.
 type ResponseList struct {
-	QueryInfo  *helper.QueryInfo  `json:"queryInfo,omitempty"`
-	ResultInfo *helper.ResultInfo `json:"resultInfo,omitempty"`
+	QueryInfo *helper.QueryInfo `json:"queryInfo,omitempty"`
+	// ResultInfo *helper.ResultInfo `json:"resultInfo,omitempty"`
 	CursorInfo *helper.CursorInfo `json:"cursorInfo,omitempty"`
 	Zones      []*Response        `json:"zones,omitempty"`
 }

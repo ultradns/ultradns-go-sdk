@@ -1,0 +1,36 @@
+name: Release
+on: 
+  push:
+    branches:
+      - main
+jobs:
+  Release_Job:
+    runs-on: ubuntu-latest
+    environment: test
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Fetching GO version from repo
+        run: echo "GO_VERSION=$(cat .go-version)" >> $GITHUB_ENV
+      - name: Setup GO environment
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: Running integration tests
+        run: go test -v -coverpkg=./... -coverprofile=coverage.out ./...
+        env:
+          ULTRADNS_UNIT_TEST_USERNAME: ${{ secrets.ULTRADNS_UNIT_TEST_USERNAME }}
+          ULTRADNS_UNIT_TEST_PASSWORD: ${{ secrets.ULTRADNS_UNIT_TEST_PASSWORD }}
+          ULTRADNS_UNIT_TEST_HOST_URL: ${{ secrets.ULTRADNS_UNIT_TEST_HOST_URL }}
+          ULTRADNS_UNIT_TEST_USER_AGENT: ${{ secrets.ULTRADNS_UNIT_TEST_USER_AGENT }}
+      - name: Fetch code coverage
+        run: go tool cover -func coverage.out
+      - name: Create Release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: "v1.0.0"
+          release_name: "v1.0.0"
+          draft: false
+          prerelease: false

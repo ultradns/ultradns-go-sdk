@@ -1,12 +1,14 @@
 package test
 
 import (
+	"crypto/rand"
 	"log"
-	"math/rand"
+	"math/big"
 	"os"
-	"time"
 
 	"github.com/ultradns/ultradns-go-sdk/pkg/client"
+	"github.com/ultradns/ultradns-go-sdk/pkg/rrset"
+	"github.com/ultradns/ultradns-go-sdk/pkg/zone"
 )
 
 const (
@@ -14,6 +16,7 @@ const (
 	randStringSet      = "abcdefghijklmnopqrstuvwxyz012346789"
 	randZoneNamePrefix = "sdk-go-test-"
 	randZoneNameSuffix = ".com."
+	recordTypeA        = "A"
 )
 
 var (
@@ -30,6 +33,7 @@ func init() {
 	if err != nil {
 		log.Panicf("unable to initialize test client for testing error : %s", err)
 	}
+
 	TestClient = client
 }
 
@@ -48,11 +52,41 @@ func GetRandomZoneName() string {
 
 func GetRandomString() string {
 	result := make([]byte, randStringLength)
-	random := rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	for i := 0; i < randStringLength; i++ {
-		result[i] = randStringSet[random.Intn(len(randStringSet))]
+		num, err := rand.Int(rand.Reader, big.NewInt(int64(len(randStringSet))))
+		if err != nil {
+			result[i] = randStringSet[0]
+
+			continue
+		}
+
+		result[i] = randStringSet[num.Int64()]
 	}
 
 	return string(result)
+}
+
+func GetZoneProperties(zoneName, zoneType string) *zone.Properties {
+	return &zone.Properties{
+		Name:        zoneName,
+		AccountName: TestUsername,
+		Type:        zoneType,
+	}
+}
+
+func GetRRSetKey(ownerName, zoneName, recordType string) *rrset.RRSetKey {
+	return &rrset.RRSetKey{
+		Name: ownerName,
+		Zone: zoneName,
+		Type: recordType,
+	}
+}
+
+func GetRRSetTypeA(ownerName string) *rrset.RRSet {
+	return &rrset.RRSet{
+		OwnerName: ownerName,
+		RRType:    recordTypeA,
+		RData:     []string{"192.168.1.1"},
+	}
 }

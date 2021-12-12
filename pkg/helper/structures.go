@@ -38,5 +38,5 @@ func (q *QueryInfo) URI() string {
 
 	queryInfo := fmt.Sprintf("&q=%v&offset=%v&cursor=%v&limit=%v&sort=%v&reverse=%v", q.Query, q.Offset, q.Cursor, q.Limit, q.Sort, q.Reverse)
 
-	return url.PathEscape(queryInfo)
+	return "?" + url.PathEscape(queryInfo)
 }

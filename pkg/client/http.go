@@ -63,15 +63,16 @@ func validateResponse(res *http.Response, t interface{}) error {
 		return ResponseTargetError(fmt.Sprintf("%T", target))
 	}
 
-	if res.StatusCode >= http.StatusOK && res.StatusCode <= http.StatusIMUsed {
-		err := json.NewDecoder(res.Body).Decode(&target.Data)
-
-		if err != nil && err.Error() == "EOF" {
+	if res.StatusCode >= http.StatusOK && res.StatusCode < http.StatusMultipleChoices {
+		if res.StatusCode == http.StatusNoContent {
 			return nil
-		} else if err != nil {
-			return err
 		}
 
+		err := json.NewDecoder(res.Body).Decode(&target.Data)
+
+		if err != nil {
+			return err
+		}
 	} else {
 		err := json.NewDecoder(res.Body).Decode(&target.Error)
 

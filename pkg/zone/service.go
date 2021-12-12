@@ -12,7 +12,7 @@ import (
 const (
 	serviceName     = "Zone"
 	basePath        = "zones/"
-	basePathForList = "v3/zones/?"
+	basePathForList = "v3/zones/"
 	zoneTaskRetries = 5
 	zoneTaskTimeGap = 10
 	taskHeader      = "X-Task-Id"
@@ -54,12 +54,11 @@ func (s *Service) CreateZone(zone *Zone) (*http.Response, error) {
 		if zone.Properties != nil {
 			zoneName = zone.Properties.Name
 		}
+
 		return nil, CreateZoneError(zoneName, err)
 	}
 
-	er := s.checkZoneTask(res)
-
-	if er != nil {
+	if er := s.checkZoneTask(res); er != nil {
 		return nil, er
 	}
 
