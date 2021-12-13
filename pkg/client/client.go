@@ -42,12 +42,8 @@ func validateClientConfig(config Config) (*Client, error) {
 
 	hostURL := strings.TrimSuffix(config.HostURL, "/")
 	client := &Client{
-		baseURL:   config.HostURL,
+		baseURL:   hostURL,
 		userAgent: config.UserAgent,
-	}
-
-	if ok := validateParameter(config.APIVersion); ok {
-		client.baseURL = hostURL + "/" + config.APIVersion
 	}
 
 	return client, nil

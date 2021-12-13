@@ -2,18 +2,12 @@ package token_test
 
 import (
 	"context"
-	"os"
 	"strings"
 	"testing"
 
+	"github.com/ultradns/ultradns-go-sdk/internal/test"
 	"github.com/ultradns/ultradns-go-sdk/internal/token"
 	"golang.org/x/oauth2"
-)
-
-var (
-	testUsername = os.Getenv("ULTRADNS_UNIT_TEST_USERNAME")
-	testPassword = os.Getenv("ULTRADNS_UNIT_TEST_PASSWORD")
-	testHost     = os.Getenv("ULTRADNS_UNIT_TEST_HOST_URL")
 )
 
 func TestTokenSuccessWithPasswordCredentials(t *testing.T) {
@@ -71,8 +65,8 @@ func TestTokenFailureWithRefreshTokenFailure(t *testing.T) {
 func getTokenSource() *token.TokenSource {
 	return &token.TokenSource{
 		Ctx:      context.TODO(),
-		Username: testUsername,
-		Password: testPassword,
-		BaseURL:  testHost,
+		Username: test.TestUsername,
+		Password: test.TestPassword,
+		BaseURL:  test.TestHost,
 	}
 }

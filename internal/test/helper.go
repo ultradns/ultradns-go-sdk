@@ -12,20 +12,20 @@ import (
 )
 
 const (
-	randStringLength   = 5
-	randStringSet      = "abcdefghijklmnopqrstuvwxyz012346789"
-	randZoneNamePrefix = "sdk-go-test-"
-	randZoneNameSuffix = ".com."
-	recordTypeA        = "A"
+	randStringLength                  = 5
+	randStringSet                     = "abcdefghijklmnopqrstuvwxyz012346789"
+	randZoneNamePrefix                = "sdk-go-test-"
+	randZoneNameSuffix                = ".com."
+	randZoneNameWithSpecialCharSuffix = ".in-addr.arpa."
+	recordTypeA                       = "A"
 )
 
 var (
-	testPassword  = os.Getenv("ULTRADNS_UNIT_TEST_PASSWORD")
-	testHost      = os.Getenv("ULTRADNS_UNIT_TEST_HOST_URL")
-	testUserAgent = os.Getenv("ULTRADNS_UNIT_TEST_USER_AGENT")
-
-	TestUsername = os.Getenv("ULTRADNS_UNIT_TEST_USERNAME")
-	TestClient   *client.Client
+	TestUsername  = os.Getenv("ULTRADNS_UNIT_TEST_USERNAME")
+	TestPassword  = os.Getenv("ULTRADNS_UNIT_TEST_PASSWORD")
+	TestHost      = os.Getenv("ULTRADNS_UNIT_TEST_HOST_URL")
+	TestUserAgent = os.Getenv("ULTRADNS_UNIT_TEST_USER_AGENT")
+	TestClient    *client.Client
 )
 
 func init() {
@@ -40,10 +40,14 @@ func init() {
 func GetConfig() client.Config {
 	return client.Config{
 		Username:  TestUsername,
-		Password:  testPassword,
-		HostURL:   testHost,
-		UserAgent: testUserAgent,
+		Password:  TestPassword,
+		HostURL:   TestHost,
+		UserAgent: TestUserAgent,
 	}
+}
+
+func GetRandomZoneNameWithSpecialChar() string {
+	return randZoneNamePrefix + "/" + GetRandomString() + "/" + GetRandomString() + randZoneNameWithSpecialCharSuffix
 }
 
 func GetRandomZoneName() string {

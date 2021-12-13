@@ -7,11 +7,10 @@ import (
 
 // Config struct wraps the credential info for the Client.
 type Config struct {
-	Username   string
-	Password   string
-	HostURL    string
-	APIVersion string
-	UserAgent  string
+	Username  string
+	Password  string
+	HostURL   string
+	UserAgent string
 }
 
 // Client struct wraps the http client, config and ultradns api base url.

@@ -19,10 +19,11 @@ const (
 )
 
 var (
-	testPrimaryZoneName = ""
-	testAliasZoneName   = ""
-	testOwnerName       = ""
-	testRRSetKeyA       *rrset.RRSetKey
+	testPrimaryZoneName     = ""
+	testSpecialCharZoneName = ""
+	testAliasZoneName       = ""
+	testOwnerName           = ""
+	testRRSetKeyA           *rrset.RRSetKey
 )
 
 func TestNewSuccess(t *testing.T) {
@@ -426,6 +427,66 @@ func TestDeleteZoneWithNonExistingZone(t *testing.T) {
 
 	if _, er := zoneService.DeleteZone("non-existing-zone"); er.Error() != "error while deleting zone - non-existing-zone : error code : 1801 - error message : Zone does not exist in the system." {
 		t.Fatal(er)
+	}
+}
+
+func TestSpecialCharZoneCreate(t *testing.T) {
+	zoneService, err := zone.Get(test.TestClient)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	testSpecialCharZoneName = test.GetRandomZoneNameWithSpecialChar()
+	zone := getPrimaryZone(testSpecialCharZoneName)
+
+	if _, er := zoneService.CreateZone(zone); er != nil {
+		t.Fatal(er)
+	}
+}
+
+func TestSpecialCharZoneUpdate(t *testing.T) {
+	zoneService, err := zone.Get(test.TestClient)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	zone := getPrimaryZone(testSpecialCharZoneName)
+	zone.PrimaryCreateInfo.RestrictIPList[0].SingleIP = "192.168.1.2"
+
+	if _, er := zoneService.UpdateZone(testSpecialCharZoneName, zone); er != nil {
+		t.Fatal(er)
+	}
+}
+
+func TestSpecialCharZoneRead(t *testing.T) {
+	zoneService, err := zone.Get(test.TestClient)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, zoneRes, er := zoneService.ReadZone(testSpecialCharZoneName)
+
+	if er != nil {
+		t.Fatal(er)
+	}
+
+	if zoneRes != nil && zoneRes.Properties != nil && zoneRes.Properties.Name != testSpecialCharZoneName {
+		t.Fatalf("zone name mismatched expected - %v : found - %v", testSpecialCharZoneName, zoneRes.Properties.Name)
+	}
+}
+
+func TestSpecialCharZoneDelete(t *testing.T) {
+	zoneService, err := zone.Get(test.TestClient)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if _, er := zoneService.DeleteZone(testSpecialCharZoneName); er != nil {
+		t.Errorf("error while deleting special character zone : %s", er)
 	}
 }
 
