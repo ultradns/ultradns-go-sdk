@@ -11,36 +11,54 @@ package main
 
 import (
 	"fmt"
-	
-	"github.com/ultradns/ultradns-go-sdk/ultradns"
+
+	"github.com/ultradns/ultradns-go-sdk/pkg/client"
+	"github.com/ultradns/ultradns-go-sdk/pkg/zone"
 )
 
 func main() {
+	conf := client.Config{
+		Username: "username",
+		Password: "password",
+		HostURL:  "https://ultradns.com",
+	}
 
-    client, err := ultradns.NewClient("username", "password", "hosturl", "version", "client name")
+	client, err := client.NewClient(conf)
+
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	zoneProp := ultradns.ZoneProperties{
+
+	zoneService, err := zone.Get(client)
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	zoneProp := &zone.Properties{
 		Name:        "zone_name",
 		AccountName: "account_name",
 		Type:        "PRIMARY",
 	}
-	primaryZone := ultradns.PrimaryZone{
+
+	primaryZone := &zone.PrimaryZone{
 		CreateType: "NEW",
 	}
-	zone := ultradns.Zone{
-		Properties:        &zoneProp,
-		PrimaryCreateInfo: &primaryZone,
+
+	zone := &zone.Zone{
+		Properties:        zoneProp,
+		PrimaryCreateInfo: primaryZone,
 	}
 
-	res, err := client.CreateZone(zone)
+	res, err := zoneService.CreateZone(zone)
+
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	
+
 	fmt.Println(res.StatusCode)
 }
 ```
