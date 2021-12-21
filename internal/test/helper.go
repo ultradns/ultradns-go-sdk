@@ -2,7 +2,6 @@ package test
 
 import (
 	"crypto/rand"
-	"log"
 	"math/big"
 	"os"
 
@@ -21,20 +20,17 @@ const (
 )
 
 var (
-	TestUsername  = os.Getenv("ULTRADNS_UNIT_TEST_USERNAME")
-	TestPassword  = os.Getenv("ULTRADNS_UNIT_TEST_PASSWORD")
-	TestHost      = os.Getenv("ULTRADNS_UNIT_TEST_HOST_URL")
-	TestUserAgent = os.Getenv("ULTRADNS_UNIT_TEST_USER_AGENT")
-	TestClient    *client.Client
+	TestUsername                 = os.Getenv("ULTRADNS_UNIT_TEST_USERNAME")
+	TestPassword                 = os.Getenv("ULTRADNS_UNIT_TEST_PASSWORD")
+	TestHost                     = os.Getenv("ULTRADNS_UNIT_TEST_HOST_URL")
+	TestUserAgent                = os.Getenv("ULTRADNS_UNIT_TEST_USER_AGENT")
+	TestClient    *client.Client = initializeTestClient()
 )
 
-func init() {
-	client, err := client.NewClient(GetConfig())
-	if err != nil {
-		log.Panicf("unable to initialize test client for testing error : %s", err)
-	}
+func initializeTestClient() *client.Client {
+	client, _ := client.NewClient(GetConfig())
 
-	TestClient = client
+	return client
 }
 
 func GetConfig() client.Config {

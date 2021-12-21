@@ -1,18 +1,10 @@
 package task_test
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/ultradns/ultradns-go-sdk/internal/test"
 	"github.com/ultradns/ultradns-go-sdk/pkg/task"
-	"github.com/ultradns/ultradns-go-sdk/pkg/zone"
-)
-
-const (
-	secondaryZoneType     = "SECONDARY"
-	testSondaryZoneName   = "d100-permission.com."
-	testPrimaryNameServer = "e2e-bind-useast1a01-01.dev.ultradns.net"
 )
 
 func TestNewSuccess(t *testing.T) {
@@ -85,67 +77,5 @@ func TestTaskWaitTimeoutError(t *testing.T) {
 
 	if er := taskService.TaskWait("a", 0, 0); er.Error() != "timeout for checking task status : last returned task status - <nil>" {
 		t.Fatal(er)
-	}
-}
-
-func TestCreateZoneSuccessWithSecondaryZone(t *testing.T) {
-	zoneService, err := zone.Get(test.TestClient)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	zone := getSecondaryZone(testSondaryZoneName, testPrimaryNameServer)
-
-	if _, er := zoneService.CreateZone(zone); er != nil {
-		t.Fatal(er)
-	}
-}
-
-func TestDeleteSecondaryZoneSuccess(t *testing.T) {
-	zoneService, err := zone.Get(test.TestClient)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if _, er := zoneService.DeleteZone(testSondaryZoneName); er != nil {
-		t.Fatal(er)
-	}
-}
-
-func TestCreateZoneFailureWithSecondaryZone(t *testing.T) {
-	zoneService, err := zone.Get(test.TestClient)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	zone := getSecondaryZone("non-existing-zone.com.", "b.com.")
-
-	if _, er := zoneService.CreateZone(zone); !strings.Contains(er.Error(), "ERROR - message : The name server 'b.com.' is not a valid name server for zone 'non-existing-zone.com.'. Please check host name/IP of name server.") {
-		t.Fatal(er)
-	}
-}
-
-func getSecondaryZone(zoneName, primaryNameServerIP string) *zone.Zone {
-	nameServerIP := &zone.NameServer{
-		IP: primaryNameServerIP,
-	}
-	nameServerIPList := &zone.NameServerIPList{
-		NameServerIP1: nameServerIP,
-	}
-
-	primaryNameServer := &zone.PrimaryNameServers{
-		NameServerIPList: nameServerIPList,
-	}
-
-	secondaryZone := &zone.SecondaryZone{
-		PrimaryNameServers: primaryNameServer,
-	}
-
-	return &zone.Zone{
-		Properties:          test.GetZoneProperties(zoneName, secondaryZoneType),
-		SecondaryCreateInfo: secondaryZone,
 	}
 }

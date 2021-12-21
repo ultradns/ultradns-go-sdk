@@ -22,12 +22,11 @@ linters:
     # return the error need not to wrap
     - wrapcheck
 
-    #later check
     - gochecknoglobals
     - bodyclose
     - lll # should reduce line length or configure max length of line
     - noctx
-    - gochecknoinits
+  
 
   fast: false
 

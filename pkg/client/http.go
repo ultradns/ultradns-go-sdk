@@ -4,13 +4,30 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
 )
 
 const (
-	defaultUserAgent = "golang-sdk-v1"
-	contentType      = "application/json"
+	defaultUserAgentPrefix = "golang-sdk-"
+	sdkFile                = ".sdk-version"
+	contentType            = "application/json"
 )
+
+var (
+	defaultUserAgent = getDefaultUserAgent()
+)
+
+func getDefaultUserAgent() string {
+	content, err := ioutil.ReadFile(sdkFile)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return defaultUserAgentPrefix + string(content)
+}
 
 func (c *Client) Do(method, path string, payload, target interface{}) (*http.Response, error) {
 	url := fmt.Sprintf("%s/%s", c.baseURL, path)
