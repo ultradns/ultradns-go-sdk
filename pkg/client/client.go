@@ -3,10 +3,13 @@ package client
 import (
 	"context"
 	"strings"
+	"time"
 
 	"github.com/ultradns/ultradns-go-sdk/internal/token"
 	"golang.org/x/oauth2"
 )
+
+const ctxTimeout = 1
 
 func NewClient(config Config) (client *Client, err error) {
 	client, err = validateClientConfig(config)
@@ -15,7 +18,7 @@ func NewClient(config Config) (client *Client, err error) {
 		return nil, err
 	}
 
-	ctx := context.TODO()
+	ctx, _ := context.WithTimeout(context.Background(), time.Duration(ctxTimeout)*time.Minute)
 	tokenSource := token.TokenSource{
 		Ctx:      ctx,
 		BaseURL:  client.baseURL,
