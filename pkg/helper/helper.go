@@ -27,7 +27,7 @@ func GetOwnerFQDN(name, zone string) string {
 	return GetZoneFQDN(name)
 }
 
-func GetRRTypeFullString(key string) string {
+func GetRecordTypeFullString(key string) string {
 	var rrTypes = map[string]string{
 		"A":         "A (1)",
 		"1":         "A (1)",
