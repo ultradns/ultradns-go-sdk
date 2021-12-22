@@ -42,7 +42,7 @@ func (r RRSetKey) URI() string {
 func (r RRSetKey) ID() string {
 	r.Name = helper.GetOwnerFQDN(r.Name, r.Zone)
 	r.Zone = helper.GetZoneFQDN(r.Zone)
-	r.Type = helper.GetRRTypeFullString(r.Type)
+	r.Type = helper.GetRecordTypeFullString(r.Type)
 
 	return fmt.Sprintf("%s:%s:%s", r.Name, r.Zone, r.Type)
 }
