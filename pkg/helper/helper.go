@@ -69,3 +69,53 @@ func GetRRTypeFullString(key string) string {
 
 	return rrTypes[key]
 }
+
+func GetRecordTypeString(key string) string {
+	var rrTypes = map[string]string{
+		"A (1)":             "A",
+		"NS (2)":            "NS",
+		"CNAME (5)":         "CNAME",
+		"SOA (6)":           "SOA",
+		"PTR (12)":          "PTR",
+		"HINFO (13)":        "HINFO",
+		"MX (15)":           "MX",
+		"TXT (16)":          "TXT",
+		"RP (17)":           "RP",
+		"AAAA (28)":         "AAAA",
+		"SRV (33)":          "SRV",
+		"NAPTR (35)":        "NAPTR",
+		"DS (43)":           "DS",
+		"SSHFP (44)":        "SSHFP",
+		"TLSA (52)":         "TLSA",
+		"SPF (99)":          "SPF",
+		"CAA (257)":         "CAA",
+		"APEXALIAS (65282)": "APEXALIAS",
+	}
+
+	return rrTypes[key]
+}
+
+func GetRecordTypeNumber(key string) string {
+	var rrTypes = map[string]string{
+		"A (1)":             "1",
+		"NS (2)":            "2",
+		"CNAME (5)":         "5",
+		"SOA (6)":           "6",
+		"PTR (12)":          "12",
+		"HINFO (13)":        "13",
+		"MX (15)":           "15",
+		"TXT (16)":          "16",
+		"RP (17)":           "17",
+		"AAAA (28)":         "28",
+		"SRV (33)":          "33",
+		"NAPTR (35)":        "35",
+		"DS (43)":           "43",
+		"SSHFP (44)":        "44",
+		"TLSA (52)":         "52",
+		"SPF (99)":          "99",
+		"CAA (257)":         "257",
+		"APEXALIAS (65282)": "65282",
+	}
+
+	return rrTypes[key]
+}
