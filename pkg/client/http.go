@@ -9,14 +9,9 @@ import (
 	"github.com/ultradns/ultradns-go-sdk/internal/version"
 )
 
-const (
-	defaultUserAgentPrefix = "golang-sdk-"
-	contentType            = "application/json"
-)
+const contentType = "application/json"
 
-var (
-	defaultUserAgent = defaultUserAgentPrefix + version.GetSDKVersion()
-)
+var defaultUserAgent = version.GetSDKVersion()
 
 func (c *Client) Do(method, path string, payload, target interface{}) (*http.Response, error) {
 	url := fmt.Sprintf("%s/%s", c.baseURL, path)
