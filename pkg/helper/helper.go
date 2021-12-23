@@ -20,8 +20,8 @@ func GetZoneFQDN(zoneName string) string {
 }
 
 func GetOwnerFQDN(name, zone string) string {
-	if !strings.Contains(name, zone) {
-		name = AppendRootDot(name) + GetZoneFQDN(zone)
+	if !strings.Contains(GetZoneFQDN(name), zone) {
+		return AppendRootDot(name) + GetZoneFQDN(zone)
 	}
 
 	return GetZoneFQDN(name)

@@ -4,30 +4,19 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"log"
 	"net/http"
+
+	"github.com/ultradns/ultradns-go-sdk/internal/version"
 )
 
 const (
 	defaultUserAgentPrefix = "golang-sdk-"
-	sdkFile                = ".sdk-version"
 	contentType            = "application/json"
 )
 
 var (
-	defaultUserAgent = getDefaultUserAgent()
+	defaultUserAgent = defaultUserAgentPrefix + version.GetSDKVersion()
 )
-
-func getDefaultUserAgent() string {
-	content, err := ioutil.ReadFile(sdkFile)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return defaultUserAgentPrefix + string(content)
-}
 
 func (c *Client) Do(method, path string, payload, target interface{}) (*http.Response, error) {
 	url := fmt.Sprintf("%s/%s", c.baseURL, path)
