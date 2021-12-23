@@ -24,7 +24,7 @@ linters:
 
     - gochecknoglobals
     - bodyclose
-    - lll # should reduce line length or configure max length of line
+    - lll 
     - noctx
   
 
