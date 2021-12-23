@@ -18,7 +18,8 @@ func NewClient(config Config) (client *Client, err error) {
 		return nil, err
 	}
 
-	ctx, _ := context.WithTimeout(context.Background(), time.Duration(ctxTimeout)*time.Minute)
+	ctx, cancelFunc := context.WithTimeout(context.Background(), time.Duration(ctxTimeout)*time.Minute)
+	_ = cancelFunc
 	tokenSource := token.TokenSource{
 		Ctx:      ctx,
 		BaseURL:  client.baseURL,
