@@ -27,5 +27,6 @@ jobs:
           ULTRADNS_UNIT_TEST_PASSWORD: ${{ secrets.ULTRADNS_UNIT_TEST_PASSWORD }}
           ULTRADNS_UNIT_TEST_HOST_URL: ${{ secrets.ULTRADNS_UNIT_TEST_HOST_URL }}
           ULTRADNS_UNIT_TEST_USER_AGENT: ${{ secrets.ULTRADNS_UNIT_TEST_USER_AGENT }}
+          ULTRADNS_UNIT_TEST_OXFR_HOST_URL: ${{ ULTRADNS_UNIT_TEST_OXFR_HOST_URL }}
       - name: Fetch code coverage
         run: go tool cover -func coverage.out
