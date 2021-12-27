@@ -1,10 +1,26 @@
-# ultradns-go-sdk
+# UltraDNS SDK for Go
 
-This is a golang SDK for the UltraDNS REST API.
+ultradns-go-sdk is the official UltraDNS SDK for the Go programming language.<br/>
+Golang-Version : `1.17`
 
-The rest client object should be created with appropiate credentials. Using the client object CRUD operations of ultradns resources can be performed.
+Jump To:
+* [Getting Started](#Getting-Started)
+* [Quick Examples](#Quick-Examples)
 
-## Example
+## Getting Started
+
+### Installing
+
+Use `go get` to retrieve the latest version of SDK to add it to your `GOPATH` workspace.
+
+	go get github.com/ultradns/ultradns-go-sdk@latest
+
+## Quick Examples
+
+### Complete SDK Example
+
+This example shows a complete working Go file which will create a primary zone in UltraDNS. 
+This example highlights how to get services using client and make requests.
 
 ```go
 package main
@@ -59,6 +75,6 @@ func main() {
 		return
 	}
 
-	fmt.Println(res.StatusCode)
+	fmt.Println("Zone Created Successfully")
 }
 ```
