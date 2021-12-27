@@ -26,6 +26,7 @@ This example highlights how to get services using client and make requests.
 package main
 
 import (
+	"flag"
 	"fmt"
 
 	"github.com/ultradns/ultradns-go-sdk/pkg/client"
@@ -33,10 +34,15 @@ import (
 )
 
 func main() {
+	username :=flag.String("ULTRADNS_USERNAME","","username name for UltraDNS rest api")
+	password :=flag.String("ULTRADNS_PASSWORD","","password for UltraDNS rest api")
+	url :=flag.String("ULTRADNS_HOST_URL","","host url for UltraDNS rest api")
+	flag.Parse()
+
 	conf := client.Config{
-		Username: "username",
-		Password: "password",
-		HostURL:  "https://ultradns.com",
+		Username: *username,
+		Password: *password,
+		HostURL:  *url,
 	}
 
 	client, err := client.NewClient(conf)
