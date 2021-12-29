@@ -13,3 +13,9 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+#IDE settings
+.vscode/*
+
+#Testing file for development purpose
+test*.go
