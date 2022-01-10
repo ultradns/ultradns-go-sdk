@@ -12,6 +12,7 @@ import (
 
 const (
 	randStringLength                  = 5
+	randSecondaryZoneCount            = 50
 	randStringSet                     = "abcdefghijklmnopqrstuvwxyz012346789"
 	randZoneNamePrefix                = "sdk-go-test-"
 	randZoneNameSuffix                = ".com."
@@ -20,11 +21,12 @@ const (
 )
 
 var (
-	TestUsername                 = os.Getenv("ULTRADNS_UNIT_TEST_USERNAME")
-	TestPassword                 = os.Getenv("ULTRADNS_UNIT_TEST_PASSWORD")
-	TestHost                     = os.Getenv("ULTRADNS_UNIT_TEST_HOST_URL")
-	TestUserAgent                = os.Getenv("ULTRADNS_UNIT_TEST_USER_AGENT")
-	TestClient    *client.Client = initializeTestClient()
+	TestUsername                         = os.Getenv("ULTRADNS_UNIT_TEST_USERNAME")
+	TestPassword                         = os.Getenv("ULTRADNS_UNIT_TEST_PASSWORD")
+	TestHost                             = os.Getenv("ULTRADNS_UNIT_TEST_HOST_URL")
+	TestUserAgent                        = os.Getenv("ULTRADNS_UNIT_TEST_USER_AGENT")
+	TestPrimaryNameServer                = os.Getenv("ULTRADNS_UNIT_TEST_NAME_SERVER")
+	TestClient            *client.Client = initializeTestClient()
 )
 
 func initializeTestClient() *client.Client {
@@ -48,6 +50,14 @@ func GetRandomZoneNameWithSpecialChar() string {
 
 func GetRandomZoneName() string {
 	return randZoneNamePrefix + GetRandomString() + randZoneNameSuffix
+}
+
+func GetRandomSecondaryZoneName() string {
+	if num, err := rand.Int(rand.Reader, big.NewInt(randSecondaryZoneCount)); err == nil {
+		return randZoneNamePrefix + num.String() + randZoneNameSuffix
+	}
+
+	return randZoneNamePrefix + "0" + randZoneNameSuffix
 }
 
 func GetRandomString() string {

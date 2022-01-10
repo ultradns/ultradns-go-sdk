@@ -5,6 +5,15 @@ import (
 
 	"github.com/ultradns/ultradns-go-sdk/internal/test"
 	"github.com/ultradns/ultradns-go-sdk/pkg/task"
+	"github.com/ultradns/ultradns-go-sdk/pkg/zone"
+)
+
+const (
+	secondaryZoneType = "SECONDARY"
+)
+
+var (
+	testSondaryZoneName = test.GetRandomSecondaryZoneName()
 )
 
 func TestNewSuccess(t *testing.T) {
@@ -77,5 +86,53 @@ func TestTaskWaitTimeoutError(t *testing.T) {
 
 	if er := taskService.TaskWait("a", 0, 0); er.Error() != "timeout for checking task status : last returned task status - <nil>" {
 		t.Fatal(er)
+	}
+}
+
+func TestCreateZoneSuccessWithSecondaryZone(t *testing.T) {
+	zoneService, err := zone.Get(test.TestClient)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	zone := getSecondaryZone()
+
+	if _, er := zoneService.CreateZone(zone); er != nil {
+		t.Fatal(er)
+	}
+}
+
+func TestDeleteSecondaryZoneSuccess(t *testing.T) {
+	zoneService, err := zone.Get(test.TestClient)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if _, er := zoneService.DeleteZone(testSondaryZoneName); er != nil {
+		t.Fatal(er)
+	}
+}
+
+func getSecondaryZone() *zone.Zone {
+	nameServerIP := &zone.NameServer{
+		IP: test.TestPrimaryNameServer,
+	}
+	nameServerIPList := &zone.NameServerIPList{
+		NameServerIP1: nameServerIP,
+	}
+
+	primaryNameServer := &zone.PrimaryNameServers{
+		NameServerIPList: nameServerIPList,
+	}
+
+	secondaryZone := &zone.SecondaryZone{
+		PrimaryNameServers: primaryNameServer,
+	}
+
+	return &zone.Zone{
+		Properties:          test.GetZoneProperties(testSondaryZoneName, secondaryZoneType),
+		SecondaryCreateInfo: secondaryZone,
 	}
 }
