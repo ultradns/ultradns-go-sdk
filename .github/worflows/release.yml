@@ -2,7 +2,7 @@ name: Release_Workflow
 on: 
   push:
     branches:
-      - master
+      - main
 jobs:
   Release_Job:
     runs-on: ubuntu-latest

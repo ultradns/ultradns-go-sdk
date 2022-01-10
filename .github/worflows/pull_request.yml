@@ -2,7 +2,7 @@ name: Code_Analysis
 on: 
   pull_request:
     branches:
-      - master
+      - main
 jobs:
   Code_Analyze_Job:
     runs-on: ubuntu-latest
