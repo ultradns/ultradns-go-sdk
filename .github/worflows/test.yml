@@ -2,7 +2,7 @@ name: Test_Workflow
 on: 
   push:
     branches:
-      - 'config/workflow'
+      - 'config*'
 jobs:
   Code_Analysis_Job:
     runs-on: ubuntu-latest
