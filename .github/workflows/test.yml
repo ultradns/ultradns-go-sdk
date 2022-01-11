@@ -4,7 +4,7 @@ on:
     branches:
       - 'config/workflow'
 jobs:
-  Code_Analysis_Job:
+  Code_Analysis_Job1:
     runs-on: ubuntu-latest
     environment: test
     steps:
