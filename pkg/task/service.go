@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/ultradns/ultradns-go-sdk/pkg/client"
+	"github.com/ultradns/ultradns-go-sdk/pkg/helper"
 )
 
 const (
@@ -19,7 +20,7 @@ type Service struct {
 func New(cnf client.Config) (*Service, error) {
 	c, err := client.NewClient(cnf)
 	if err != nil {
-		return nil, client.ServiceConfigError(serviceName, err)
+		return nil, helper.ServiceConfigError(serviceName, err)
 	}
 
 	return &Service{c}, nil
@@ -27,7 +28,7 @@ func New(cnf client.Config) (*Service, error) {
 
 func Get(c *client.Client) (*Service, error) {
 	if c == nil {
-		return nil, client.ServiceError(serviceName)
+		return nil, helper.ServiceError(serviceName)
 	}
 
 	return &Service{c}, nil
@@ -37,7 +38,7 @@ func (s *Service) GetTaskStatus(taskID string) (*http.Response, *Task, error) {
 	target := client.Target(&Task{})
 
 	if s.c == nil {
-		return nil, nil, client.ServiceError(serviceName)
+		return nil, nil, helper.ServiceError(serviceName)
 	}
 
 	res, err := s.c.Do(http.MethodGet, basePath+taskID, nil, target)
