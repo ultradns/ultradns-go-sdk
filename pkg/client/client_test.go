@@ -3,12 +3,12 @@ package client_test
 import (
 	"testing"
 
-	"github.com/ultradns/ultradns-go-sdk/internal/test"
+	"github.com/ultradns/ultradns-go-sdk/internal/test/integration"
 	"github.com/ultradns/ultradns-go-sdk/pkg/client"
 )
 
 func TestNewClientWithCredentials(t *testing.T) {
-	conf := test.GetConfig()
+	conf := integration.GetConfig()
 
 	if _, err := client.NewClient(conf); err != nil {
 		t.Error(err)
@@ -16,7 +16,7 @@ func TestNewClientWithCredentials(t *testing.T) {
 }
 
 func TestNewClientWithoutUsername(t *testing.T) {
-	conf := test.GetConfig()
+	conf := integration.GetConfig()
 	conf.Username = ""
 
 	if _, err := client.NewClient(conf); err.Error() != "config validation failure: username is missing" {
@@ -25,7 +25,7 @@ func TestNewClientWithoutUsername(t *testing.T) {
 }
 
 func TestNewClientWithoutPassword(t *testing.T) {
-	conf := test.GetConfig()
+	conf := integration.GetConfig()
 	conf.Password = ""
 
 	if _, err := client.NewClient(conf); err.Error() != "config validation failure: password is missing" {
@@ -34,7 +34,7 @@ func TestNewClientWithoutPassword(t *testing.T) {
 }
 
 func TestNewClientWithoutHost(t *testing.T) {
-	conf := test.GetConfig()
+	conf := integration.GetConfig()
 	conf.HostURL = ""
 
 	if _, err := client.NewClient(conf); err.Error() != "config validation failure: host url is missing" {

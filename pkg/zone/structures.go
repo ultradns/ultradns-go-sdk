@@ -2,6 +2,12 @@ package zone
 
 import "github.com/ultradns/ultradns-go-sdk/pkg/helper"
 
+const (
+	Primary   = "PRIMARY"
+	Secondary = "SECONDARY"
+	Alias     = "ALIAS"
+)
+
 // Zone wraps the structure of zone.
 type Zone struct {
 	Properties          *Properties    `json:"properties,omitempty"`

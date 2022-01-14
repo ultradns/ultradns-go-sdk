@@ -15,7 +15,7 @@ const contentType = "application/json"
 
 var (
 	defaultUserAgent = version.GetSDKVersion()
-	errResponse      = errors.New("error response : ")
+	errResponse      = errors.New("error from api response -")
 )
 
 func (c *Client) Do(method, path string, payload, target interface{}) (*http.Response, error) {

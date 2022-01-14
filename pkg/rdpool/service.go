@@ -93,7 +93,13 @@ func (s *Service) PartialUpdateRDPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRS
 }
 
 func (s *Service) ReadRDPool(rrSetKey *rrset.RRSetKey) (*http.Response, *rrset.ResponseList, error) {
-	target := client.Target(&rrset.ResponseList{})
+	rdPoolRRSet := &rrset.RRSet{
+		Profile: &Profile{},
+	}
+	rdPoolResList := &rrset.ResponseList{}
+	rdPoolResList.RRSets = make([]*rrset.RRSet, 1)
+	rdPoolResList.RRSets[0] = rdPoolRRSet
+	target := client.Target(rdPoolResList)
 
 	if s.c == nil {
 		return nil, nil, helper.ServiceError(serviceName)

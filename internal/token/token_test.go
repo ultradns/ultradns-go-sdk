@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ultradns/ultradns-go-sdk/internal/test"
+	"github.com/ultradns/ultradns-go-sdk/internal/test/integration"
 	"github.com/ultradns/ultradns-go-sdk/internal/token"
 	"golang.org/x/oauth2"
 )
@@ -65,8 +65,8 @@ func TestTokenFailureWithRefreshTokenFailure(t *testing.T) {
 func getTokenSource() *token.TokenSource {
 	return &token.TokenSource{
 		Ctx:      context.TODO(),
-		Username: test.TestUsername,
-		Password: test.TestPassword,
-		BaseURL:  test.TestHost,
+		Username: integration.TestUsername,
+		Password: integration.TestPassword,
+		BaseURL:  integration.TestHost,
 	}
 }

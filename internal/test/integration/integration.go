@@ -1,4 +1,4 @@
-package test
+package integration
 
 import (
 	"crypto/rand"
@@ -14,10 +14,12 @@ const (
 	randStringLength                  = 5
 	randSecondaryZoneCount            = 50
 	randStringSet                     = "abcdefghijklmnopqrstuvwxyz012346789"
-	randZoneNamePrefix                = "sdk-go-test-"
+	randZoneNamePrefix                = "golang-sdk-unit-test-"
 	randZoneNameSuffix                = ".com."
 	randZoneNameWithSpecialCharSuffix = ".in-addr.arpa."
-	recordTypeA                       = "A"
+	testRestrictIP                    = "192.168.1.1"
+	testNotifyIP                      = "192.168.1.11"
+	testPrimaryZoneCreateType         = "NEW"
 )
 
 var (
@@ -44,10 +46,6 @@ func GetConfig() client.Config {
 	}
 }
 
-func GetRandomZoneNameWithSpecialChar() string {
-	return randZoneNamePrefix + "/" + GetRandomString() + "/" + GetRandomString() + randZoneNameWithSpecialCharSuffix
-}
-
 func GetRandomZoneName() string {
 	return randZoneNamePrefix + GetRandomString() + randZoneNameSuffix
 }
@@ -58,6 +56,10 @@ func GetRandomSecondaryZoneName() string {
 	}
 
 	return randZoneNamePrefix + "0" + randZoneNameSuffix
+}
+
+func GetRandomZoneNameWithSpecialChar() string {
+	return randZoneNamePrefix + "/" + GetRandomString() + "/" + GetRandomString() + randZoneNameWithSpecialCharSuffix
 }
 
 func GetRandomString() string {
@@ -85,18 +87,62 @@ func GetZoneProperties(zoneName, zoneType string) *zone.Properties {
 	}
 }
 
+func GetPrimaryZone(zoneName string) *zone.Zone {
+	restrictIP := &zone.RestrictIP{
+		SingleIP: testRestrictIP,
+	}
+	notifyAddress := &zone.NotifyAddress{
+		NotifyAddress: testNotifyIP,
+	}
+	primaryZone := &zone.PrimaryZone{
+		CreateType:      testPrimaryZoneCreateType,
+		RestrictIPList:  []*zone.RestrictIP{restrictIP},
+		NotifyAddresses: []*zone.NotifyAddress{notifyAddress},
+	}
+
+	return &zone.Zone{
+		Properties:        GetZoneProperties(zoneName, zone.Primary),
+		PrimaryCreateInfo: primaryZone,
+	}
+}
+
+func GetSecondaryZone(zoneName string) *zone.Zone {
+	nameServerIP := &zone.NameServer{
+		IP: TestPrimaryNameServer,
+	}
+	nameServerIPList := &zone.NameServerIPList{
+		NameServerIP1: nameServerIP,
+	}
+
+	primaryNameServer := &zone.PrimaryNameServers{
+		NameServerIPList: nameServerIPList,
+	}
+
+	secondaryZone := &zone.SecondaryZone{
+		PrimaryNameServers: primaryNameServer,
+	}
+
+	return &zone.Zone{
+		Properties:          GetZoneProperties(zoneName, zone.Secondary),
+		SecondaryCreateInfo: secondaryZone,
+	}
+}
+
+func GetAliasZone(alias, primary string) *zone.Zone {
+	aliasZone := &zone.AliasZone{
+		OriginalZoneName: primary,
+	}
+
+	return &zone.Zone{
+		Properties:      GetZoneProperties(alias, zone.Alias),
+		AliasCreateInfo: aliasZone,
+	}
+}
+
 func GetRRSetKey(ownerName, zoneName, recordType string) *rrset.RRSetKey {
 	return &rrset.RRSetKey{
 		Name: ownerName,
 		Zone: zoneName,
 		Type: recordType,
-	}
-}
-
-func GetRRSetTypeA(ownerName string) *rrset.RRSet {
-	return &rrset.RRSet{
-		OwnerName: ownerName,
-		RRType:    recordTypeA,
-		RData:     []string{"192.168.1.1"},
 	}
 }
