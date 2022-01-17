@@ -36,10 +36,11 @@ func (c *Client) Do(method, path string, payload, target interface{}) (*http.Res
 		return nil, err
 	}
 
+	userAgent := defaultUserAgent + ";" + c.userAgent
+
 	req.Header.Set("Content-Type", contentType)
 	req.Header.Add("Accept", contentType)
-	req.Header.Add("User-Agent", defaultUserAgent)
-	req.Header.Add("User-Agent", c.userAgent)
+	req.Header.Add("User-Agent", userAgent)
 
 	res, err := c.httpClient.Do(req)
 
