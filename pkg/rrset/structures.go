@@ -3,6 +3,7 @@ package rrset
 import (
 	"fmt"
 	"net/url"
+	"strings"
 
 	"github.com/ultradns/ultradns-go-sdk/pkg/helper"
 )
@@ -49,4 +50,17 @@ func (r RRSetKey) ID() string {
 	r.Type = helper.GetRecordTypeFullString(r.Type)
 
 	return fmt.Sprintf("%s:%s:%s", r.Name, r.Zone, r.Type)
+}
+
+func GetRRSetKeyFromID(id string) *RRSetKey {
+	rrSetKeyData := &RRSetKey{}
+	splitStringData := strings.Split(id, ":")
+
+	if len(splitStringData) == 3 {
+		rrSetKeyData.Name = splitStringData[0]
+		rrSetKeyData.Zone = splitStringData[1]
+		rrSetKeyData.Type = helper.GetRecordTypeString(splitStringData[2])
+	}
+
+	return rrSetKeyData
 }
