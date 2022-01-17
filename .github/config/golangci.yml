@@ -34,3 +34,4 @@ issues:
   exclude:
     - type name will be used as rrset.RRsetKey.*$
     - type name will be used as token.TokenSource.*$
+    - .*subtests should call t.Parallel$
