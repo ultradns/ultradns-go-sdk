@@ -1,6 +1,7 @@
-package record
+package rdpool
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/ultradns/ultradns-go-sdk/pkg/client"
@@ -8,7 +9,10 @@ import (
 	"github.com/ultradns/ultradns-go-sdk/pkg/rrset"
 )
 
-const serviceName = "Record"
+const (
+	serviceName = "RD-Pool"
+	profileType = "*rdpool.Profile"
+)
 
 type Service struct {
 	c *client.Client
@@ -32,11 +36,15 @@ func Get(c *client.Client) (*Service, error) {
 	return &Service{c}, nil
 }
 
-func (s *Service) CreateRecord(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*http.Response, error) {
+func (s *Service) CreateRDPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*http.Response, error) {
 	target := client.Target(&client.SuccessResponse{})
 
 	if s.c == nil {
 		return nil, helper.ServiceError(serviceName)
+	}
+
+	if err := validateRDPoolProfile(rrSet); err != nil {
+		return nil, err
 	}
 
 	res, err := s.c.Do(http.MethodPost, rrSetKey.URI(), rrSet, target)
@@ -48,11 +56,15 @@ func (s *Service) CreateRecord(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*h
 	return res, nil
 }
 
-func (s *Service) UpdateRecord(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*http.Response, error) {
+func (s *Service) UpdateRDPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*http.Response, error) {
 	target := client.Target(&client.SuccessResponse{})
 
 	if s.c == nil {
 		return nil, helper.ServiceError(serviceName)
+	}
+
+	if err := validateRDPoolProfile(rrSet); err != nil {
+		return nil, err
 	}
 
 	res, err := s.c.Do(http.MethodPut, rrSetKey.URI(), rrSet, target)
@@ -64,7 +76,7 @@ func (s *Service) UpdateRecord(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*h
 	return res, nil
 }
 
-func (s *Service) PartialUpdateRecord(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*http.Response, error) {
+func (s *Service) PartialUpdateRDPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*http.Response, error) {
 	target := client.Target(&client.SuccessResponse{})
 
 	if s.c == nil {
@@ -80,8 +92,14 @@ func (s *Service) PartialUpdateRecord(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRS
 	return res, nil
 }
 
-func (s *Service) ReadRecord(rrSetKey *rrset.RRSetKey) (*http.Response, *rrset.ResponseList, error) {
-	target := client.Target(&rrset.ResponseList{})
+func (s *Service) ReadRDPool(rrSetKey *rrset.RRSetKey) (*http.Response, *rrset.ResponseList, error) {
+	rdPoolRRSet := &rrset.RRSet{
+		Profile: &Profile{},
+	}
+	rdPoolResList := &rrset.ResponseList{}
+	rdPoolResList.RRSets = make([]*rrset.RRSet, 1)
+	rdPoolResList.RRSets[0] = rdPoolRRSet
+	target := client.Target(rdPoolResList)
 
 	if s.c == nil {
 		return nil, nil, helper.ServiceError(serviceName)
@@ -98,7 +116,7 @@ func (s *Service) ReadRecord(rrSetKey *rrset.RRSetKey) (*http.Response, *rrset.R
 	return res, rrsetList, nil
 }
 
-func (s *Service) DeleteRecord(rrSetKey *rrset.RRSetKey) (*http.Response, error) {
+func (s *Service) DeleteRDPool(rrSetKey *rrset.RRSetKey) (*http.Response, error) {
 	target := client.Target(&client.SuccessResponse{})
 
 	if s.c == nil {
@@ -112,4 +130,36 @@ func (s *Service) DeleteRecord(rrSetKey *rrset.RRSetKey) (*http.Response, error)
 	}
 
 	return res, nil
+}
+
+func validateRDPoolProfile(rrSet *rrset.RRSet) error {
+	ptrProfileType := fmt.Sprintf("%T", rrSet.Profile)
+
+	if ptrProfileType != profileType {
+		return helper.TypeMismatchError(profileType, ptrProfileType)
+	}
+
+	rrSet.Profile.SetContext()
+
+	rdProfile := rrSet.Profile.(*Profile)
+
+	if !isRDPoolOrderValid(rdProfile.Order) {
+		list := []string{"FIXED", "RANDOM", "ROUND_ROBIN"}
+
+		return helper.UnknownDataError("RD-Pool order", rdProfile.Order, list)
+	}
+
+	return nil
+}
+
+func isRDPoolOrderValid(order string) bool {
+	var rdPoolOrders = map[string]bool{
+		"FIXED":       true,
+		"RANDOM":      true,
+		"ROUND_ROBIN": true,
+	}
+
+	_, ok := rdPoolOrders[order]
+
+	return ok
 }

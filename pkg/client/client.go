@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/ultradns/ultradns-go-sdk/internal/token"
+	"github.com/ultradns/ultradns-go-sdk/pkg/helper"
 	"golang.org/x/oauth2"
 )
 
@@ -33,15 +34,15 @@ func NewClient(config Config) (client *Client, err error) {
 
 func validateClientConfig(config Config) (*Client, error) {
 	if ok := validateParameter(config.Username); !ok {
-		return nil, ConfigError("username")
+		return nil, helper.ValidationError("username")
 	}
 
 	if ok := validateParameter(config.Password); !ok {
-		return nil, ConfigError("password")
+		return nil, helper.ValidationError("password")
 	}
 
 	if ok := validateParameter(config.HostURL); !ok {
-		return nil, ConfigError("host url")
+		return nil, helper.ValidationError("host url")
 	}
 
 	hostURL := strings.TrimSuffix(config.HostURL, "/")

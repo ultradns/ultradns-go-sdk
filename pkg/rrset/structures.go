@@ -8,17 +8,21 @@ import (
 )
 
 type RRSet struct {
-	OwnerName string      `json:"ownerName,omitempty"`
-	RRType    string      `json:"rrtype,omitempty"`
-	TTL       int         `json:"ttl,omitempty"`
-	RData     []string    `json:"rdata,omitempty"`
-	Profile   interface{} `json:"profile,omitempty"`
+	OwnerName string     `json:"ownerName,omitempty"`
+	RRType    string     `json:"rrtype,omitempty"`
+	TTL       int        `json:"ttl,omitempty"`
+	RData     []string   `json:"rdata,omitempty"`
+	Profile   RawProfile `json:"profile,omitempty"`
 }
 
 type RRSetKey struct {
 	Zone string
 	Type string
 	Name string
+}
+
+type RawProfile interface {
+	SetContext()
 }
 
 type ResponseList struct {

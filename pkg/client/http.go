@@ -3,15 +3,20 @@ package client
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
 	"github.com/ultradns/ultradns-go-sdk/internal/version"
+	"github.com/ultradns/ultradns-go-sdk/pkg/helper"
 )
 
 const contentType = "application/json"
 
-var defaultUserAgent = version.GetSDKVersion()
+var (
+	defaultUserAgent = version.GetSDKVersion()
+	errResponse      = errors.New("error from api response -")
+)
 
 func (c *Client) Do(method, path string, payload, target interface{}) (*http.Response, error) {
 	url := fmt.Sprintf("%s/%s", c.baseURL, path)
@@ -31,10 +36,11 @@ func (c *Client) Do(method, path string, payload, target interface{}) (*http.Res
 		return nil, err
 	}
 
+	userAgent := defaultUserAgent + ";" + c.userAgent
+
 	req.Header.Set("Content-Type", contentType)
 	req.Header.Add("Accept", contentType)
-	req.Header.Add("User-Agent", defaultUserAgent)
-	req.Header.Add("User-Agent", c.userAgent)
+	req.Header.Add("User-Agent", userAgent)
 
 	res, err := c.httpClient.Do(req)
 
@@ -55,13 +61,13 @@ func (c *Client) Do(method, path string, payload, target interface{}) (*http.Res
 
 func validateResponse(res *http.Response, t interface{}) error {
 	if t == nil {
-		return ResponseTargetError("<nil>")
+		return helper.ResponseTargetError("<nil>")
 	}
 
 	target, ok := t.(*Response)
 
 	if !ok {
-		return ResponseTargetError(fmt.Sprintf("%T", target))
+		return helper.ResponseTargetError(fmt.Sprintf("%T", target))
 	}
 
 	if res.StatusCode >= http.StatusOK && res.StatusCode < http.StatusMultipleChoices {
@@ -81,7 +87,7 @@ func validateResponse(res *http.Response, t interface{}) error {
 			return err
 		}
 
-		return ResponseError(target.Error)
+		return fmt.Errorf("%w %s", errResponse, target.Error[0])
 	}
 
 	return nil

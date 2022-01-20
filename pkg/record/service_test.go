@@ -3,15 +3,21 @@ package record_test
 import (
 	"testing"
 
-	"github.com/ultradns/ultradns-go-sdk/internal/test"
+	"github.com/ultradns/ultradns-go-sdk/internal/test/integration"
 	"github.com/ultradns/ultradns-go-sdk/pkg/record"
 	"github.com/ultradns/ultradns-go-sdk/pkg/rrset"
 )
 
 const serviceErrorString = "Record service is not properly configured"
 
+var testRRSetKey = &rrset.RRSetKey{
+	Name: "www",
+	Zone: "non-existing-zone.com.",
+	Type: "A",
+}
+
 func TestNewSuccess(t *testing.T) {
-	conf := test.GetConfig()
+	conf := integration.GetConfig()
 
 	if _, err := record.New(conf); err != nil {
 		t.Fatal(err)
@@ -19,16 +25,10 @@ func TestNewSuccess(t *testing.T) {
 }
 
 func TestNewError(t *testing.T) {
-	conf := test.GetConfig()
+	conf := integration.GetConfig()
 	conf.Password = ""
 
 	if _, err := record.New(conf); err.Error() != "config error while creating Record service : config validation failure: password is missing" {
-		t.Fatal(err)
-	}
-}
-
-func TestGetSuccess(t *testing.T) {
-	if _, err := record.Get(test.TestClient); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -78,15 +78,85 @@ func TestDeleteRecordWithConfigError(t *testing.T) {
 	}
 }
 
+func TestCreateRecordFailure(t *testing.T) {
+	recordService, err := record.Get(integration.TestClient)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if _, er := recordService.CreateRecord(testRRSetKey, &rrset.RRSet{}); er.Error() != "error while creating Record - www.non-existing-zone.com.:non-existing-zone.com.:A (1) : error from api response - error code : 70005 - error message : At least one field must be specified: rdata or profile" {
+		t.Fatal(er)
+	}
+}
+
+func TestUpdateRecordFailure(t *testing.T) {
+	recordService, err := record.Get(integration.TestClient)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if _, er := recordService.UpdateRecord(testRRSetKey, &rrset.RRSet{}); er.Error() != "error while updating Record - www.non-existing-zone.com.:non-existing-zone.com.:A (1) : error from api response - error code : 70005 - error message : At least one field must be specified: rdata or profile" {
+		t.Fatal(er)
+	}
+}
+
+func TestPartialUpdateRecordFailure(t *testing.T) {
+	recordService, err := record.Get(integration.TestClient)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if _, er := recordService.PartialUpdateRecord(testRRSetKey, &rrset.RRSet{}); er.Error() != "error while partial updating Record - www.non-existing-zone.com.:non-existing-zone.com.:A (1) : error from api response - error code : 1801 - error message : Zone does not exist in the system." {
+		t.Fatal(er)
+	}
+}
+
+func TestReadRecordFailure(t *testing.T) {
+	recordService, err := record.Get(integration.TestClient)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if _, _, er := recordService.ReadRecord(testRRSetKey); er.Error() != "error while reading Record - www.non-existing-zone.com.:non-existing-zone.com.:A (1) : error from api response - error code : 1801 - error message : Zone does not exist in the system." {
+		t.Fatal(er)
+	}
+}
+
+func TestDeleteRecordFailure(t *testing.T) {
+	recordService, err := record.Get(integration.TestClient)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if _, er := recordService.DeleteRecord(testRRSetKey); er.Error() != "error while deleting Record - www.non-existing-zone.com.:non-existing-zone.com.:A (1) : error from api response - error code : 1801 - error message : Zone does not exist in the system." {
+		t.Fatal(er)
+	}
+}
+
 func TestRRSetKeyURI(t *testing.T) {
 	rrSetKey := rrset.RRSetKey{
 		Zone: "a",
 		Name: "b",
 	}
 
-	expectedURI := "zones/a/rrsets/ANY/b"
-
-	if foundURI := rrSetKey.URI(); expectedURI != foundURI {
+	if expectedURI, foundURI := "zones/a/rrsets/ANY/b", rrSetKey.URI(); expectedURI != foundURI {
 		t.Fatalf("uri mismatched expected - %s : found - %s", expectedURI, foundURI)
+	}
+}
+
+func TestRRSetKeyID(t *testing.T) {
+	rrSetKey := rrset.RRSetKey{
+		Zone: "example.com",
+		Name: "www",
+		Type: "A",
+	}
+
+	if expectedID, foundID := "www.example.com.:example.com.:A (1)", rrSetKey.ID(); expectedID != foundID {
+		t.Fatalf("rrset id mismatched expected - %s : found - %s", expectedID, foundID)
 	}
 }
