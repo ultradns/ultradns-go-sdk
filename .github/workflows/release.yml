@@ -70,7 +70,7 @@ jobs:
         run: echo "RELEASE_VERSION=${{ env.SDK_VERSION }}-${{ env.CURRENT_TIME }}-${{ env.COMMIT_ID }}" >> $GITHUB_ENV
       -
         name: Update release version using go generate
-        run: go generate internal/version
+        run: go generate ./internal/version
       - 
         name: Setup git config for creating Tag
         run: |
