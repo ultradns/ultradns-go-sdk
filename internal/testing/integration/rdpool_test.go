@@ -3,7 +3,7 @@ package integration_test
 import (
 	"testing"
 
-	"github.com/ultradns/ultradns-go-sdk/internal/test/integration"
+	"github.com/ultradns/ultradns-go-sdk/internal/testing/integration"
 	"github.com/ultradns/ultradns-go-sdk/pkg/rdpool"
 	"github.com/ultradns/ultradns-go-sdk/pkg/rrset"
 )
@@ -20,7 +20,7 @@ func TestRDPoolResources(t *testing.T) {
 			it.Test = st
 			it.CreatePrimaryZone(zoneName)
 		})
-	t.Run("TestCreateRDPoolResource",
+	t.Run("TestCreateRDPoolResourceTypeA",
 		func(st *testing.T) {
 			it.Test = st
 			it.CreateRDPoolTypeA(ownerName, zoneName)
