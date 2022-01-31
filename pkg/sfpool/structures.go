@@ -1,5 +1,7 @@
 package sfpool
 
+import "github.com/ultradns/ultradns-go-sdk/pkg/pool"
+
 const schema = "http://schemas.ultradns.com/SFPool.jsonschema"
 
 type Profile struct {
@@ -10,19 +12,12 @@ type Profile struct {
 	RegionFailureSensitivity string        `json:"regionFailureSensitivity,omitempty"`
 	Status                   string        `json:"status,omitempty"`
 	BackupRecord             *BackupRecord `json:"backupRecord,omitempty"`
-	Monitor                  *Monitor      `json:"monitor,omitempty"`
+	Monitor                  *pool.Monitor `json:"monitor,omitempty"`
 }
 
 type BackupRecord struct {
 	RData       string `json:"rdata,omitempty"`
 	Description string `json:"description,omitempty"`
-}
-
-type Monitor struct {
-	Method          string `json:"method,omitempty"`
-	URL             string `json:"url,omitempty"`
-	TransmittedData string `json:"transmittedData,omitempty"`
-	SearchString    string `json:"searchString,omitempty"`
 }
 
 func (profile *Profile) SetContext() {

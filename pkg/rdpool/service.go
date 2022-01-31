@@ -1,11 +1,11 @@
 package rdpool
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/ultradns/ultradns-go-sdk/pkg/client"
 	"github.com/ultradns/ultradns-go-sdk/pkg/helper"
+	"github.com/ultradns/ultradns-go-sdk/pkg/pool"
 	"github.com/ultradns/ultradns-go-sdk/pkg/rrset"
 )
 
@@ -133,13 +133,9 @@ func (s *Service) DeleteRDPool(rrSetKey *rrset.RRSetKey) (*http.Response, error)
 }
 
 func validateRDPoolProfile(rrSet *rrset.RRSet) error {
-	ptrProfileType := fmt.Sprintf("%T", rrSet.Profile)
-
-	if ptrProfileType != profileType {
-		return helper.TypeMismatchError(profileType, ptrProfileType)
+	if err := pool.ValidatePoolProfile(profileType, rrSet); err != nil {
+		return err
 	}
-
-	rrSet.Profile.SetContext()
 
 	rdProfile := rrSet.Profile.(*Profile)
 

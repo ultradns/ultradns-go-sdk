@@ -1,4 +1,4 @@
-package sfpool
+package slbpool
 
 import (
 	"net/http"
@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	serviceName = "SF-Pool"
-	profileType = "*sfpool.Profile"
+	serviceName = "SLB-Pool"
+	profileType = "*slbpool.Profile"
 )
 
 type Service struct {
@@ -36,14 +36,14 @@ func Get(c *client.Client) (*Service, error) {
 	return &Service{c}, nil
 }
 
-func (s *Service) CreateSFPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*http.Response, error) {
+func (s *Service) CreateSLBPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*http.Response, error) {
 	target := client.Target(&client.SuccessResponse{})
 
 	if s.c == nil {
 		return nil, helper.ServiceError(serviceName)
 	}
 
-	if err := validateSFPoolProfile(rrSet); err != nil {
+	if err := validateSLBPoolProfile(rrSet); err != nil {
 		return nil, err
 	}
 
@@ -56,14 +56,14 @@ func (s *Service) CreateSFPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*h
 	return res, nil
 }
 
-func (s *Service) UpdateSFPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*http.Response, error) {
+func (s *Service) UpdateSLBPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*http.Response, error) {
 	target := client.Target(&client.SuccessResponse{})
 
 	if s.c == nil {
 		return nil, helper.ServiceError(serviceName)
 	}
 
-	if err := validateSFPoolProfile(rrSet); err != nil {
+	if err := validateSLBPoolProfile(rrSet); err != nil {
 		return nil, err
 	}
 
@@ -76,7 +76,7 @@ func (s *Service) UpdateSFPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*h
 	return res, nil
 }
 
-func (s *Service) PartialUpdateSFPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*http.Response, error) {
+func (s *Service) PartialUpdateSLBPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*http.Response, error) {
 	target := client.Target(&client.SuccessResponse{})
 
 	if s.c == nil {
@@ -92,14 +92,14 @@ func (s *Service) PartialUpdateSFPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRS
 	return res, nil
 }
 
-func (s *Service) ReadSFPool(rrSetKey *rrset.RRSetKey) (*http.Response, *rrset.ResponseList, error) {
-	sfPoolRRSet := &rrset.RRSet{
+func (s *Service) ReadSLBPool(rrSetKey *rrset.RRSetKey) (*http.Response, *rrset.ResponseList, error) {
+	slbPoolRRSet := &rrset.RRSet{
 		Profile: &Profile{},
 	}
-	sfPoolResList := &rrset.ResponseList{}
-	sfPoolResList.RRSets = make([]*rrset.RRSet, 1)
-	sfPoolResList.RRSets[0] = sfPoolRRSet
-	target := client.Target(sfPoolResList)
+	slbPoolResList := &rrset.ResponseList{}
+	slbPoolResList.RRSets = make([]*rrset.RRSet, 1)
+	slbPoolResList.RRSets[0] = slbPoolRRSet
+	target := client.Target(slbPoolResList)
 
 	if s.c == nil {
 		return nil, nil, helper.ServiceError(serviceName)
@@ -116,7 +116,7 @@ func (s *Service) ReadSFPool(rrSetKey *rrset.RRSetKey) (*http.Response, *rrset.R
 	return res, rrsetList, nil
 }
 
-func (s *Service) DeleteSFPool(rrSetKey *rrset.RRSetKey) (*http.Response, error) {
+func (s *Service) DeleteSLBPool(rrSetKey *rrset.RRSetKey) (*http.Response, error) {
 	target := client.Target(&client.SuccessResponse{})
 
 	if s.c == nil {
@@ -132,24 +132,56 @@ func (s *Service) DeleteSFPool(rrSetKey *rrset.RRSetKey) (*http.Response, error)
 	return res, nil
 }
 
-func validateSFPoolProfile(rrSet *rrset.RRSet) error {
+func validateSLBPoolProfile(rrSet *rrset.RRSet) error {
 	if err := pool.ValidatePoolProfile(profileType, rrSet); err != nil {
 		return err
 	}
 
-	sfProfile := rrSet.Profile.(*Profile)
+	slbProfile := rrSet.Profile.(*Profile)
 
-	if !pool.IsRegionFailureSensitivityValid(sfProfile.RegionFailureSensitivity) {
+	if !pool.IsRegionFailureSensitivityValid(slbProfile.RegionFailureSensitivity) {
 		list := []string{"HIGH", "LOW"}
 
-		return helper.UnknownDataError("SF-Pool Region Failure Sensitivity", sfProfile.RegionFailureSensitivity, list)
+		return helper.UnknownDataError("SLB-Pool Region Failure Sensitivity", slbProfile.RegionFailureSensitivity, list)
 	}
 
-	if !pool.IsMonitorMethodValid(sfProfile.Monitor.Method) {
+	if !pool.IsMonitorMethodValid(slbProfile.Monitor.Method) {
 		list := []string{"GET", "POST"}
 
-		return helper.UnknownDataError("SF-Pool Monitor Method", sfProfile.Monitor.Method, list)
+		return helper.UnknownDataError("SLB-Pool Monitor Method", slbProfile.Monitor.Method, list)
+	}
+
+	if !isSLBResponseMethodValid(slbProfile.ResponseMethod) {
+		list := []string{"PRIORITY_HUNT", "RANDOM", "ROUND_ROBIN"}
+
+		return helper.UnknownDataError("SLB-Pool Response Method", slbProfile.ResponseMethod, list)
+	}
+
+	if !isSLBServingPreferenceValid(slbProfile.ServingPreference) {
+		list := []string{"AUTO_SELECT", "SERVE_PRIMARY", "SERVE_ALL_FAIL"}
+
+		return helper.UnknownDataError("SLB-Pool Serving Preference", slbProfile.ServingPreference, list)
 	}
 
 	return nil
+}
+
+func isSLBResponseMethodValid(val string) bool {
+	var slbResponseMethod = map[string]bool{
+		"PRIORITY_HUNT": true,
+		"RANDOM":        true,
+		"ROUND_ROBIN":   true,
+	}
+
+	return pool.IsValidField(val, slbResponseMethod)
+}
+
+func isSLBServingPreferenceValid(val string) bool {
+	var slbServingPreference = map[string]bool{
+		"AUTO_SELECT":    true,
+		"SERVE_PRIMARY":  true,
+		"SERVE_ALL_FAIL": true,
+	}
+
+	return pool.IsValidField(val, slbServingPreference)
 }
