@@ -4,15 +4,17 @@ import (
 	"testing"
 
 	"github.com/ultradns/ultradns-go-sdk/internal/testing/integration"
+	"github.com/ultradns/ultradns-go-sdk/pkg/pool"
 	"github.com/ultradns/ultradns-go-sdk/pkg/rrset"
 	"github.com/ultradns/ultradns-go-sdk/pkg/sfpool"
 )
 
 func TestSFPoolResources(t *testing.T) {
+	zoneName := integration.GetRandomZoneName()
+
 	t.Parallel()
 
 	it := IntegrationTest{}
-	zoneName := integration.GetRandomZoneName()
 	ownerName := integration.GetRandomString()
 
 	t.Run("TestCreateSFPoolResourceZone",
@@ -136,7 +138,7 @@ func getSFPoolTypeAAAA(ownerName string) *rrset.RRSet {
 	backupRecord := &sfpool.BackupRecord{
 		RData: "AAAA:BBBB:CCCC:DDDD:EEEE:FFFF:1:2",
 	}
-	monitor := &sfpool.Monitor{
+	monitor := &pool.Monitor{
 		Method: "GET",
 		URL:    integration.TestHost,
 	}
@@ -145,6 +147,7 @@ func getSFPoolTypeAAAA(ownerName string) *rrset.RRSet {
 		Monitor:                  monitor,
 		RegionFailureSensitivity: "HIGH",
 	}
+
 	return &rrset.RRSet{
 		OwnerName: ownerName,
 		RRType:    testRecordTypeAAAA,

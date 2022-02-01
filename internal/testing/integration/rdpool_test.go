@@ -9,9 +9,10 @@ import (
 )
 
 func TestRDPoolResources(t *testing.T) {
+	it := IntegrationTest{}
+
 	t.Parallel()
 
-	it := IntegrationTest{}
 	zoneName := integration.GetRandomZoneName()
 	ownerName := integration.GetRandomString()
 

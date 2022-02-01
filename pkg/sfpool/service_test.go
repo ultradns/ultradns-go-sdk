@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/ultradns/ultradns-go-sdk/internal/testing/integration"
+	"github.com/ultradns/ultradns-go-sdk/pkg/pool"
 	"github.com/ultradns/ultradns-go-sdk/pkg/rrset"
 	"github.com/ultradns/ultradns-go-sdk/pkg/sfpool"
 )
@@ -201,10 +202,11 @@ func getSFPoolProfile() *sfpool.Profile {
 	backupRecord := &sfpool.BackupRecord{
 		RData: "192.168.1.1",
 	}
-	monitor := &sfpool.Monitor{
+	monitor := &pool.Monitor{
 		Method: "GET",
 		URL:    integration.TestHost,
 	}
+
 	return &sfpool.Profile{
 		BackupRecord:             backupRecord,
 		Monitor:                  monitor,

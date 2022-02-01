@@ -19,14 +19,14 @@ type Profile struct {
 type RDataInfo struct {
 	Description      string `json:"description,omitempty"`
 	ForcedState      string `json:"forcedState,omitempty"`
-	ProbingEnabled   bool   `json:"probingEnabled,omitempty"`
-	AvailableToServe bool   `json:"availableToServe,omitempty"`
+	ProbingEnabled   bool   `json:"probingEnabled"`
+	AvailableToServe bool   `json:"availableToServe"`
 }
 
 type AllFailRecord struct {
 	Description string `json:"description,omitempty"`
 	RData       string `json:"rdata,omitempty"`
-	Serving     bool   `json:"serving,omitempty"`
+	Serving     bool   `json:"serving"`
 }
 
 func (profile *Profile) SetContext() {

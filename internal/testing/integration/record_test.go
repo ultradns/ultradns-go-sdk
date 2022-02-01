@@ -14,12 +14,11 @@ const (
 )
 
 func TestRecordResources(t *testing.T) {
+	it := IntegrationTest{}
 	zoneName := integration.GetRandomZoneName()
 	ownerName := integration.GetRandomString()
 
 	t.Parallel()
-
-	it := IntegrationTest{}
 
 	t.Run("TestCreateRecordResourceZone",
 		func(st *testing.T) {
