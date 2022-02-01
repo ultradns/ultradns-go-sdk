@@ -21,6 +21,8 @@ linters:
     - varnamelen
     # return the error need not to wrap
     - wrapcheck
+    # context needed to be stored in the struct for using refresh token 
+    - containedctx
 
     - gochecknoglobals
     - bodyclose
