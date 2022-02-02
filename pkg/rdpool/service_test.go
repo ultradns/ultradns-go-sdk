@@ -3,18 +3,12 @@ package rdpool_test
 import (
 	"testing"
 
-	"github.com/ultradns/ultradns-go-sdk/internal/test/integration"
+	"github.com/ultradns/ultradns-go-sdk/internal/testing/integration"
 	"github.com/ultradns/ultradns-go-sdk/pkg/rdpool"
 	"github.com/ultradns/ultradns-go-sdk/pkg/rrset"
 )
 
 const serviceErrorString = "RD-Pool service is not properly configured"
-
-var testRRSetKey = &rrset.RRSetKey{
-	Name: "www",
-	Zone: "non-existing-zone.com.",
-	Type: "A",
-}
 
 func TestNewSuccess(t *testing.T) {
 	conf := integration.GetConfig()
@@ -92,7 +86,7 @@ func TestCreateRDPoolFailure(t *testing.T) {
 		Profile: profile,
 	}
 
-	if _, er := rdPoolService.CreateRDPool(testRRSetKey, rrSet); er.Error() != "error while creating RD-Pool - www.non-existing-zone.com.:non-existing-zone.com.:A (1) : error from api response - error code : 1801 - error message : Zone does not exist in the system." {
+	if _, er := rdPoolService.CreateRDPool(integration.TestRRSetKey, rrSet); er.Error() != "error while creating RD-Pool - www.non-existing-zone.com.:non-existing-zone.com.:A (1) : error from api response - error code : 1801 - error message : Zone does not exist in the system." {
 		t.Fatal(er)
 	}
 }
@@ -111,7 +105,7 @@ func TestUpdateRDPoolFailure(t *testing.T) {
 		Profile: profile,
 	}
 
-	if _, er := rdPoolService.UpdateRDPool(testRRSetKey, rrSet); er.Error() != "error while updating RD-Pool - www.non-existing-zone.com.:non-existing-zone.com.:A (1) : error from api response - error code : 1801 - error message : Zone does not exist in the system." {
+	if _, er := rdPoolService.UpdateRDPool(integration.TestRRSetKey, rrSet); er.Error() != "error while updating RD-Pool - www.non-existing-zone.com.:non-existing-zone.com.:A (1) : error from api response - error code : 1801 - error message : Zone does not exist in the system." {
 		t.Fatal(er)
 	}
 }
@@ -130,7 +124,7 @@ func TestPartialUpdateRDPoolFailure(t *testing.T) {
 		Profile: profile,
 	}
 
-	if _, er := rdPoolService.PartialUpdateRDPool(testRRSetKey, rrSet); er.Error() != "error while partial updating RD-Pool - www.non-existing-zone.com.:non-existing-zone.com.:A (1) : error from api response - error code : 1801 - error message : Zone does not exist in the system." {
+	if _, er := rdPoolService.PartialUpdateRDPool(integration.TestRRSetKey, rrSet); er.Error() != "error while partial updating RD-Pool - www.non-existing-zone.com.:non-existing-zone.com.:A (1) : error from api response - error code : 1801 - error message : Zone does not exist in the system." {
 		t.Fatal(er)
 	}
 }
@@ -142,7 +136,7 @@ func TestReadRDPoolFailure(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if _, _, er := rdPoolService.ReadRDPool(testRRSetKey); er.Error() != "error while reading RD-Pool - www.non-existing-zone.com.:non-existing-zone.com.:A (1) : error from api response - error code : 1801 - error message : Zone does not exist in the system." {
+	if _, _, er := rdPoolService.ReadRDPool(integration.TestRRSetKey); er.Error() != "error while reading RD-Pool - www.non-existing-zone.com.:non-existing-zone.com.:A (1) : error from api response - error code : 1801 - error message : Zone does not exist in the system." {
 		t.Fatal(er)
 	}
 }
@@ -154,7 +148,7 @@ func TestDeleteRDPoolFailure(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if _, er := rdPoolService.DeleteRDPool(testRRSetKey); er.Error() != "error while deleting RD-Pool - www.non-existing-zone.com.:non-existing-zone.com.:A (1) : error from api response - error code : 1801 - error message : Zone does not exist in the system." {
+	if _, er := rdPoolService.DeleteRDPool(integration.TestRRSetKey); er.Error() != "error while deleting RD-Pool - www.non-existing-zone.com.:non-existing-zone.com.:A (1) : error from api response - error code : 1801 - error message : Zone does not exist in the system." {
 		t.Fatal(er)
 	}
 }
@@ -166,7 +160,7 @@ func TestCreateRDPoolWithValidationFailure(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if _, er := rdPoolService.CreateRDPool(testRRSetKey, &rrset.RRSet{}); er.Error() != "type mismatched : expected - *rdpool.Profile : found - <nil>" {
+	if _, er := rdPoolService.CreateRDPool(integration.TestRRSetKey, &rrset.RRSet{}); er.Error() != "type mismatched : expected - *rdpool.Profile : found - <nil>" {
 		t.Fatal(er)
 	}
 }
@@ -185,7 +179,7 @@ func TestUpdateRDPoolWithValidationFailure(t *testing.T) {
 		Profile: profile,
 	}
 
-	if _, er := rdPoolService.UpdateRDPool(testRRSetKey, rrSet); er.Error() != "RD-Pool order should be any of the following data [FIXED RANDOM ROUND_ROBIN] : found - TEST" {
+	if _, er := rdPoolService.UpdateRDPool(integration.TestRRSetKey, rrSet); er.Error() != "RD-Pool order should be any of the following data [FIXED RANDOM ROUND_ROBIN] : found - TEST" {
 		t.Fatal(er)
 	}
 }

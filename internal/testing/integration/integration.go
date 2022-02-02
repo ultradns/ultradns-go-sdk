@@ -31,6 +31,12 @@ var (
 	TestClient            *client.Client = initializeTestClient()
 )
 
+var TestRRSetKey = &rrset.RRSetKey{
+	Name: "www",
+	Zone: "non-existing-zone.com.",
+	Type: "A",
+}
+
 func initializeTestClient() *client.Client {
 	client, _ := client.NewClient(GetConfig())
 

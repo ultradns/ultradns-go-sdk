@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/ultradns/ultradns-go-sdk/internal/test/integration"
+	"github.com/ultradns/ultradns-go-sdk/internal/testing/integration"
 	"github.com/ultradns/ultradns-go-sdk/pkg/client"
 	"github.com/ultradns/ultradns-go-sdk/pkg/zone"
 )

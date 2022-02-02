@@ -3,22 +3,22 @@ package integration_test
 import (
 	"testing"
 
-	"github.com/ultradns/ultradns-go-sdk/internal/test/integration"
+	"github.com/ultradns/ultradns-go-sdk/internal/testing/integration"
 	"github.com/ultradns/ultradns-go-sdk/pkg/record"
 	"github.com/ultradns/ultradns-go-sdk/pkg/rrset"
 )
 
 const (
-	testRecordTypeA = "A"
+	testRecordTypeA    = "A"
+	testRecordTypeAAAA = "AAAA"
 )
 
 func TestRecordResources(t *testing.T) {
+	it := IntegrationTest{}
 	zoneName := integration.GetRandomZoneName()
 	ownerName := integration.GetRandomString()
 
 	t.Parallel()
-
-	it := IntegrationTest{}
 
 	t.Run("TestCreateRecordResourceZone",
 		func(st *testing.T) {

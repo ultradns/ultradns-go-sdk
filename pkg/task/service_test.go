@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ultradns/ultradns-go-sdk/internal/test/integration"
+	"github.com/ultradns/ultradns-go-sdk/internal/testing/integration"
 	"github.com/ultradns/ultradns-go-sdk/pkg/task"
 	"github.com/ultradns/ultradns-go-sdk/pkg/zone"
 )

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ultradns/ultradns-go-sdk/internal/test/integration"
+	"github.com/ultradns/ultradns-go-sdk/internal/testing/integration"
 	"github.com/ultradns/ultradns-go-sdk/internal/token"
 	"golang.org/x/oauth2"
 )

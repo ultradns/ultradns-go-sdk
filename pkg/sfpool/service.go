@@ -1,4 +1,4 @@
-package rdpool
+package sfpool
 
 import (
 	"net/http"
@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	serviceName = "RD-Pool"
-	profileType = "*rdpool.Profile"
+	serviceName = "SF-Pool"
+	profileType = "*sfpool.Profile"
 )
 
 type Service struct {
@@ -36,14 +36,14 @@ func Get(c *client.Client) (*Service, error) {
 	return &Service{c}, nil
 }
 
-func (s *Service) CreateRDPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*http.Response, error) {
+func (s *Service) CreateSFPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*http.Response, error) {
 	target := client.Target(&client.SuccessResponse{})
 
 	if s.c == nil {
 		return nil, helper.ServiceError(serviceName)
 	}
 
-	if err := validateRDPoolProfile(rrSet); err != nil {
+	if err := validateSFPoolProfile(rrSet); err != nil {
 		return nil, err
 	}
 
@@ -56,14 +56,14 @@ func (s *Service) CreateRDPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*h
 	return res, nil
 }
 
-func (s *Service) UpdateRDPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*http.Response, error) {
+func (s *Service) UpdateSFPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*http.Response, error) {
 	target := client.Target(&client.SuccessResponse{})
 
 	if s.c == nil {
 		return nil, helper.ServiceError(serviceName)
 	}
 
-	if err := validateRDPoolProfile(rrSet); err != nil {
+	if err := validateSFPoolProfile(rrSet); err != nil {
 		return nil, err
 	}
 
@@ -76,7 +76,7 @@ func (s *Service) UpdateRDPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*h
 	return res, nil
 }
 
-func (s *Service) PartialUpdateRDPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*http.Response, error) {
+func (s *Service) PartialUpdateSFPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*http.Response, error) {
 	target := client.Target(&client.SuccessResponse{})
 
 	if s.c == nil {
@@ -92,14 +92,14 @@ func (s *Service) PartialUpdateRDPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRS
 	return res, nil
 }
 
-func (s *Service) ReadRDPool(rrSetKey *rrset.RRSetKey) (*http.Response, *rrset.ResponseList, error) {
-	rdPoolRRSet := &rrset.RRSet{
+func (s *Service) ReadSFPool(rrSetKey *rrset.RRSetKey) (*http.Response, *rrset.ResponseList, error) {
+	sfPoolRRSet := &rrset.RRSet{
 		Profile: &Profile{},
 	}
-	rdPoolResList := &rrset.ResponseList{}
-	rdPoolResList.RRSets = make([]*rrset.RRSet, 1)
-	rdPoolResList.RRSets[0] = rdPoolRRSet
-	target := client.Target(rdPoolResList)
+	sfPoolResList := &rrset.ResponseList{}
+	sfPoolResList.RRSets = make([]*rrset.RRSet, 1)
+	sfPoolResList.RRSets[0] = sfPoolRRSet
+	target := client.Target(sfPoolResList)
 
 	if s.c == nil {
 		return nil, nil, helper.ServiceError(serviceName)
@@ -116,7 +116,7 @@ func (s *Service) ReadRDPool(rrSetKey *rrset.RRSetKey) (*http.Response, *rrset.R
 	return res, rrsetList, nil
 }
 
-func (s *Service) DeleteRDPool(rrSetKey *rrset.RRSetKey) (*http.Response, error) {
+func (s *Service) DeleteSFPool(rrSetKey *rrset.RRSetKey) (*http.Response, error) {
 	target := client.Target(&client.SuccessResponse{})
 
 	if s.c == nil {
@@ -132,30 +132,24 @@ func (s *Service) DeleteRDPool(rrSetKey *rrset.RRSetKey) (*http.Response, error)
 	return res, nil
 }
 
-func validateRDPoolProfile(rrSet *rrset.RRSet) error {
+func validateSFPoolProfile(rrSet *rrset.RRSet) error {
 	if err := pool.ValidatePoolProfile(profileType, rrSet); err != nil {
 		return err
 	}
 
-	rdProfile := rrSet.Profile.(*Profile)
+	sfProfile := rrSet.Profile.(*Profile)
 
-	if !isRDPoolOrderValid(rdProfile.Order) {
-		list := []string{"FIXED", "RANDOM", "ROUND_ROBIN"}
+	if !pool.IsRegionFailureSensitivityValid(sfProfile.RegionFailureSensitivity) {
+		list := []string{"HIGH", "LOW"}
 
-		return helper.UnknownDataError("RD-Pool order", rdProfile.Order, list)
+		return helper.UnknownDataError("SF-Pool Region Failure Sensitivity", sfProfile.RegionFailureSensitivity, list)
+	}
+
+	if !pool.IsMonitorMethodValid(sfProfile.Monitor.Method) {
+		list := []string{"GET", "POST"}
+
+		return helper.UnknownDataError("SF-Pool Monitor Method", sfProfile.Monitor.Method, list)
 	}
 
 	return nil
-}
-
-func isRDPoolOrderValid(order string) bool {
-	var rdPoolOrders = map[string]bool{
-		"FIXED":       true,
-		"RANDOM":      true,
-		"ROUND_ROBIN": true,
-	}
-
-	_, ok := rdPoolOrders[order]
-
-	return ok
 }
