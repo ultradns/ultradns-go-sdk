@@ -199,7 +199,7 @@ func TestUpdateSFPoolWithMethodValidationFailure(t *testing.T) {
 }
 
 func getSFPoolProfile() *sfpool.Profile {
-	backupRecord := &pool.BackupRecord{
+	backupRecord := &sfpool.BackupRecord{
 		RData: "192.168.1.1",
 	}
 	monitor := &pool.Monitor{
