@@ -135,7 +135,7 @@ func (it *IntegrationTest) DeleteSFPool(rrSetKey *rrset.RRSetKey) {
 }
 
 func getSFPoolTypeAAAA(ownerName string) *rrset.RRSet {
-	backupRecord := &sfpool.BackupRecord{
+	backupRecord := &pool.BackupRecord{
 		RData: "AAAA:BBBB:CCCC:DDDD:EEEE:FFFF:1:2",
 	}
 	monitor := &pool.Monitor{
