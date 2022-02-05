@@ -23,3 +23,7 @@ type BackupRecord struct {
 func (profile *Profile) SetContext() {
 	profile.Context = Schema
 }
+
+func (profile *Profile) GetContext() string {
+	return profile.Context
+}
