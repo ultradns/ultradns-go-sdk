@@ -2,7 +2,7 @@ package slbpool
 
 import "github.com/ultradns/ultradns-go-sdk/pkg/pool"
 
-const schema = "http://schemas.ultradns.com/SLBPool.jsonschema"
+const Schema = "http://schemas.ultradns.com/SLBPool.jsonschema"
 
 type Profile struct {
 	Context                  string         `json:"@context,omitempty"`
@@ -30,5 +30,5 @@ type AllFailRecord struct {
 }
 
 func (profile *Profile) SetContext() {
-	profile.Context = schema
+	profile.Context = Schema
 }
