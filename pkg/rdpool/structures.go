@@ -1,6 +1,6 @@
 package rdpool
 
-const schema = "http://schemas.ultradns.com/RDPool.jsonschema"
+const Schema = "http://schemas.ultradns.com/RDPool.jsonschema"
 
 type Profile struct {
 	Context     string `json:"@context,omitempty"`
@@ -9,5 +9,9 @@ type Profile struct {
 }
 
 func (profile *Profile) SetContext() {
-	profile.Context = schema
+	profile.Context = Schema
+}
+
+func (profile *Profile) GetContext() string {
+	return profile.Context
 }

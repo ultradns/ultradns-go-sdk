@@ -2,12 +2,12 @@ package sfpool
 
 import "github.com/ultradns/ultradns-go-sdk/pkg/pool"
 
-const schema = "http://schemas.ultradns.com/SFPool.jsonschema"
+const Schema = "http://schemas.ultradns.com/SFPool.jsonschema"
 
 type Profile struct {
 	Context                  string        `json:"@context,omitempty"`
-	PoolDescription          string        `json:"poolDescription,omitempty"`
-	LiveRecordDescription    string        `json:"liveRecordDescription,omitempty"`
+	PoolDescription          string        `json:"poolDescription"`
+	LiveRecordDescription    string        `json:"liveRecordDescription"`
 	LiveRecordState          string        `json:"liveRecordState,omitempty"`
 	RegionFailureSensitivity string        `json:"regionFailureSensitivity,omitempty"`
 	Status                   string        `json:"status,omitempty"`
@@ -17,9 +17,13 @@ type Profile struct {
 
 type BackupRecord struct {
 	RData       string `json:"rdata,omitempty"`
-	Description string `json:"description,omitempty"`
+	Description string `json:"description"`
 }
 
 func (profile *Profile) SetContext() {
-	profile.Context = schema
+	profile.Context = Schema
+}
+
+func (profile *Profile) GetContext() string {
+	return profile.Context
 }

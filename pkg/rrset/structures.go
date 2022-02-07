@@ -23,6 +23,7 @@ type RRSetKey struct {
 
 type RawProfile interface {
 	SetContext()
+	GetContext() string
 }
 
 type ResponseList struct {
