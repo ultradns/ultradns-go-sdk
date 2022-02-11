@@ -1,4 +1,4 @@
-package helper
+package errors
 
 import (
 	"errors"
@@ -9,8 +9,10 @@ var (
 	errValidation     = errors.New("config validation failure")
 	errService        = errors.New("service is not properly configured")
 	errResponseTarget = errors.New("response target type mismatched : returned type")
+	errResponse       = errors.New("error from api response -")
 	errTypeMismatch   = errors.New("type mismatched")
 	errUnknownData    = errors.New("should be any of the following data")
+	errNotFound       = errors.New("not found")
 )
 
 func ValidationError(key string) error {
@@ -27,6 +29,10 @@ func ServiceConfigError(service string, err error) error {
 
 func ResponseTargetError(key string) error {
 	return fmt.Errorf("%w - %s", errResponseTarget, key)
+}
+
+func APIResponseError(err string) error {
+	return fmt.Errorf("%w %s", errResponse, err)
 }
 
 func TypeMismatchError(expected, found string) error {
@@ -59,4 +65,12 @@ func DeleteError(service, id string, err error) error {
 
 func ListError(service, uri string, err error) error {
 	return fmt.Errorf("error while listing %s : uri - %s : %w", service, uri, err)
+}
+
+func ResourceNotFoundError(resourceName, key string) error {
+	return fmt.Errorf("%s resource - %s %w", resourceName, key, errNotFound)
+}
+
+func ResourceTypeNotFoundError(resourceName, resourceType, key string) error {
+	return fmt.Errorf("%s resource of type %s - %s %w", resourceName, resourceType, key, errNotFound)
 }

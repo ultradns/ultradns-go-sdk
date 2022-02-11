@@ -5,6 +5,7 @@ import (
 	"net/url"
 
 	"github.com/ultradns/ultradns-go-sdk/pkg/client"
+	"github.com/ultradns/ultradns-go-sdk/pkg/errors"
 	"github.com/ultradns/ultradns-go-sdk/pkg/helper"
 	"github.com/ultradns/ultradns-go-sdk/pkg/task"
 )
@@ -26,7 +27,7 @@ func New(cnf client.Config) (*Service, error) {
 	c, err := client.NewClient(cnf)
 
 	if err != nil {
-		return nil, helper.ServiceConfigError(serviceName, err)
+		return nil, errors.ServiceConfigError(serviceName, err)
 	}
 
 	return &Service{c}, nil
@@ -34,7 +35,7 @@ func New(cnf client.Config) (*Service, error) {
 
 func Get(c *client.Client) (*Service, error) {
 	if c == nil {
-		return nil, helper.ServiceError(serviceName)
+		return nil, errors.ServiceError(serviceName)
 	}
 
 	return &Service{c}, nil
@@ -44,7 +45,7 @@ func (s *Service) CreateZone(zone *Zone) (*http.Response, error) {
 	target := client.Target(&client.SuccessResponse{})
 
 	if s.c == nil {
-		return nil, helper.ServiceError(serviceName)
+		return nil, errors.ServiceError(serviceName)
 	}
 
 	res, err := s.c.Do(http.MethodPost, basePath, zone, target)
@@ -55,7 +56,7 @@ func (s *Service) CreateZone(zone *Zone) (*http.Response, error) {
 			zoneName = zone.Properties.Name
 		}
 
-		return nil, helper.CreateError(serviceName, zoneName, err)
+		return nil, errors.CreateError(serviceName, zoneName, err)
 	}
 
 	if er := s.checkZoneTask(res); er != nil {
@@ -70,13 +71,13 @@ func (s *Service) ReadZone(zoneName string) (*http.Response, *Response, error) {
 	zoneName = url.PathEscape(zoneName)
 
 	if s.c == nil {
-		return nil, nil, helper.ServiceError(serviceName)
+		return nil, nil, errors.ServiceError(serviceName)
 	}
 
 	res, err := s.c.Do(http.MethodGet, basePath+zoneName, nil, target)
 
 	if err != nil {
-		return nil, nil, helper.ReadError(serviceName, zoneName, err)
+		return nil, nil, errors.ReadError(serviceName, zoneName, err)
 	}
 
 	zoneResponse := target.Data.(*Response)
@@ -89,13 +90,13 @@ func (s *Service) UpdateZone(zoneName string, zone *Zone) (*http.Response, error
 	zoneName = url.PathEscape(zoneName)
 
 	if s.c == nil {
-		return nil, helper.ServiceError(serviceName)
+		return nil, errors.ServiceError(serviceName)
 	}
 
 	res, err := s.c.Do(http.MethodPut, basePath+zoneName, zone, target)
 
 	if err != nil {
-		return nil, helper.UpdateError(serviceName, zoneName, err)
+		return nil, errors.UpdateError(serviceName, zoneName, err)
 	}
 
 	return res, nil
@@ -106,13 +107,13 @@ func (s *Service) PartialUpdateZone(zoneName string, zone *Zone) (*http.Response
 	zoneName = url.PathEscape(zoneName)
 
 	if s.c == nil {
-		return nil, helper.ServiceError(serviceName)
+		return nil, errors.ServiceError(serviceName)
 	}
 
 	res, err := s.c.Do(http.MethodPatch, basePath+zoneName, zone, target)
 
 	if err != nil {
-		return nil, helper.PartialUpdateError(serviceName, zoneName, err)
+		return nil, errors.PartialUpdateError(serviceName, zoneName, err)
 	}
 
 	return res, nil
@@ -123,13 +124,13 @@ func (s *Service) DeleteZone(zoneName string) (*http.Response, error) {
 	zoneName = url.PathEscape(zoneName)
 
 	if s.c == nil {
-		return nil, helper.ServiceError(serviceName)
+		return nil, errors.ServiceError(serviceName)
 	}
 
 	res, err := s.c.Do(http.MethodDelete, basePath+zoneName, nil, target)
 
 	if err != nil {
-		return nil, helper.DeleteError(serviceName, zoneName, err)
+		return nil, errors.DeleteError(serviceName, zoneName, err)
 	}
 
 	return res, nil
@@ -139,13 +140,13 @@ func (s *Service) ListZone(queryInfo *helper.QueryInfo) (*http.Response, *Respon
 	target := client.Target(&ResponseList{})
 
 	if s.c == nil {
-		return nil, nil, helper.ServiceError(serviceName)
+		return nil, nil, errors.ServiceError(serviceName)
 	}
 
 	res, err := s.c.Do(http.MethodGet, basePathForList+queryInfo.URI(), nil, target)
 
 	if err != nil {
-		return nil, nil, helper.ListError(serviceName, basePathForList+queryInfo.URI(), err)
+		return nil, nil, errors.ListError(serviceName, basePathForList+queryInfo.URI(), err)
 	}
 
 	zoneListResponse := target.Data.(*ResponseList)
