@@ -84,7 +84,7 @@ func (it *IntegrationTest) CreateRecord(rrSetKey *rrset.RRSetKey, rrSet *rrset.R
 		it.Test.Fatal(err)
 	}
 
-	if _, er := recordService.CreateRecord(rrSetKey, rrSet); er != nil {
+	if _, er := recordService.Create(rrSetKey, rrSet); er != nil {
 		it.Test.Fatal(er)
 	}
 }
@@ -96,7 +96,7 @@ func (it *IntegrationTest) UpdateRecord(rrSetKey *rrset.RRSetKey, rrSet *rrset.R
 		it.Test.Fatal(err)
 	}
 
-	if _, er := recordService.UpdateRecord(rrSetKey, rrSet); er != nil {
+	if _, er := recordService.Update(rrSetKey, rrSet); er != nil {
 		it.Test.Fatal(er)
 	}
 }
@@ -108,7 +108,7 @@ func (it *IntegrationTest) PartialUpdateRecord(rrSetKey *rrset.RRSetKey, rrSet *
 		it.Test.Fatal(err)
 	}
 
-	if _, er := recordService.PartialUpdateRecord(rrSetKey, rrSet); er != nil {
+	if _, er := recordService.PartialUpdate(rrSetKey, rrSet); er != nil {
 		it.Test.Fatal(er)
 	}
 }
@@ -120,7 +120,7 @@ func (it *IntegrationTest) ReadRecord(rrSetKey *rrset.RRSetKey) {
 		it.Test.Fatal(err)
 	}
 
-	if _, _, er := recordService.ReadRecord(rrSetKey); er != nil {
+	if _, _, er := recordService.Read(rrSetKey); er != nil {
 		it.Test.Fatal(er)
 	}
 }
@@ -132,7 +132,7 @@ func (it *IntegrationTest) DeleteRecord(rrSetKey *rrset.RRSetKey) {
 		it.Test.Fatal(err)
 	}
 
-	if _, er := recordService.DeleteRecord(rrSetKey); er != nil {
+	if _, er := recordService.Delete(rrSetKey); er != nil {
 		it.Test.Fatal(er)
 	}
 }

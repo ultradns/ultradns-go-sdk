@@ -4,9 +4,10 @@ import (
 	"testing"
 
 	"github.com/ultradns/ultradns-go-sdk/internal/testing/integration"
-	"github.com/ultradns/ultradns-go-sdk/pkg/pool"
+	"github.com/ultradns/ultradns-go-sdk/pkg/record"
+	"github.com/ultradns/ultradns-go-sdk/pkg/record/pool"
+	"github.com/ultradns/ultradns-go-sdk/pkg/record/slbpool"
 	"github.com/ultradns/ultradns-go-sdk/pkg/rrset"
-	"github.com/ultradns/ultradns-go-sdk/pkg/slbpool"
 )
 
 func TestSLBPoolResources(t *testing.T) {
@@ -75,61 +76,61 @@ func (it *IntegrationTest) PartialUpdateSLBPoolTypeA(ownerName, zoneName string)
 }
 
 func (it *IntegrationTest) CreateSLBPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) {
-	slbPoolService, err := slbpool.Get(integration.TestClient)
+	recordService, err := record.Get(integration.TestClient)
 
 	if err != nil {
 		it.Test.Fatal(err)
 	}
 
-	if _, er := slbPoolService.CreateSLBPool(rrSetKey, rrSet); er != nil {
+	if _, er := recordService.Create(rrSetKey, rrSet); er != nil {
 		it.Test.Fatal(er)
 	}
 }
 
 func (it *IntegrationTest) UpdateSLBPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) {
-	slbPoolService, err := slbpool.Get(integration.TestClient)
+	recordService, err := record.Get(integration.TestClient)
 
 	if err != nil {
 		it.Test.Fatal(err)
 	}
 
-	if _, er := slbPoolService.UpdateSLBPool(rrSetKey, rrSet); er != nil {
+	if _, er := recordService.Update(rrSetKey, rrSet); er != nil {
 		it.Test.Fatal(er)
 	}
 }
 
 func (it *IntegrationTest) PartialUpdateSLBPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) {
-	slbPoolService, err := slbpool.Get(integration.TestClient)
+	recordService, err := record.Get(integration.TestClient)
 
 	if err != nil {
 		it.Test.Fatal(err)
 	}
 
-	if _, er := slbPoolService.PartialUpdateSLBPool(rrSetKey, rrSet); er != nil {
+	if _, er := recordService.PartialUpdate(rrSetKey, rrSet); er != nil {
 		it.Test.Fatal(er)
 	}
 }
 
 func (it *IntegrationTest) ReadSLBPool(rrSetKey *rrset.RRSetKey) {
-	slbPoolService, err := slbpool.Get(integration.TestClient)
+	recordService, err := record.Get(integration.TestClient)
 
 	if err != nil {
 		it.Test.Fatal(err)
 	}
 
-	if _, _, er := slbPoolService.ReadSLBPool(rrSetKey); er != nil {
+	if _, _, er := recordService.Read(rrSetKey); er != nil {
 		it.Test.Fatal(er)
 	}
 }
 
 func (it *IntegrationTest) DeleteSLBPool(rrSetKey *rrset.RRSetKey) {
-	slbPoolService, err := slbpool.Get(integration.TestClient)
+	recordService, err := record.Get(integration.TestClient)
 
 	if err != nil {
 		it.Test.Fatal(err)
 	}
 
-	if _, er := slbPoolService.DeleteSLBPool(rrSetKey); er != nil {
+	if _, er := recordService.Delete(rrSetKey); er != nil {
 		it.Test.Fatal(er)
 	}
 }

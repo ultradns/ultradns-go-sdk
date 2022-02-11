@@ -4,7 +4,8 @@ import (
 	"testing"
 
 	"github.com/ultradns/ultradns-go-sdk/internal/testing/integration"
-	"github.com/ultradns/ultradns-go-sdk/pkg/rdpool"
+	"github.com/ultradns/ultradns-go-sdk/pkg/record"
+	"github.com/ultradns/ultradns-go-sdk/pkg/record/rdpool"
 	"github.com/ultradns/ultradns-go-sdk/pkg/rrset"
 )
 
@@ -74,61 +75,61 @@ func (it *IntegrationTest) PartialUpdateRDPoolTypeA(ownerName, zoneName string) 
 }
 
 func (it *IntegrationTest) CreateRDPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) {
-	rdPoolService, err := rdpool.Get(integration.TestClient)
+	recordService, err := record.Get(integration.TestClient)
 
 	if err != nil {
 		it.Test.Fatal(err)
 	}
 
-	if _, er := rdPoolService.CreateRDPool(rrSetKey, rrSet); er != nil {
+	if _, er := recordService.Create(rrSetKey, rrSet); er != nil {
 		it.Test.Fatal(er)
 	}
 }
 
 func (it *IntegrationTest) UpdateRDPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) {
-	rdPoolService, err := rdpool.Get(integration.TestClient)
+	recordService, err := record.Get(integration.TestClient)
 
 	if err != nil {
 		it.Test.Fatal(err)
 	}
 
-	if _, er := rdPoolService.UpdateRDPool(rrSetKey, rrSet); er != nil {
+	if _, er := recordService.Update(rrSetKey, rrSet); er != nil {
 		it.Test.Fatal(er)
 	}
 }
 
 func (it *IntegrationTest) PartialUpdateRDPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) {
-	rdPoolService, err := rdpool.Get(integration.TestClient)
+	recordService, err := record.Get(integration.TestClient)
 
 	if err != nil {
 		it.Test.Fatal(err)
 	}
 
-	if _, er := rdPoolService.PartialUpdateRDPool(rrSetKey, rrSet); er != nil {
+	if _, er := recordService.PartialUpdate(rrSetKey, rrSet); er != nil {
 		it.Test.Fatal(er)
 	}
 }
 
 func (it *IntegrationTest) ReadRDPool(rrSetKey *rrset.RRSetKey) {
-	rdPoolService, err := rdpool.Get(integration.TestClient)
+	recordService, err := record.Get(integration.TestClient)
 
 	if err != nil {
 		it.Test.Fatal(err)
 	}
 
-	if _, _, er := rdPoolService.ReadRDPool(rrSetKey); er != nil {
+	if _, _, er := recordService.Read(rrSetKey); er != nil {
 		it.Test.Fatal(er)
 	}
 }
 
 func (it *IntegrationTest) DeleteRDPool(rrSetKey *rrset.RRSetKey) {
-	rdPoolService, err := rdpool.Get(integration.TestClient)
+	recordService, err := record.Get(integration.TestClient)
 
 	if err != nil {
 		it.Test.Fatal(err)
 	}
 
-	if _, er := rdPoolService.DeleteRDPool(rrSetKey); er != nil {
+	if _, er := recordService.Delete(rrSetKey); er != nil {
 		it.Test.Fatal(er)
 	}
 }

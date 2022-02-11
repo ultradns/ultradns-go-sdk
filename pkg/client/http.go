@@ -3,19 +3,17 @@ package client
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 
 	"github.com/ultradns/ultradns-go-sdk/internal/version"
-	"github.com/ultradns/ultradns-go-sdk/pkg/helper"
+	"github.com/ultradns/ultradns-go-sdk/pkg/errors"
 )
 
 const contentType = "application/json"
 
 var (
 	defaultUserAgent = version.GetSDKVersion()
-	errResponse      = errors.New("error from api response -")
 )
 
 func (c *Client) Do(method, path string, payload, target interface{}) (*http.Response, error) {
@@ -61,13 +59,13 @@ func (c *Client) Do(method, path string, payload, target interface{}) (*http.Res
 
 func validateResponse(res *http.Response, t interface{}) error {
 	if t == nil {
-		return helper.ResponseTargetError("<nil>")
+		return errors.ResponseTargetError("<nil>")
 	}
 
 	target, ok := t.(*Response)
 
 	if !ok {
-		return helper.ResponseTargetError(fmt.Sprintf("%T", target))
+		return errors.ResponseTargetError(fmt.Sprintf("%T", target))
 	}
 
 	if res.StatusCode >= http.StatusOK && res.StatusCode < http.StatusMultipleChoices {
@@ -87,7 +85,7 @@ func validateResponse(res *http.Response, t interface{}) error {
 			return err
 		}
 
-		return fmt.Errorf("%w %s", errResponse, target.Error[0])
+		return errors.APIResponseError(target.Error[0].String())
 	}
 
 	return nil

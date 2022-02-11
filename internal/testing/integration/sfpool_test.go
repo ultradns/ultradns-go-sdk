@@ -4,9 +4,10 @@ import (
 	"testing"
 
 	"github.com/ultradns/ultradns-go-sdk/internal/testing/integration"
-	"github.com/ultradns/ultradns-go-sdk/pkg/pool"
+	"github.com/ultradns/ultradns-go-sdk/pkg/record"
+	"github.com/ultradns/ultradns-go-sdk/pkg/record/pool"
+	"github.com/ultradns/ultradns-go-sdk/pkg/record/sfpool"
 	"github.com/ultradns/ultradns-go-sdk/pkg/rrset"
-	"github.com/ultradns/ultradns-go-sdk/pkg/sfpool"
 )
 
 func TestSFPoolResources(t *testing.T) {
@@ -75,61 +76,61 @@ func (it *IntegrationTest) PartialUpdateSFPoolTypeAAAA(ownerName, zoneName strin
 }
 
 func (it *IntegrationTest) CreateSFPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) {
-	sfPoolService, err := sfpool.Get(integration.TestClient)
+	recordService, err := record.Get(integration.TestClient)
 
 	if err != nil {
 		it.Test.Fatal(err)
 	}
 
-	if _, er := sfPoolService.CreateSFPool(rrSetKey, rrSet); er != nil {
+	if _, er := recordService.Create(rrSetKey, rrSet); er != nil {
 		it.Test.Fatal(er)
 	}
 }
 
 func (it *IntegrationTest) UpdateSFPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) {
-	sfPoolService, err := sfpool.Get(integration.TestClient)
+	recordService, err := record.Get(integration.TestClient)
 
 	if err != nil {
 		it.Test.Fatal(err)
 	}
 
-	if _, er := sfPoolService.UpdateSFPool(rrSetKey, rrSet); er != nil {
+	if _, er := recordService.Update(rrSetKey, rrSet); er != nil {
 		it.Test.Fatal(er)
 	}
 }
 
 func (it *IntegrationTest) PartialUpdateSFPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) {
-	sfPoolService, err := sfpool.Get(integration.TestClient)
+	recordService, err := record.Get(integration.TestClient)
 
 	if err != nil {
 		it.Test.Fatal(err)
 	}
 
-	if _, er := sfPoolService.PartialUpdateSFPool(rrSetKey, rrSet); er != nil {
+	if _, er := recordService.PartialUpdate(rrSetKey, rrSet); er != nil {
 		it.Test.Fatal(er)
 	}
 }
 
 func (it *IntegrationTest) ReadSFPool(rrSetKey *rrset.RRSetKey) {
-	sfPoolService, err := sfpool.Get(integration.TestClient)
+	recordService, err := record.Get(integration.TestClient)
 
 	if err != nil {
 		it.Test.Fatal(err)
 	}
 
-	if _, _, er := sfPoolService.ReadSFPool(rrSetKey); er != nil {
+	if _, _, er := recordService.Read(rrSetKey); er != nil {
 		it.Test.Fatal(er)
 	}
 }
 
 func (it *IntegrationTest) DeleteSFPool(rrSetKey *rrset.RRSetKey) {
-	sfPoolService, err := sfpool.Get(integration.TestClient)
+	recordService, err := record.Get(integration.TestClient)
 
 	if err != nil {
 		it.Test.Fatal(err)
 	}
 
-	if _, er := sfPoolService.DeleteSFPool(rrSetKey); er != nil {
+	if _, er := recordService.Delete(rrSetKey); er != nil {
 		it.Test.Fatal(er)
 	}
 }
