@@ -67,10 +67,6 @@ func ListError(service, uri string, err error) error {
 	return fmt.Errorf("error while listing %s : uri - %s : %w", service, uri, err)
 }
 
-func ResourceNotFoundError(resourceName, key string) error {
-	return fmt.Errorf("%s resource - %s %w", resourceName, key, errNotFound)
-}
-
 func ResourceTypeNotFoundError(resourceName, resourceType, key string) error {
 	return fmt.Errorf("%s resource of type %s - %s %w", resourceName, resourceType, key, errNotFound)
 }
