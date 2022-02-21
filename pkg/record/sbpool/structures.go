@@ -13,7 +13,7 @@ type Profile struct {
 	ActOnProbes      bool                 `json:"actOnProbes"`
 	MaxActive        int                  `json:"maxActive,omitempty"`
 	MaxServed        int                  `json:"maxServed,omitempty"`
-	FailureThreshold int                  `json:"failureThreshold"`
+	FailureThreshold int                  `json:"failureThreshold,omitempty"`
 	RDataInfo        []*pool.RDataInfo    `json:"rdataInfo,omitempty"`
 	BackupRecords    []*pool.BackupRecord `json:"backupRecords,omitempty"`
 }

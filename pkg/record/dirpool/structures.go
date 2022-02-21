@@ -6,7 +6,7 @@ type Profile struct {
 	Context         string       `json:"@context,omitempty"`
 	Description     string       `json:"description"`
 	ConflictResolve string       `json:"conflictResolve,omitempty"`
-	IgnoreECS       bool         `json:"ignoreECS"`
+	IgnoreECS       bool         `json:"ignoreECS,omitempty"`
 	NoResponse      *RDataInfo   `json:"noResponse,omitempty"`
 	RDataInfo       []*RDataInfo `json:"rdataInfo,omitempty"`
 }
@@ -14,7 +14,7 @@ type Profile struct {
 type RDataInfo struct {
 	Type             string   `json:"type,omitempty"`
 	Ttl              int      `json:"ttl,omitempty"`
-	AllNonConfigured bool     `json:"allNonConfigured"`
+	AllNonConfigured bool     `json:"allNonConfigured,omitempty"`
 	GeoInfo          *GEOInfo `json:"geoInfo,omitempty"`
 	IPInfo           *IPInfo  `json:"ipInfo,omitempty"`
 }
@@ -23,14 +23,14 @@ type GEOInfo struct {
 	Name                    string   `json:"name,omitempty"`
 	Codes                   []string `json:"codes,omitempty"`
 	IsExistingGroupFromPool bool     `json:"isExistingGroupFromPool"`
-	ForceOverlap            bool     `json:"forceOverlap"`
-	IsAccountLevel          bool     `json:"isAccountLevel"`
+	ForceOverlap            bool     `json:"forceOverlap,omitempty"`
+	IsAccountLevel          bool     `json:"isAccountLevel,omitempty"`
 }
 
 type IPInfo struct {
 	Name                    string       `json:"name,omitempty"`
-	IsExistingGroupFromPool bool         `json:"isExistingGroupFromPool"`
-	IsAccountLevel          bool         `json:"isAccountLevel"`
+	IsExistingGroupFromPool bool         `json:"isExistingGroupFromPool,omitempty"`
+	IsAccountLevel          bool         `json:"isAccountLevel,omitempty"`
 	IPs                     []*IPAddress `json:"ips,omitempty"`
 }
 
