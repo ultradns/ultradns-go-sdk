@@ -7,10 +7,6 @@ import (
 	"github.com/ultradns/ultradns-go-sdk/pkg/zone"
 )
 
-type IntegrationTest struct {
-	Test *testing.T
-}
-
 func TestZoneResources(t *testing.T) {
 	t.Parallel()
 

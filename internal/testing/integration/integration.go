@@ -32,12 +32,6 @@ var (
 	TestClient            *client.Client = initializeTestClient()
 )
 
-var TestRRSetKey = &rrset.RRSetKey{
-	Owner:      "www",
-	Zone:       "non-existing-zone.com.",
-	RecordType: "A",
-}
-
 func initializeTestClient() *client.Client {
 	client, _ := client.NewClient(GetConfig())
 
@@ -146,10 +140,20 @@ func GetAliasZone(alias, primary string) *zone.Zone {
 	}
 }
 
-func GetRRSetKey(ownerName, zoneName, recordType string) *rrset.RRSetKey {
+func GetRRSetKey(ownerName, zoneName, recordType, pType string) *rrset.RRSetKey {
 	return &rrset.RRSetKey{
 		Owner:      ownerName,
 		Zone:       zoneName,
 		RecordType: recordType,
+		PType:      pType,
+	}
+}
+
+func GetTestRRSetKey() *rrset.RRSetKey {
+	return &rrset.RRSetKey{
+		ID:         "id",
+		Owner:      "www",
+		Zone:       "non-existing-zone.com.",
+		RecordType: "A",
 	}
 }

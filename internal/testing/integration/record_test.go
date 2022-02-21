@@ -8,73 +8,63 @@ import (
 	"github.com/ultradns/ultradns-go-sdk/pkg/rrset"
 )
 
-const (
-	testRecordTypeA    = "A"
-	testRecordTypeAAAA = "AAAA"
-)
-
-func TestRecordResources(t *testing.T) {
+func (t *IntegrationTest) TestRecordResources(zoneName string) {
 	it := IntegrationTest{}
-	zoneName := integration.GetRandomZoneName()
 	ownerName := integration.GetRandomString()
 
-	t.Parallel()
-
-	t.Run("TestCreateRecordResourceZone",
-		func(st *testing.T) {
-			it.Test = st
-			it.CreatePrimaryZone(zoneName)
-		})
-	t.Run("TestCreateRecordResourceTypeA",
+	t.Test.Run("TestCreateRecordResourceTypeA",
 		func(st *testing.T) {
 			it.Test = st
 			it.CreateRecordTypeA(ownerName, zoneName)
 		})
-	t.Run("TestUpdateRecordResourceTypeA",
+	t.Test.Run("TestUpdateRecordResourceTypeA",
 		func(st *testing.T) {
 			it.Test = st
 			it.UpdateRecordTypeA(ownerName, zoneName)
 		})
-	t.Run("TestPartialUpdateRecordResourceTypeA",
+	t.Test.Run("TestPartialUpdateRecordResourceTypeA",
 		func(st *testing.T) {
 			it.Test = st
 			it.PartialUpdateRecordTypeA(ownerName, zoneName)
 		})
-	t.Run("TestReadRecordResourceTypeA",
+	t.Test.Run("TestReadRecordResourceTypeA",
 		func(st *testing.T) {
 			it.Test = st
-			it.ReadRecord(integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA))
+			it.ReadRecord(integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, ""))
 		})
-	t.Run("TestDeleteRecordResourceTypeA",
+	t.Test.Run("TestDeleteRecordResourceTypeA",
 		func(st *testing.T) {
 			it.Test = st
-			it.DeleteRecord(integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA))
-		})
-	t.Run("TestDeleteRecordResourceZone",
-		func(st *testing.T) {
-			it.Test = st
-			it.DeleteZone(zoneName)
+			it.DeleteRecord(integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, ""))
 		})
 }
 
 func (it *IntegrationTest) CreateRecordTypeA(ownerName, zoneName string) {
-	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA)
+	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, "")
 	rrSet := getRRSetTypeA(ownerName)
 	it.CreateRecord(rrSetKey, rrSet)
 }
 
 func (it *IntegrationTest) UpdateRecordTypeA(ownerName, zoneName string) {
-	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA)
+	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, "")
 	rrSet := getRRSetTypeA(ownerName)
 	rrSet.RData = []string{"192.168.1.11"}
 	it.UpdateRecord(rrSetKey, rrSet)
 }
 
 func (it *IntegrationTest) PartialUpdateRecordTypeA(ownerName, zoneName string) {
-	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA)
+	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, "")
 	rrSet := getRRSetTypeA(ownerName)
 	rrSet.RData = []string{"192.168.1.12"}
 	it.PartialUpdateRecord(rrSetKey, rrSet)
+}
+
+func getRRSetTypeA(ownerName string) *rrset.RRSet {
+	return &rrset.RRSet{
+		OwnerName: ownerName,
+		RRType:    testRecordTypeA,
+		RData:     []string{"192.168.1.1"},
+	}
 }
 
 func (it *IntegrationTest) CreateRecord(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) {
@@ -134,13 +124,5 @@ func (it *IntegrationTest) DeleteRecord(rrSetKey *rrset.RRSetKey) {
 
 	if _, er := recordService.Delete(rrSetKey); er != nil {
 		it.Test.Fatal(er)
-	}
-}
-
-func getRRSetTypeA(ownerName string) *rrset.RRSet {
-	return &rrset.RRSet{
-		OwnerName: ownerName,
-		RRType:    testRecordTypeA,
-		RData:     []string{"192.168.1.1"},
 	}
 }
