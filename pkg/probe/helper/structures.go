@@ -1,14 +1,14 @@
 package helper
 
 type LimitsInfo struct {
-	Connect      Limit        `json:"connect,omitempty"`
-	AvgConnect   Limit        `json:"avgConnect,omitempty"`
-	Run          Limit        `json:"run,omitempty"`
-	AvgRun       Limit        `json:"avgRun,omitempty"`
-	Total        Limit        `json:"total,omitempty"`
-	Average      Limit        `json:"average,omitempty"`
-	LossPercent  Limit        `json:"lossPercent,omitempty"`
-	SearchString SearchString `json:"searchString,omitempty"`
+	Connect      *Limit        `json:"connect,omitempty"`
+	AvgConnect   *Limit        `json:"avgConnect,omitempty"`
+	Run          *Limit        `json:"run,omitempty"`
+	AvgRun       *Limit        `json:"avgRun,omitempty"`
+	Total        *Limit        `json:"total,omitempty"`
+	Average      *Limit        `json:"average,omitempty"`
+	LossPercent  *Limit        `json:"lossPercent,omitempty"`
+	SearchString *SearchString `json:"searchString,omitempty"`
 }
 
 type Limit struct {

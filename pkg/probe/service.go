@@ -128,3 +128,23 @@ func (s *Service) Delete(rrSetKey *rrset.RRSetKey) (*http.Response, error) {
 
 	return res, nil
 }
+
+func (s *Service) List(rrSetKey *rrset.RRSetKey) (*http.Response, *ResponseList, error) {
+	target := client.Target(&ResponseList{})
+
+	if s.c == nil {
+		return nil, nil, errors.ServiceError(serviceName)
+	}
+
+	rrSetKey.ID = ""
+
+	res, err := s.c.Do(http.MethodGet, rrSetKey.ProbeURI(), nil, target)
+
+	if err != nil {
+		return nil, nil, errors.ListError(serviceName, rrSetKey.ProbeURI(), err)
+	}
+
+	probesList := target.Data.(*ResponseList)
+
+	return res, probesList, nil
+}

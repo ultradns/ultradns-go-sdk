@@ -1,5 +1,7 @@
 package probe
 
+import "github.com/ultradns/ultradns-go-sdk/pkg/helper"
+
 const (
 	HTTP     = "HTTP"
 	TCP      = "TCP"
@@ -21,3 +23,9 @@ type Probe struct {
 }
 
 type RawDetails interface{}
+
+type ResponseList struct {
+	QueryInfo  *helper.QueryInfo  `json:"queryInfo,omitempty"`
+	ResultInfo *helper.ResultInfo `json:"resultInfo,omitempty"`
+	Probes     []*Probe           `json:"probes,omitempty"`
+}
