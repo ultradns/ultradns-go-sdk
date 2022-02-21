@@ -40,20 +40,20 @@ func (t *IntegrationTest) TestDIRPoolResources(zoneName string) {
 		})
 }
 
-func (it *IntegrationTest) CreateDIRPoolTypeA(ownerName, zoneName string) {
+func (t *IntegrationTest) CreateDIRPoolTypeA(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, "")
 	rrSet := getDIRPoolTypeA(ownerName)
-	it.CreateRecord(rrSetKey, rrSet)
+	t.CreateRecord(rrSetKey, rrSet)
 }
 
-func (it *IntegrationTest) UpdateDIRPoolTypeA(ownerName, zoneName string) {
+func (t *IntegrationTest) UpdateDIRPoolTypeA(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, "")
 	rrSet := getDIRPoolTypeA(ownerName)
 	rrSet.RData = []string{"192.168.1.11"}
-	it.UpdateRecord(rrSetKey, rrSet)
+	t.UpdateRecord(rrSetKey, rrSet)
 }
 
-func (it *IntegrationTest) PartialUpdateDIRPoolTypeA(ownerName, zoneName string) {
+func (t *IntegrationTest) PartialUpdateDIRPoolTypeA(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, "")
 	rrSet := getDIRPoolTypeA(ownerName)
 	geoInfo := &dirpool.GEOInfo{
@@ -64,7 +64,7 @@ func (it *IntegrationTest) PartialUpdateDIRPoolTypeA(ownerName, zoneName string)
 	}
 	rrSet.Profile.(*dirpool.Profile).RDataInfo = []*dirpool.RDataInfo{rdataInfo}
 	rrSet.RData = []string{"192.168.1.11"}
-	it.PartialUpdateRecord(rrSetKey, rrSet)
+	t.PartialUpdateRecord(rrSetKey, rrSet)
 }
 
 func getDIRPoolTypeA(ownerName string) *rrset.RRSet {

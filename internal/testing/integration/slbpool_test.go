@@ -40,24 +40,24 @@ func (t *IntegrationTest) TestSLBPoolResources(zoneName string) {
 		})
 }
 
-func (it *IntegrationTest) CreateSLBPoolTypeA(ownerName, zoneName string) {
+func (t *IntegrationTest) CreateSLBPoolTypeA(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, "")
 	rrSet := getSLBPoolTypeA(ownerName)
-	it.CreateRecord(rrSetKey, rrSet)
+	t.CreateRecord(rrSetKey, rrSet)
 }
 
-func (it *IntegrationTest) UpdateSLBPoolTypeA(ownerName, zoneName string) {
+func (t *IntegrationTest) UpdateSLBPoolTypeA(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, "")
 	rrSet := getSLBPoolTypeA(ownerName)
 	rrSet.RData = []string{"192.168.1.11"}
-	it.UpdateRecord(rrSetKey, rrSet)
+	t.UpdateRecord(rrSetKey, rrSet)
 }
 
-func (it *IntegrationTest) PartialUpdateSLBPoolTypeA(ownerName, zoneName string) {
+func (t *IntegrationTest) PartialUpdateSLBPoolTypeA(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, "")
 	rrSet := getSLBPoolTypeA(ownerName)
 	rrSet.RData = []string{"192.168.1.12"}
-	it.PartialUpdateRecord(rrSetKey, rrSet)
+	t.PartialUpdateRecord(rrSetKey, rrSet)
 }
 
 func getSLBPoolTypeA(ownerName string) *rrset.RRSet {

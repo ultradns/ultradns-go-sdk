@@ -44,20 +44,20 @@ func (t *IntegrationTest) TestTCPProbeResources(zoneName, ownerName string) {
 		})
 }
 
-func (it *IntegrationTest) CreateProbeTypeTCP(ownerName, zoneName string) {
+func (t *IntegrationTest) CreateProbeTypeTCP(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, probe.TCP)
 	probedata := getProbeTypeTCP()
-	it.CreateProbe(rrSetKey, probedata)
+	t.CreateProbe(rrSetKey, probedata)
 }
 
-func (it *IntegrationTest) UpdateProbeTypeTCP(ownerName, zoneName string) {
+func (t *IntegrationTest) UpdateProbeTypeTCP(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, probe.TCP)
 	probedata := getProbeTypeTCP()
-	probedata.Interval = "FIFTEEN_MINUTES"
-	it.UpdateProbe(rrSetKey, probedata)
+	probedata.Interval = testProbeInterval
+	t.UpdateProbe(rrSetKey, probedata)
 }
 
-func (it *IntegrationTest) PartialUpdateProbeTypeTCP(ownerName, zoneName string) {
+func (t *IntegrationTest) PartialUpdateProbeTypeTCP(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, probe.TCP)
 	probedata := getProbeTypeTCP()
 	limit := &helper.Limit{
@@ -71,7 +71,7 @@ func (it *IntegrationTest) PartialUpdateProbeTypeTCP(ownerName, zoneName string)
 		Limits: limitInfo,
 	}
 	probedata.Details = details
-	it.PartialUpdateProbe(rrSetKey, probedata)
+	t.PartialUpdateProbe(rrSetKey, probedata)
 }
 
 func getProbeTypeTCP() *probe.Probe {
@@ -92,5 +92,6 @@ func getProbeTypeTCP() *probe.Probe {
 		Threshold: 2,
 		Details:   details,
 	}
+
 	return probedata
 }

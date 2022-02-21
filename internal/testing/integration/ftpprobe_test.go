@@ -44,20 +44,20 @@ func (t *IntegrationTest) TestFTPProbeResources(zoneName, ownerName string) {
 		})
 }
 
-func (it *IntegrationTest) CreateProbeTypeFTP(ownerName, zoneName string) {
+func (t *IntegrationTest) CreateProbeTypeFTP(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, probe.FTP)
 	probedata := getProbeTypeFTP()
-	it.CreateProbe(rrSetKey, probedata)
+	t.CreateProbe(rrSetKey, probedata)
 }
 
-func (it *IntegrationTest) UpdateProbeTypeFTP(ownerName, zoneName string) {
+func (t *IntegrationTest) UpdateProbeTypeFTP(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, probe.FTP)
 	probedata := getProbeTypeFTP()
-	probedata.Interval = "FIFTEEN_MINUTES"
-	it.UpdateProbe(rrSetKey, probedata)
+	probedata.Interval = testProbeInterval
+	t.UpdateProbe(rrSetKey, probedata)
 }
 
-func (it *IntegrationTest) PartialUpdateProbeTypeFTP(ownerName, zoneName string) {
+func (t *IntegrationTest) PartialUpdateProbeTypeFTP(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, probe.FTP)
 	probedata := getProbeTypeFTP()
 	limit := &helper.Limit{
@@ -71,7 +71,7 @@ func (it *IntegrationTest) PartialUpdateProbeTypeFTP(ownerName, zoneName string)
 		Limits: limitInfo,
 	}
 	probedata.Details = details
-	it.PartialUpdateProbe(rrSetKey, probedata)
+	t.PartialUpdateProbe(rrSetKey, probedata)
 }
 
 func getProbeTypeFTP() *probe.Probe {
@@ -94,5 +94,6 @@ func getProbeTypeFTP() *probe.Probe {
 		Threshold: 2,
 		Details:   details,
 	}
+
 	return probedata
 }

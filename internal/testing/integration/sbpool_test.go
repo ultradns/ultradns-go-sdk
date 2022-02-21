@@ -34,24 +34,24 @@ func (t *IntegrationTest) TestSBPoolResources(zoneName, ownerName string) {
 		})
 }
 
-func (it *IntegrationTest) CreateSBPoolTypeA(ownerName, zoneName string) {
+func (t *IntegrationTest) CreateSBPoolTypeA(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, "")
 	rrSet := getSBPoolTypeA(ownerName)
-	it.CreateRecord(rrSetKey, rrSet)
+	t.CreateRecord(rrSetKey, rrSet)
 }
 
-func (it *IntegrationTest) UpdateSBPoolTypeA(ownerName, zoneName string) {
+func (t *IntegrationTest) UpdateSBPoolTypeA(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, "")
 	rrSet := getSBPoolTypeA(ownerName)
 	rrSet.RData = []string{"192.168.1.11"}
-	it.UpdateRecord(rrSetKey, rrSet)
+	t.UpdateRecord(rrSetKey, rrSet)
 }
 
-func (it *IntegrationTest) PartialUpdateSBPoolTypeA(ownerName, zoneName string) {
+func (t *IntegrationTest) PartialUpdateSBPoolTypeA(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, "")
 	rrSet := getSBPoolTypeA(ownerName)
 	rrSet.RData = []string{"192.168.1.12"}
-	it.PartialUpdateRecord(rrSetKey, rrSet)
+	t.PartialUpdateRecord(rrSetKey, rrSet)
 }
 
 func getSBPoolTypeA(ownerName string) *rrset.RRSet {

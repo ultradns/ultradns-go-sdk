@@ -6,6 +6,6 @@ type Details struct {
 	OwnerName string             `json:"ownerName,omitempty"`
 	Type      string             `json:"type,omitempty"`
 	Port      int                `json:"port,omitempty"`
-	TcpOnly   bool               `json:"tcpOnly,omitempty"`
+	TCPOnly   bool               `json:"tcpOnly,omitempty"`
 	Limits    *helper.LimitsInfo `json:"limits,omitempty"`
 }

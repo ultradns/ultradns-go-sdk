@@ -51,20 +51,20 @@ func (t *IntegrationTest) TestHTTPProbeResources(zoneName, ownerName string) {
 		})
 }
 
-func (it *IntegrationTest) CreateProbeTypeHTTP(ownerName, zoneName string) {
+func (t *IntegrationTest) CreateProbeTypeHTTP(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, probe.HTTP)
 	probedata := getProbeTypeHTTP()
-	it.CreateProbe(rrSetKey, probedata)
+	t.CreateProbe(rrSetKey, probedata)
 }
 
-func (it *IntegrationTest) UpdateProbeTypeHTTP(ownerName, zoneName string) {
+func (t *IntegrationTest) UpdateProbeTypeHTTP(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, probe.HTTP)
 	probedata := getProbeTypeHTTP()
-	probedata.Interval = "FIFTEEN_MINUTES"
-	it.UpdateProbe(rrSetKey, probedata)
+	probedata.Interval = testProbeInterval
+	t.UpdateProbe(rrSetKey, probedata)
 }
 
-func (it *IntegrationTest) PartialUpdateProbeTypeHTTP(ownerName, zoneName string) {
+func (t *IntegrationTest) PartialUpdateProbeTypeHTTP(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, probe.HTTP)
 	probedata := getProbeTypeHTTP()
 	limit := &helper.Limit{
@@ -84,20 +84,20 @@ func (it *IntegrationTest) PartialUpdateProbeTypeHTTP(ownerName, zoneName string
 		Transactions: []*http.Transaction{transction},
 	}
 	probedata.Details = details
-	it.PartialUpdateProbe(rrSetKey, probedata)
+	t.PartialUpdateProbe(rrSetKey, probedata)
 }
 
-func (it *IntegrationTest) ReadProbeValidationFailure(rrSetKey *rrset.RRSetKey) {
+func (t *IntegrationTest) ReadProbeValidationFailure(rrSetKey *rrset.RRSetKey) {
 	probeService, err := probe.Get(integration.TestClient)
 
 	if err != nil {
-		it.Test.Fatal(err)
+		t.Test.Fatal(err)
 	}
 
 	rrSetKey.ID = probeID
 
 	if _, _, er := probeService.Read(rrSetKey); er.Error() != fmt.Sprintf("Probe resource of type TCP - %v not found", rrSetKey.PID()) {
-		it.Test.Fatal(er)
+		t.Test.Fatal(er)
 	}
 }
 
@@ -125,5 +125,6 @@ func getProbeTypeHTTP() *probe.Probe {
 		Threshold: 2,
 		Details:   details,
 	}
+
 	return probedata
 }

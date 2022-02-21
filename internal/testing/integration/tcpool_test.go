@@ -34,24 +34,24 @@ func (t *IntegrationTest) TestTCPoolResources(zoneName, ownerName string) {
 		})
 }
 
-func (it *IntegrationTest) CreateTCPoolTypeA(ownerName, zoneName string) {
+func (t *IntegrationTest) CreateTCPoolTypeA(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, "")
 	rrSet := getTCPoolTypeA(ownerName)
-	it.CreateRecord(rrSetKey, rrSet)
+	t.CreateRecord(rrSetKey, rrSet)
 }
 
-func (it *IntegrationTest) UpdateTCPoolTypeA(ownerName, zoneName string) {
+func (t *IntegrationTest) UpdateTCPoolTypeA(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, "")
 	rrSet := getTCPoolTypeA(ownerName)
 	rrSet.RData = []string{"192.168.1.11"}
-	it.UpdateRecord(rrSetKey, rrSet)
+	t.UpdateRecord(rrSetKey, rrSet)
 }
 
-func (it *IntegrationTest) PartialUpdateTCPoolTypeA(ownerName, zoneName string) {
+func (t *IntegrationTest) PartialUpdateTCPoolTypeA(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, "")
 	rrSet := getTCPoolTypeA(ownerName)
 	rrSet.RData = []string{"192.168.1.12"}
-	it.PartialUpdateRecord(rrSetKey, rrSet)
+	t.PartialUpdateRecord(rrSetKey, rrSet)
 }
 
 func getTCPoolTypeA(ownerName string) *rrset.RRSet {

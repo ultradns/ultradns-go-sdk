@@ -39,24 +39,24 @@ func (t *IntegrationTest) TestRecordResources(zoneName string) {
 		})
 }
 
-func (it *IntegrationTest) CreateRecordTypeA(ownerName, zoneName string) {
+func (t *IntegrationTest) CreateRecordTypeA(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, "")
 	rrSet := getRRSetTypeA(ownerName)
-	it.CreateRecord(rrSetKey, rrSet)
+	t.CreateRecord(rrSetKey, rrSet)
 }
 
-func (it *IntegrationTest) UpdateRecordTypeA(ownerName, zoneName string) {
+func (t *IntegrationTest) UpdateRecordTypeA(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, "")
 	rrSet := getRRSetTypeA(ownerName)
 	rrSet.RData = []string{"192.168.1.11"}
-	it.UpdateRecord(rrSetKey, rrSet)
+	t.UpdateRecord(rrSetKey, rrSet)
 }
 
-func (it *IntegrationTest) PartialUpdateRecordTypeA(ownerName, zoneName string) {
+func (t *IntegrationTest) PartialUpdateRecordTypeA(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, "")
 	rrSet := getRRSetTypeA(ownerName)
 	rrSet.RData = []string{"192.168.1.12"}
-	it.PartialUpdateRecord(rrSetKey, rrSet)
+	t.PartialUpdateRecord(rrSetKey, rrSet)
 }
 
 func getRRSetTypeA(ownerName string) *rrset.RRSet {
@@ -67,62 +67,62 @@ func getRRSetTypeA(ownerName string) *rrset.RRSet {
 	}
 }
 
-func (it *IntegrationTest) CreateRecord(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) {
+func (t *IntegrationTest) CreateRecord(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) {
 	recordService, err := record.Get(integration.TestClient)
 
 	if err != nil {
-		it.Test.Fatal(err)
+		t.Test.Fatal(err)
 	}
 
 	if _, er := recordService.Create(rrSetKey, rrSet); er != nil {
-		it.Test.Fatal(er)
+		t.Test.Fatal(er)
 	}
 }
 
-func (it *IntegrationTest) UpdateRecord(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) {
+func (t *IntegrationTest) UpdateRecord(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) {
 	recordService, err := record.Get(integration.TestClient)
 
 	if err != nil {
-		it.Test.Fatal(err)
+		t.Test.Fatal(err)
 	}
 
 	if _, er := recordService.Update(rrSetKey, rrSet); er != nil {
-		it.Test.Fatal(er)
+		t.Test.Fatal(er)
 	}
 }
 
-func (it *IntegrationTest) PartialUpdateRecord(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) {
+func (t *IntegrationTest) PartialUpdateRecord(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) {
 	recordService, err := record.Get(integration.TestClient)
 
 	if err != nil {
-		it.Test.Fatal(err)
+		t.Test.Fatal(err)
 	}
 
 	if _, er := recordService.PartialUpdate(rrSetKey, rrSet); er != nil {
-		it.Test.Fatal(er)
+		t.Test.Fatal(er)
 	}
 }
 
-func (it *IntegrationTest) ReadRecord(rrSetKey *rrset.RRSetKey) {
+func (t *IntegrationTest) ReadRecord(rrSetKey *rrset.RRSetKey) {
 	recordService, err := record.Get(integration.TestClient)
 
 	if err != nil {
-		it.Test.Fatal(err)
+		t.Test.Fatal(err)
 	}
 
 	if _, _, er := recordService.Read(rrSetKey); er != nil {
-		it.Test.Fatal(er)
+		t.Test.Fatal(er)
 	}
 }
 
-func (it *IntegrationTest) DeleteRecord(rrSetKey *rrset.RRSetKey) {
+func (t *IntegrationTest) DeleteRecord(rrSetKey *rrset.RRSetKey) {
 	recordService, err := record.Get(integration.TestClient)
 
 	if err != nil {
-		it.Test.Fatal(err)
+		t.Test.Fatal(err)
 	}
 
 	if _, er := recordService.Delete(rrSetKey); er != nil {
-		it.Test.Fatal(er)
+		t.Test.Fatal(er)
 	}
 }

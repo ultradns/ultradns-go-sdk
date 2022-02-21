@@ -44,20 +44,20 @@ func (t *IntegrationTest) TestPINGProbeResources(zoneName, ownerName string) {
 		})
 }
 
-func (it *IntegrationTest) CreateProbeTypePING(ownerName, zoneName string) {
+func (t *IntegrationTest) CreateProbeTypePING(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, probe.PING)
 	probedata := getProbeTypePING()
-	it.CreateProbe(rrSetKey, probedata)
+	t.CreateProbe(rrSetKey, probedata)
 }
 
-func (it *IntegrationTest) UpdateProbeTypePING(ownerName, zoneName string) {
+func (t *IntegrationTest) UpdateProbeTypePING(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, probe.PING)
 	probedata := getProbeTypePING()
-	probedata.Interval = "FIFTEEN_MINUTES"
-	it.UpdateProbe(rrSetKey, probedata)
+	probedata.Interval = testProbeInterval
+	t.UpdateProbe(rrSetKey, probedata)
 }
 
-func (it *IntegrationTest) PartialUpdateProbeTypePING(ownerName, zoneName string) {
+func (t *IntegrationTest) PartialUpdateProbeTypePING(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, probe.PING)
 	probedata := getProbeTypePING()
 	limit := &helper.Limit{
@@ -73,7 +73,7 @@ func (it *IntegrationTest) PartialUpdateProbeTypePING(ownerName, zoneName string
 		Limits:     limitInfo,
 	}
 	probedata.Details = details
-	it.PartialUpdateProbe(rrSetKey, probedata)
+	t.PartialUpdateProbe(rrSetKey, probedata)
 }
 
 func getProbeTypePING() *probe.Probe {
@@ -96,5 +96,6 @@ func getProbeTypePING() *probe.Probe {
 		Threshold: 2,
 		Details:   details,
 	}
+
 	return probedata
 }

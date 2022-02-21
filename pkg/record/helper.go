@@ -20,26 +20,25 @@ func getPoolSchema(poolType string) string {
 		pool.TC:  tcpool.Schema,
 		pool.DIR: dirpool.Schema,
 	}
+
 	return poolSchema[poolType]
 }
 
-func getPoolProfile(profileType string) rrset.RawProfile {
+func setPoolProfile(profileType string, rrSet *rrset.RRSet) {
 	switch profileType {
 	case pool.RD:
-		return &rdpool.Profile{}
+		rrSet.Profile = &rdpool.Profile{}
 	case pool.SF:
-		return &sfpool.Profile{}
+		rrSet.Profile = &sfpool.Profile{}
 	case pool.SLB:
-		return &slbpool.Profile{}
+		rrSet.Profile = &slbpool.Profile{}
 	case pool.SB:
-		return &sbpool.Profile{}
+		rrSet.Profile = &sbpool.Profile{}
 	case pool.TC:
-		return &tcpool.Profile{}
+		rrSet.Profile = &tcpool.Profile{}
 	case pool.DIR:
-		return &dirpool.Profile{}
+		rrSet.Profile = &dirpool.Profile{}
 	}
-
-	return nil
 }
 
 func validatePoolProfile(rrSet *rrset.RRSet) error {
@@ -63,6 +62,7 @@ func validatePoolProfile(rrSet *rrset.RRSet) error {
 	case dirpool.Schema:
 		return pool.ValidateConflictResolve(rrSet.Profile.(*dirpool.Profile).ConflictResolve)
 	}
+
 	return nil
 }
 
@@ -106,5 +106,6 @@ func validateSBPoolProfile(profile *sbpool.Profile) error {
 	if err := pool.ValidatePoolRecordState(profile.RDataInfo); err != nil {
 		return err
 	}
+
 	return nil
 }

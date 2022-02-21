@@ -44,20 +44,20 @@ func (t *IntegrationTest) TestDNSProbeResources(zoneName, ownerName string) {
 		})
 }
 
-func (it *IntegrationTest) CreateProbeTypeDNS(ownerName, zoneName string) {
+func (t *IntegrationTest) CreateProbeTypeDNS(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, probe.DNS)
 	probedata := getProbeTypeDNS()
-	it.CreateProbe(rrSetKey, probedata)
+	t.CreateProbe(rrSetKey, probedata)
 }
 
-func (it *IntegrationTest) UpdateProbeTypeDNS(ownerName, zoneName string) {
+func (t *IntegrationTest) UpdateProbeTypeDNS(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, probe.DNS)
 	probedata := getProbeTypeDNS()
-	probedata.Interval = "FIFTEEN_MINUTES"
-	it.UpdateProbe(rrSetKey, probedata)
+	probedata.Interval = testProbeInterval
+	t.UpdateProbe(rrSetKey, probedata)
 }
 
-func (it *IntegrationTest) PartialUpdateProbeTypeDNS(ownerName, zoneName string) {
+func (t *IntegrationTest) PartialUpdateProbeTypeDNS(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, probe.DNS)
 	probedata := getProbeTypeDNS()
 	limit := &helper.Limit{
@@ -71,7 +71,7 @@ func (it *IntegrationTest) PartialUpdateProbeTypeDNS(ownerName, zoneName string)
 		Limits: limitInfo,
 	}
 	probedata.Details = details
-	it.PartialUpdateProbe(rrSetKey, probedata)
+	t.PartialUpdateProbe(rrSetKey, probedata)
 }
 
 func getProbeTypeDNS() *probe.Probe {
@@ -92,5 +92,6 @@ func getProbeTypeDNS() *probe.Probe {
 		Threshold: 2,
 		Details:   details,
 	}
+
 	return probedata
 }

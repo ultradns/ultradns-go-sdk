@@ -47,35 +47,35 @@ func (t *IntegrationTest) TestRDPoolResources(zoneName string) {
 		})
 }
 
-func (it *IntegrationTest) CreateRDPoolTypeA(ownerName, zoneName string) {
+func (t *IntegrationTest) CreateRDPoolTypeA(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, "")
 	rrSet := getRDPoolTypeA(ownerName)
-	it.CreateRecord(rrSetKey, rrSet)
+	t.CreateRecord(rrSetKey, rrSet)
 }
 
-func (it *IntegrationTest) UpdateRDPoolTypeA(ownerName, zoneName string) {
+func (t *IntegrationTest) UpdateRDPoolTypeA(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, "")
 	rrSet := getRDPoolTypeA(ownerName)
 	rrSet.RData = []string{"192.168.1.11"}
-	it.UpdateRecord(rrSetKey, rrSet)
+	t.UpdateRecord(rrSetKey, rrSet)
 }
 
-func (it *IntegrationTest) PartialUpdateRDPoolTypeA(ownerName, zoneName string) {
+func (t *IntegrationTest) PartialUpdateRDPoolTypeA(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, "")
 	rrSet := getRDPoolTypeA(ownerName)
 	rrSet.RData = []string{"192.168.1.12"}
-	it.PartialUpdateRecord(rrSetKey, rrSet)
+	t.PartialUpdateRecord(rrSetKey, rrSet)
 }
 
-func (it *IntegrationTest) ReadPoolValidationFailure(rrSetKey *rrset.RRSetKey) {
+func (t *IntegrationTest) ReadPoolValidationFailure(rrSetKey *rrset.RRSetKey) {
 	recordService, err := record.Get(integration.TestClient)
 
 	if err != nil {
-		it.Test.Fatal(err)
+		t.Test.Fatal(err)
 	}
 
 	if _, _, er := recordService.Read(rrSetKey); er.Error() != fmt.Sprintf("Record resource of type SB_POOL - %v not found", rrSetKey.RecordID()) {
-		it.Test.Fatal(er)
+		t.Test.Fatal(er)
 	}
 }
 

@@ -13,7 +13,7 @@ type Profile struct {
 
 type RDataInfo struct {
 	Type             string   `json:"type,omitempty"`
-	Ttl              int      `json:"ttl,omitempty"`
+	TTL              int      `json:"ttl,omitempty"`
 	AllNonConfigured bool     `json:"allNonConfigured,omitempty"`
 	GeoInfo          *GEOInfo `json:"geoInfo,omitempty"`
 	IPInfo           *IPInfo  `json:"ipInfo,omitempty"`

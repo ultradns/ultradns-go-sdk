@@ -44,20 +44,20 @@ func (t *IntegrationTest) TestSMTPProbeResources(zoneName, ownerName string) {
 		})
 }
 
-func (it *IntegrationTest) CreateProbeTypeSMTP(ownerName, zoneName string) {
+func (t *IntegrationTest) CreateProbeTypeSMTP(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, probe.SMTP)
 	probedata := getProbeTypeSMTP()
-	it.CreateProbe(rrSetKey, probedata)
+	t.CreateProbe(rrSetKey, probedata)
 }
 
-func (it *IntegrationTest) UpdateProbeTypeSMTP(ownerName, zoneName string) {
+func (t *IntegrationTest) UpdateProbeTypeSMTP(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, probe.SMTP)
 	probedata := getProbeTypeSMTP()
-	probedata.Interval = "FIFTEEN_MINUTES"
-	it.UpdateProbe(rrSetKey, probedata)
+	probedata.Interval = testProbeInterval
+	t.UpdateProbe(rrSetKey, probedata)
 }
 
-func (it *IntegrationTest) PartialUpdateProbeTypeSMTP(ownerName, zoneName string) {
+func (t *IntegrationTest) PartialUpdateProbeTypeSMTP(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, probe.SMTP)
 	probedata := getProbeTypeSMTP()
 	limit := &helper.Limit{
@@ -71,7 +71,7 @@ func (it *IntegrationTest) PartialUpdateProbeTypeSMTP(ownerName, zoneName string
 		Limits: limitInfo,
 	}
 	probedata.Details = details
-	it.PartialUpdateProbe(rrSetKey, probedata)
+	t.PartialUpdateProbe(rrSetKey, probedata)
 }
 
 func getProbeTypeSMTP() *probe.Probe {
@@ -92,5 +92,6 @@ func getProbeTypeSMTP() *probe.Probe {
 		Threshold: 2,
 		Details:   details,
 	}
+
 	return probedata
 }

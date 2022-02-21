@@ -44,6 +44,7 @@ func ValidatePoolOrder(val string) error {
 	if isValidField(val, poolOrder) {
 		return nil
 	}
+
 	list := []string{"FIXED", "RANDOM", "ROUND_ROBIN"}
 
 	return errors.UnknownDataError("Pool order", val, list)
@@ -53,6 +54,7 @@ func ValidateRegionFailureSensitivity(val string) error {
 	if isValidField(val, regionFailureSensitivity) {
 		return nil
 	}
+
 	list := []string{"HIGH", "LOW"}
 
 	return errors.UnknownDataError("Pool Region Failure Sensitivity", val, list)
@@ -62,6 +64,7 @@ func ValidateMonitorMethod(monitor *Monitor) error {
 	if monitor == nil || isValidField(monitor.Method, monitorMethod) {
 		return nil
 	}
+
 	list := []string{"GET", "POST"}
 
 	return errors.UnknownDataError("Pool Monitor Method", monitor.Method, list)
@@ -71,6 +74,7 @@ func ValidateResponseMethod(val string) error {
 	if isValidField(val, responseMethod) {
 		return nil
 	}
+
 	list := []string{"PRIORITY_HUNT", "RANDOM", "ROUND_ROBIN"}
 
 	return errors.UnknownDataError("Pool Response Method", val, list)
@@ -80,6 +84,7 @@ func ValidateServingPreference(val string) error {
 	if isValidField(val, servingPreference) {
 		return nil
 	}
+
 	list := []string{"AUTO_SELECT", "SERVE_PRIMARY", "SERVE_ALL_FAIL"}
 
 	return errors.UnknownDataError("Pool Serving Preference", val, list)
@@ -89,6 +94,7 @@ func ValidateConflictResolve(val string) error {
 	if isValidField(val, dirPoolConflict) {
 		return nil
 	}
+
 	list := []string{"GEO", "IP", ""}
 
 	return errors.UnknownDataError("DIR Pool Resolve Conflict", val, list)

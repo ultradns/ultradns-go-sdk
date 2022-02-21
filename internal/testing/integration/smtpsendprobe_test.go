@@ -44,20 +44,20 @@ func (t *IntegrationTest) TestSMTPSendProbeResources(zoneName, ownerName string)
 		})
 }
 
-func (it *IntegrationTest) CreateProbeTypeSMTPSend(ownerName, zoneName string) {
+func (t *IntegrationTest) CreateProbeTypeSMTPSend(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, probe.SMTPSend)
 	probedata := getProbeTypeSMTPSend()
-	it.CreateProbe(rrSetKey, probedata)
+	t.CreateProbe(rrSetKey, probedata)
 }
 
-func (it *IntegrationTest) UpdateProbeTypeSMTPSend(ownerName, zoneName string) {
+func (t *IntegrationTest) UpdateProbeTypeSMTPSend(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, probe.SMTPSend)
 	probedata := getProbeTypeSMTPSend()
-	probedata.Interval = "FIFTEEN_MINUTES"
-	it.UpdateProbe(rrSetKey, probedata)
+	probedata.Interval = testProbeInterval
+	t.UpdateProbe(rrSetKey, probedata)
 }
 
-func (it *IntegrationTest) PartialUpdateProbeTypeSMTPSend(ownerName, zoneName string) {
+func (t *IntegrationTest) PartialUpdateProbeTypeSMTPSend(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, probe.SMTPSend)
 	probedata := getProbeTypeSMTPSend()
 	limit := &helper.Limit{
@@ -70,7 +70,7 @@ func (it *IntegrationTest) PartialUpdateProbeTypeSMTPSend(ownerName, zoneName st
 		Limits: limitInfo,
 	}
 	probedata.Details = details
-	it.PartialUpdateProbe(rrSetKey, probedata)
+	t.PartialUpdateProbe(rrSetKey, probedata)
 }
 
 func getProbeTypeSMTPSend() *probe.Probe {
@@ -94,5 +94,6 @@ func getProbeTypeSMTPSend() *probe.Probe {
 		Threshold: 2,
 		Details:   details,
 	}
+
 	return probedata
 }

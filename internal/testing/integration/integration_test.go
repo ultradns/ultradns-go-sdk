@@ -59,40 +59,10 @@ func TestRecordResources(t *testing.T) {
 			it.Test = st
 			it.TestTCPoolResources(zoneName, ownerNameTC)
 		})
-	t.Run("TestHTTPProbeResources",
+	t.Run("TestProbeResources",
 		func(st *testing.T) {
 			it.Test = st
-			it.TestHTTPProbeResources(zoneName, ownerNameSB)
-		})
-	t.Run("TestFTPProbeResources",
-		func(st *testing.T) {
-			it.Test = st
-			it.TestFTPProbeResources(zoneName, ownerNameSB)
-		})
-	t.Run("TestTCPProbeResources",
-		func(st *testing.T) {
-			it.Test = st
-			it.TestTCPProbeResources(zoneName, ownerNameSB)
-		})
-	t.Run("TestPINGProbeResources",
-		func(st *testing.T) {
-			it.Test = st
-			it.TestPINGProbeResources(zoneName, ownerNameTC)
-		})
-	t.Run("TestDNSProbeResources",
-		func(st *testing.T) {
-			it.Test = st
-			it.TestDNSProbeResources(zoneName, ownerNameTC)
-		})
-	t.Run("TestSMTPProbeResources",
-		func(st *testing.T) {
-			it.Test = st
-			it.TestSMTPProbeResources(zoneName, ownerNameTC)
-		})
-	t.Run("TestSMTPSendProbeResources",
-		func(st *testing.T) {
-			it.Test = st
-			it.TestSMTPSendProbeResources(zoneName, ownerNameSB)
+			it.TestProbeResources(zoneName, ownerNameSB, ownerNameTC)
 		})
 	t.Run("TestDIRPoolRecordResources",
 		func(st *testing.T) {

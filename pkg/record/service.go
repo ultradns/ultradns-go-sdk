@@ -53,9 +53,10 @@ func (s *Service) Create(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*http.Re
 }
 
 func (s *Service) Read(rrSetKey *rrset.RRSetKey) (*http.Response, *rrset.ResponseList, error) {
-	rrSetTarget := &rrset.RRSet{
-		Profile: getPoolProfile(rrSetKey.PType),
-	}
+	rrSetTarget := &rrset.RRSet{}
+
+	setPoolProfile(rrSetKey.PType, rrSetTarget)
+
 	rrSetResList := &rrset.ResponseList{}
 	rrSetResList.RRSets = make([]*rrset.RRSet, 1)
 	rrSetResList.RRSets[0] = rrSetTarget

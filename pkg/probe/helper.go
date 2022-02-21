@@ -31,6 +31,7 @@ func getProbeDetailsType(probeType string) string {
 		PING:     "*ping.Details",
 		DNS:      "*dns.Details",
 	}
+
 	return probeDetailsType[probeType]
 }
 

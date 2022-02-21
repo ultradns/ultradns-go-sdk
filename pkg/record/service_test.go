@@ -17,7 +17,10 @@ import (
 
 const serviceErrorString = "Record service is not properly configured"
 
-const testString = "TEST"
+const (
+	testString         = "TEST"
+	testPoolOrderError = "Pool order should be any of the following data [FIXED RANDOM ROUND_ROBIN] : found - TEST"
+)
 
 func TestNewSuccess(t *testing.T) {
 	conf := integration.GetConfig()
@@ -155,7 +158,7 @@ func TestUpdateWithValidationFailure(t *testing.T) {
 		Profile: profile,
 	}
 
-	if _, er := recordService.Update(integration.GetTestRRSetKey(), rrSet); er.Error() != "Pool order should be any of the following data [FIXED RANDOM ROUND_ROBIN] : found - TEST" {
+	if _, er := recordService.Update(integration.GetTestRRSetKey(), rrSet); er.Error() != testPoolOrderError {
 		t.Fatal(er)
 	}
 }
@@ -197,7 +200,7 @@ func TestRDPoolOrderValidationFailure(t *testing.T) {
 		Profile: profile,
 	}
 
-	if _, er := recordService.Create(integration.GetTestRRSetKey(), rrSet); er.Error() != "Pool order should be any of the following data [FIXED RANDOM ROUND_ROBIN] : found - TEST" {
+	if _, er := recordService.Create(integration.GetTestRRSetKey(), rrSet); er.Error() != testPoolOrderError {
 		t.Fatal(er)
 	}
 }
@@ -355,7 +358,7 @@ func TestSBPoolOrderValidationFailure(t *testing.T) {
 		Profile: profile,
 	}
 
-	if _, er := recordService.Create(integration.GetTestRRSetKey(), rrSet); er.Error() != "Pool order should be any of the following data [FIXED RANDOM ROUND_ROBIN] : found - TEST" {
+	if _, er := recordService.Create(integration.GetTestRRSetKey(), rrSet); er.Error() != testPoolOrderError {
 		t.Fatal(er)
 	}
 }
@@ -411,6 +414,7 @@ func TestDIRPoolConflictResolveValidationFailure(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	profile := &dirpool.Profile{
 		ConflictResolve: testString,
 	}

@@ -9,7 +9,7 @@ const (
 	DIR = "DIR_POOL"
 )
 
-// Monitor structure for SF and SLB Pool
+// Monitor structure for SF and SLB Pool.
 type Monitor struct {
 	Method          string `json:"method,omitempty"`
 	URL             string `json:"url,omitempty"`
@@ -17,14 +17,14 @@ type Monitor struct {
 	SearchString    string `json:"searchString"`
 }
 
-// BackupRecord structure for SB and TC pool
+// BackupRecord structure for SB and TC pool.
 type BackupRecord struct {
 	RData            string `json:"rdata,omitempty"`
 	FailOverDelay    int    `json:"failoverDelay"`
 	AvailableToServe bool   `json:"availableToServe"`
 }
 
-// RDataInfo structure for SB and TC pool
+// RDataInfo structure for SB and TC pool.
 type RDataInfo struct {
 	State            string `json:"state,omitempty"`
 	Status           string `json:"status,omitempty"`

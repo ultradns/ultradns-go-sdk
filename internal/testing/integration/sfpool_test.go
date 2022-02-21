@@ -40,24 +40,24 @@ func (t *IntegrationTest) TestSFPoolResources(zoneName string) {
 		})
 }
 
-func (it *IntegrationTest) CreateSFPoolTypeAAAA(ownerName, zoneName string) {
+func (t *IntegrationTest) CreateSFPoolTypeAAAA(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeAAAA, "")
 	rrSet := getSFPoolTypeAAAA(ownerName)
-	it.CreateRecord(rrSetKey, rrSet)
+	t.CreateRecord(rrSetKey, rrSet)
 }
 
-func (it *IntegrationTest) UpdateSFPoolTypeAAAA(ownerName, zoneName string) {
+func (t *IntegrationTest) UpdateSFPoolTypeAAAA(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeAAAA, "")
 	rrSet := getSFPoolTypeAAAA(ownerName)
 	rrSet.RData = []string{"aaaa:bbbb:cccc:dddd:eeee:ffff:1:11"}
-	it.UpdateRecord(rrSetKey, rrSet)
+	t.UpdateRecord(rrSetKey, rrSet)
 }
 
-func (it *IntegrationTest) PartialUpdateSFPoolTypeAAAA(ownerName, zoneName string) {
+func (t *IntegrationTest) PartialUpdateSFPoolTypeAAAA(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeAAAA, "")
 	rrSet := getSFPoolTypeAAAA(ownerName)
 	rrSet.RData = []string{"aaaa:bbbb:cccc:dddd:eeee:ffff:1:12"}
-	it.PartialUpdateRecord(rrSetKey, rrSet)
+	t.PartialUpdateRecord(rrSetKey, rrSet)
 }
 
 func getSFPoolTypeAAAA(ownerName string) *rrset.RRSet {
