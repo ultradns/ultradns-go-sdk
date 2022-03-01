@@ -28,6 +28,7 @@ linters:
     - bodyclose
     - lll 
     - noctx
+    - dupl
   
 
   fast: false

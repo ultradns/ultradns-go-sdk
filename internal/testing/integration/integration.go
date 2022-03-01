@@ -25,17 +25,12 @@ const (
 var (
 	TestUsername                         = os.Getenv("ULTRADNS_UNIT_TEST_USERNAME")
 	TestPassword                         = os.Getenv("ULTRADNS_UNIT_TEST_PASSWORD")
+	TestAccount                          = os.Getenv("ULTRADNS_UNIT_TEST_ACCOUNT")
 	TestHost                             = os.Getenv("ULTRADNS_UNIT_TEST_HOST_URL")
 	TestUserAgent                        = os.Getenv("ULTRADNS_UNIT_TEST_USER_AGENT")
 	TestPrimaryNameServer                = os.Getenv("ULTRADNS_UNIT_TEST_NAME_SERVER")
 	TestClient            *client.Client = initializeTestClient()
 )
-
-var TestRRSetKey = &rrset.RRSetKey{
-	Name: "www",
-	Zone: "non-existing-zone.com.",
-	Type: "A",
-}
 
 func initializeTestClient() *client.Client {
 	client, _ := client.NewClient(GetConfig())
@@ -88,7 +83,7 @@ func GetRandomString() string {
 func GetZoneProperties(zoneName, zoneType string) *zone.Properties {
 	return &zone.Properties{
 		Name:        zoneName,
-		AccountName: TestUsername,
+		AccountName: TestAccount,
 		Type:        zoneType,
 	}
 }
@@ -145,10 +140,20 @@ func GetAliasZone(alias, primary string) *zone.Zone {
 	}
 }
 
-func GetRRSetKey(ownerName, zoneName, recordType string) *rrset.RRSetKey {
+func GetRRSetKey(ownerName, zoneName, recordType, pType string) *rrset.RRSetKey {
 	return &rrset.RRSetKey{
-		Name: ownerName,
-		Zone: zoneName,
-		Type: recordType,
+		Owner:      ownerName,
+		Zone:       zoneName,
+		RecordType: recordType,
+		PType:      pType,
+	}
+}
+
+func GetTestRRSetKey() *rrset.RRSetKey {
+	return &rrset.RRSetKey{
+		ID:         "id",
+		Owner:      "www",
+		Zone:       "non-existing-zone.com.",
+		RecordType: "A",
 	}
 }

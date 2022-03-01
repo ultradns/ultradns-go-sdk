@@ -4,134 +4,60 @@ import (
 	"testing"
 
 	"github.com/ultradns/ultradns-go-sdk/internal/testing/integration"
-	"github.com/ultradns/ultradns-go-sdk/pkg/pool"
+	"github.com/ultradns/ultradns-go-sdk/pkg/record/pool"
+	"github.com/ultradns/ultradns-go-sdk/pkg/record/slbpool"
 	"github.com/ultradns/ultradns-go-sdk/pkg/rrset"
-	"github.com/ultradns/ultradns-go-sdk/pkg/slbpool"
 )
 
-func TestSLBPoolResources(t *testing.T) {
-	ownerName := integration.GetRandomString()
+func (t *IntegrationTest) TestSLBPoolResources(zoneName string) {
 	it := IntegrationTest{}
+	ownerName := integration.GetRandomString()
 
-	t.Parallel()
-
-	zoneName := integration.GetRandomZoneName()
-
-	t.Run("TestCreateSLBPoolResourceZone",
-		func(st *testing.T) {
-			it.Test = st
-			it.CreatePrimaryZone(zoneName)
-		})
-	t.Run("TestCreateSLBPoolResourceTypeA",
+	t.Test.Run("TestCreateSLBPoolResourceTypeA",
 		func(st *testing.T) {
 			it.Test = st
 			it.CreateSLBPoolTypeA(ownerName, zoneName)
 		})
-	t.Run("TestUpdateSLBPoolResourceTypeA",
+	t.Test.Run("TestUpdateSLBPoolResourceTypeA",
 		func(st *testing.T) {
 			it.Test = st
 			it.UpdateSLBPoolTypeA(ownerName, zoneName)
 		})
-	t.Run("TestPartialUpdateSLBPoolResourceTypeA",
+	t.Test.Run("TestPartialUpdateSLBPoolResourceTypeA",
 		func(st *testing.T) {
 			it.Test = st
 			it.PartialUpdateSLBPoolTypeA(ownerName, zoneName)
 		})
-	t.Run("TestReadSLBPoolResourceTypeA",
+	t.Test.Run("TestReadSLBPoolResourceTypeA",
 		func(st *testing.T) {
 			it.Test = st
-			it.ReadSLBPool(integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA))
+			it.ReadRecord(integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, pool.SLB))
 		})
-	t.Run("TestDeleteSLBPoolResourceTypeA",
+	t.Test.Run("TestDeleteSLBPoolResourceTypeA",
 		func(st *testing.T) {
 			it.Test = st
-			it.DeleteSLBPool(integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA))
-		})
-	t.Run("TestDeleteSLBPoolResourceZone",
-		func(st *testing.T) {
-			it.Test = st
-			it.DeleteZone(zoneName)
+			it.DeleteRecord(integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, ""))
 		})
 }
 
-func (it *IntegrationTest) CreateSLBPoolTypeA(ownerName, zoneName string) {
-	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA)
+func (t *IntegrationTest) CreateSLBPoolTypeA(ownerName, zoneName string) {
+	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, "")
 	rrSet := getSLBPoolTypeA(ownerName)
-	it.CreateSLBPool(rrSetKey, rrSet)
+	t.CreateRecord(rrSetKey, rrSet)
 }
 
-func (it *IntegrationTest) UpdateSLBPoolTypeA(ownerName, zoneName string) {
-	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA)
+func (t *IntegrationTest) UpdateSLBPoolTypeA(ownerName, zoneName string) {
+	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, "")
 	rrSet := getSLBPoolTypeA(ownerName)
 	rrSet.RData = []string{"192.168.1.11"}
-	it.UpdateSLBPool(rrSetKey, rrSet)
+	t.UpdateRecord(rrSetKey, rrSet)
 }
 
-func (it *IntegrationTest) PartialUpdateSLBPoolTypeA(ownerName, zoneName string) {
-	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA)
+func (t *IntegrationTest) PartialUpdateSLBPoolTypeA(ownerName, zoneName string) {
+	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, "")
 	rrSet := getSLBPoolTypeA(ownerName)
 	rrSet.RData = []string{"192.168.1.12"}
-	it.PartialUpdateSLBPool(rrSetKey, rrSet)
-}
-
-func (it *IntegrationTest) CreateSLBPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) {
-	slbPoolService, err := slbpool.Get(integration.TestClient)
-
-	if err != nil {
-		it.Test.Fatal(err)
-	}
-
-	if _, er := slbPoolService.CreateSLBPool(rrSetKey, rrSet); er != nil {
-		it.Test.Fatal(er)
-	}
-}
-
-func (it *IntegrationTest) UpdateSLBPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) {
-	slbPoolService, err := slbpool.Get(integration.TestClient)
-
-	if err != nil {
-		it.Test.Fatal(err)
-	}
-
-	if _, er := slbPoolService.UpdateSLBPool(rrSetKey, rrSet); er != nil {
-		it.Test.Fatal(er)
-	}
-}
-
-func (it *IntegrationTest) PartialUpdateSLBPool(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) {
-	slbPoolService, err := slbpool.Get(integration.TestClient)
-
-	if err != nil {
-		it.Test.Fatal(err)
-	}
-
-	if _, er := slbPoolService.PartialUpdateSLBPool(rrSetKey, rrSet); er != nil {
-		it.Test.Fatal(er)
-	}
-}
-
-func (it *IntegrationTest) ReadSLBPool(rrSetKey *rrset.RRSetKey) {
-	slbPoolService, err := slbpool.Get(integration.TestClient)
-
-	if err != nil {
-		it.Test.Fatal(err)
-	}
-
-	if _, _, er := slbPoolService.ReadSLBPool(rrSetKey); er != nil {
-		it.Test.Fatal(er)
-	}
-}
-
-func (it *IntegrationTest) DeleteSLBPool(rrSetKey *rrset.RRSetKey) {
-	slbPoolService, err := slbpool.Get(integration.TestClient)
-
-	if err != nil {
-		it.Test.Fatal(err)
-	}
-
-	if _, er := slbPoolService.DeleteSLBPool(rrSetKey); er != nil {
-		it.Test.Fatal(er)
-	}
+	t.PartialUpdateRecord(rrSetKey, rrSet)
 }
 
 func getSLBPoolTypeA(ownerName string) *rrset.RRSet {

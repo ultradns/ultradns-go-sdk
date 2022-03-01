@@ -19,12 +19,12 @@ func GetZoneFQDN(zoneName string) string {
 	return zoneName
 }
 
-func GetOwnerFQDN(name, zone string) string {
-	if !strings.Contains(GetZoneFQDN(name), zone) {
-		return AppendRootDot(name) + GetZoneFQDN(zone)
+func GetOwnerFQDN(owner, zone string) string {
+	if !strings.Contains(GetZoneFQDN(owner), zone) {
+		return AppendRootDot(owner) + GetZoneFQDN(zone)
 	}
 
-	return GetZoneFQDN(name)
+	return GetZoneFQDN(owner)
 }
 
 func GetRecordTypeFullString(key string) string {

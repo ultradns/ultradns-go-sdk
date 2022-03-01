@@ -16,9 +16,11 @@ type RRSet struct {
 }
 
 type RRSetKey struct {
-	Zone string
-	Type string
-	Name string
+	ID         string
+	Owner      string
+	Zone       string
+	RecordType string
+	PType      string
 }
 
 type RawProfile interface {
@@ -33,21 +35,29 @@ type ResponseList struct {
 	RRSets     []*RRSet           `json:"rrSets,omitempty"`
 }
 
-func (r RRSetKey) URI() string {
-	r.Name = url.PathEscape(r.Name)
+func (r RRSetKey) RecordURI() string {
+	r.Owner = url.PathEscape(r.Owner)
 	r.Zone = url.PathEscape(r.Zone)
 
-	if r.Type == "" {
-		r.Type = "ANY"
+	if r.RecordType == "" {
+		r.RecordType = "ANY"
 	}
 
-	return fmt.Sprintf("zones/%s/rrsets/%s/%s", r.Zone, r.Type, r.Name)
+	return fmt.Sprintf("zones/%s/rrsets/%s/%s", r.Zone, r.RecordType, r.Owner)
 }
 
-func (r RRSetKey) ID() string {
-	r.Name = helper.GetOwnerFQDN(r.Name, r.Zone)
-	r.Zone = helper.GetZoneFQDN(r.Zone)
-	r.Type = helper.GetRecordTypeFullString(r.Type)
+func (r RRSetKey) ProbeURI() string {
+	return fmt.Sprintf("%s/probes/%s", r.RecordURI(), r.ID)
+}
 
-	return fmt.Sprintf("%s:%s:%s", r.Name, r.Zone, r.Type)
+func (r RRSetKey) RecordID() string {
+	r.Owner = helper.GetOwnerFQDN(r.Owner, r.Zone)
+	r.Zone = helper.GetZoneFQDN(r.Zone)
+	r.RecordType = helper.GetRecordTypeFullString(r.RecordType)
+
+	return fmt.Sprintf("%s:%s:%s", r.Owner, r.Zone, r.RecordType)
+}
+
+func (r RRSetKey) PID() string {
+	return fmt.Sprintf("%s:%s", r.RecordID(), r.ID)
 }
