@@ -129,7 +129,9 @@ func (t *IntegrationTest) ListProbe(rrSetKey *rrset.RRSetKey) {
 		t.Test.Fatal(err)
 	}
 
-	_, probesList, er := probeService.List(rrSetKey)
+	query := &probe.Query{}
+
+	_, probesList, er := probeService.List(rrSetKey, query)
 
 	if er != nil {
 		t.Test.Fatal(er)
