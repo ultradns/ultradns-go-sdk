@@ -50,6 +50,10 @@ func (r RRSetKey) ProbeURI() string {
 	return fmt.Sprintf("%s/probes/%s", r.RecordURI(), r.ID)
 }
 
+func (r RRSetKey) ProbeListURI(query string) string {
+	return fmt.Sprintf("%s/probes?q=%s", r.RecordURI(), query)
+}
+
 func (r RRSetKey) RecordID() string {
 	r.Owner = helper.GetOwnerFQDN(r.Owner, r.Zone)
 	r.Zone = helper.GetZoneFQDN(r.Zone)
