@@ -10,11 +10,11 @@ type Details struct {
 }
 
 type Transaction struct {
-	Method            string             `json:"method,omitempty"`
-	ProtocolVersion   string             `json:"protocolVersion,omitempty"`
-	URL               string             `json:"url,omitempty"`
-	TransmittedData   string             `json:"transmittedData,omitempty"`
-	EexpectedResponse string             `json:"expectedResponse,omitempty"`
-	FollowRedirects   bool               `json:"followRedirects,omitempty"`
-	Limits            *helper.LimitsInfo `json:"limits,omitempty"`
+	Method           string             `json:"method,omitempty"`
+	ProtocolVersion  string             `json:"protocolVersion,omitempty"`
+	URL              string             `json:"url,omitempty"`
+	TransmittedData  string             `json:"transmittedData,omitempty"`
+	ExpectedResponse string             `json:"expectedResponse,omitempty"`
+	FollowRedirects  bool               `json:"followRedirects,omitempty"`
+	Limits           *helper.LimitsInfo `json:"limits,omitempty"`
 }

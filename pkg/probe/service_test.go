@@ -76,7 +76,7 @@ func TestDeleteProbeWithConfigError(t *testing.T) {
 func TestListProbeWithConfigError(t *testing.T) {
 	probeService := probe.Service{}
 
-	if _, _, err := probeService.List(&rrset.RRSetKey{}); err.Error() != serviceErrorString {
+	if _, _, err := probeService.List(&rrset.RRSetKey{}, &probe.Query{}); err.Error() != serviceErrorString {
 		t.Fatal(err)
 	}
 }
@@ -154,7 +154,7 @@ func TestListProbeFailure(t *testing.T) {
 	rrSetKey := integration.GetTestRRSetKey()
 	rrSetKey.ID = ""
 
-	if _, _, er := probeService.List(rrSetKey); er.Error() != "error while listing Probe : uri - zones/non-existing-zone.com./rrsets/A/www/probes/ : error from api response - error code : 2911 - error message : Pool does not exist in the system" {
+	if _, _, er := probeService.List(rrSetKey, &probe.Query{}); er.Error() != "error while listing Probe : uri - zones/non-existing-zone.com./rrsets/A/www/probes/ : error from api response - error code : 2911 - error message : Pool does not exist in the system" {
 		t.Fatal(er)
 	}
 }
