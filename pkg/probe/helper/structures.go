@@ -9,6 +9,7 @@ type LimitsInfo struct {
 	Average      *Limit        `json:"average,omitempty"`
 	LossPercent  *Limit        `json:"lossPercent,omitempty"`
 	SearchString *SearchString `json:"searchString,omitempty"`
+	Response     *SearchString `json:"response,omitempty"`
 }
 
 type Limit struct {
