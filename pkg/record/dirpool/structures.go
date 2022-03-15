@@ -35,10 +35,10 @@ type IPInfo struct {
 }
 
 type IPAddress struct {
-	Start  string `json:"start,omitempty"`
-	End    string `json:"end,omitempty"`
-	Cidr   string `json:"cidr,omitempty"`
-	Single string `json:"address,omitempty"`
+	Start   string `json:"start,omitempty"`
+	End     string `json:"end,omitempty"`
+	Cidr    string `json:"cidr,omitempty"`
+	Address string `json:"address,omitempty"`
 }
 
 func (profile *Profile) SetContext() {
