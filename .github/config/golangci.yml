@@ -6,13 +6,22 @@ linters:
     - interfacer
     - scopelint
     - maligned
+    - exhaustivestruct
+    - nosnakecase
+    - structcheck
+    - varcheck
+    - deadcode
+    - ifshort
+    - rowserrcheck
+    - sqlclosecheck
+    - wastedassign
 
     # to suppress the errors in struct tags
     - tagliatelle
     # suppress type assertion warnings since we assert the same we passed
     - forcetypeassert
     # all struct has omitempty, so all fields in struct are not required
-    - exhaustivestruct
+    - exhaustruct
     # disable gofumpt since it has conflict with wsl(white space letter) linter
     - gofumpt
     # integration tests need to done in sequential manner
@@ -23,12 +32,15 @@ linters:
     - wrapcheck
     # context needed to be stored in the struct for using refresh token 
     - containedctx
+    # Named returns can be additional validations
+    - nonamedreturns
 
     - gochecknoglobals
     - bodyclose
     - lll 
     - noctx
     - dupl
+    - gci
   
 
   fast: false
