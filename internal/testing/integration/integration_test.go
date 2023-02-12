@@ -23,6 +23,8 @@ func TestRecordResources(t *testing.T) {
 
 	ownerNameSB := integration.GetRandomString()
 	ownerNameTC := integration.GetRandomString()
+	groupNameIP := integration.GetRandomString()
+	groupNameGeo := integration.GetRandomString()
 
 	t.Run("TestCreateZoneRecordResources",
 		func(st *testing.T) {
@@ -69,7 +71,18 @@ func TestRecordResources(t *testing.T) {
 			it.Test = st
 			it.TestDIRPoolResources(zoneName)
 		})
+	t.Run("TestDIRGroupGeoResources",
+		func(st *testing.T) {
+			it.Test = st
+			it.TestDirGroupGeoResources(getDirGroupGeo(groupNameGeo), groupNameGeo)
+		})
+	t.Run("TestDIRGroupIPResources",
+		func(st *testing.T) {
+			it.Test = st
+			it.TestDirGroupIPResources(getDirGroupIP(groupNameIP), groupNameIP)
+		})
 	t.Run("TestDeleteZoneRecordResources",
+
 		func(st *testing.T) {
 			it.Test = st
 			it.DeleteZone(zoneName)
