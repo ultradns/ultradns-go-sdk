@@ -5,26 +5,28 @@ import (
 	"strings"
 )
 
-func AppendRootDot(zoneName string) string {
+func appendRootDot(zoneName string) string {
 	return fmt.Sprintf("%s.", zoneName)
 }
 
 func GetZoneFQDN(zoneName string) string {
+	result := zoneName
 	if len(zoneName) > 0 {
 		if lastChar := zoneName[len(zoneName)-1]; lastChar != '.' {
-			return AppendRootDot(zoneName)
+			result = appendRootDot(zoneName)
 		}
 	}
 
-	return zoneName
+	return strings.ToLower(result)
 }
 
 func GetOwnerFQDN(owner, zone string) string {
-	if !strings.Contains(GetZoneFQDN(owner), zone) {
-		return AppendRootDot(owner) + GetZoneFQDN(zone)
+	result := GetZoneFQDN(owner)
+	if !strings.Contains(GetZoneFQDN(owner), strings.ToLower(zone)) {
+		result = appendRootDot(owner) + GetZoneFQDN(zone)
 	}
 
-	return GetZoneFQDN(owner)
+	return strings.ToLower(result)
 }
 
 func GetRecordTypeFullString(key string) string {
