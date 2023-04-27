@@ -7,8 +7,6 @@ import (
 	"github.com/ultradns/ultradns-go-sdk/pkg/dirgroup/geo"
 )
 
-var geoID = ""
-
 func (t *IntegrationTest) TestDirGroupGeoResources(geoData *geo.DirGroupGeo, geoName string) {
 	it := IntegrationTest{}
 
