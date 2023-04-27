@@ -2,6 +2,7 @@ package helper
 
 import (
 	"fmt"
+	"net/url"
 	"strings"
 )
 
@@ -120,4 +121,27 @@ func GetRecordTypeNumber(key string) string {
 	}
 
 	return rrTypes[key]
+}
+
+func GetAccountName(id string) string {
+	geoAccount := strings.Split(id, ":")
+	return fmt.Sprintf("%s", geoAccount[1])
+}
+
+func GetAccountNameFromURI(uri string) string {
+	geoAccount := strings.Split(uri, "/")
+	return fmt.Sprintf("%s", geoAccount[1])
+}
+
+func GetDirGroupURI(groupID, groupType string) string {
+	groupID = url.PathEscape(groupID)
+	groupData := strings.Split(groupID, ":")
+
+	return fmt.Sprintf("accounts/%s/dirgroups/%s/%s", groupData[1], groupType, groupData[0])
+}
+
+func GetDirGroupListURI(accountName, groupType string) string {
+	accountName = url.PathEscape(accountName)
+
+	return fmt.Sprintf("accounts/%s/dirgroups/%s", accountName, groupType)
 }
