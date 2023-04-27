@@ -186,6 +186,18 @@ func TestRRSetKeyID(t *testing.T) {
 	}
 }
 
+func TestCaseInsensitiveRRSetKeyID(t *testing.T) {
+	rrSetKey := rrset.RRSetKey{
+		Zone:       "EXAMPLE.com",
+		Owner:      "wWw",
+		RecordType: "A",
+	}
+
+	if expectedID, foundID := "www.example.com.:example.com.:A (1)", rrSetKey.RecordID(); expectedID != foundID {
+		t.Fatalf("rrset id mismatched expected - %s : found - %s", expectedID, foundID)
+	}
+}
+
 func TestRDPoolOrderValidationFailure(t *testing.T) {
 	recordService, err := record.Get(integration.TestClient)
 

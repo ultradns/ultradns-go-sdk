@@ -11,37 +11,37 @@ const (
 )
 
 func TestGetOwnerFQDNwithRelativeName(t *testing.T) {
-	if found := helper.GetOwnerFQDN("www", "example.com"); testOwnerFQDN != found {
+	if found := helper.GetOwnerFQDN("WWW", "example.com"); testOwnerFQDN != found {
 		t.Fatal("FQDN owner name not returned : owner name - www : zone name - example.com")
 	}
 }
 
 func TestGetOwnerFQDNwithOwnerRelativeName(t *testing.T) {
-	if found := helper.GetOwnerFQDN("www", "example.com."); testOwnerFQDN != found {
+	if found := helper.GetOwnerFQDN("www", "example.COM."); testOwnerFQDN != found {
 		t.Fatal("FQDN owner name not returned : owner name - www : zone name - example.com.")
 	}
 }
 
 func TestGetOwnerFQDNwithoutFQDN(t *testing.T) {
-	if found := helper.GetOwnerFQDN("www.example.com", "example.com"); testOwnerFQDN != found {
+	if found := helper.GetOwnerFQDN("www.EXAMPLE.com", "example.com"); testOwnerFQDN != found {
 		t.Fatal("FQDN owner name not returned : owner name - www.example.com : zone name - example.com")
 	}
 }
 
 func TestGetOwnerFQDNwithZoneFQDN(t *testing.T) {
-	if found := helper.GetOwnerFQDN("www.example.com", "example.com."); testOwnerFQDN != found {
+	if found := helper.GetOwnerFQDN("www.example.com", "EXAMPLE.com."); testOwnerFQDN != found {
 		t.Fatal("FQDN owner name not returned : owner name - www.example.com : zone name - example.com.")
 	}
 }
 
 func TestGetOwnerFQDNwithOwnerFQDN(t *testing.T) {
-	if found := helper.GetOwnerFQDN("www.example.com.", "example.com"); testOwnerFQDN != found {
+	if found := helper.GetOwnerFQDN("WWW.EXAMPLE.COM.", "example.com"); testOwnerFQDN != found {
 		t.Fatal("FQDN owner name not returned : owner name - www.example.com. : zone name - example.com")
 	}
 }
 
 func TestGetOwnerFQDNwithFQDN(t *testing.T) {
-	if found := helper.GetOwnerFQDN("www.example.com.", "example.com."); testOwnerFQDN != found {
+	if found := helper.GetOwnerFQDN("www.example.com.", "EXAMPLE.COM."); testOwnerFQDN != found {
 		t.Fatal("FQDN owner name not returned : owner name - www.example.com. : zone name - example.com.")
 	}
 }
