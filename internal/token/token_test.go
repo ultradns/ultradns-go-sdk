@@ -1,7 +1,6 @@
 package token_test
 
 import (
-	"context"
 	"strings"
 	"testing"
 
@@ -29,8 +28,6 @@ func TestTokenSuccessWithRefreshTokenFailure(t *testing.T) {
 	if _, err := tokenSource.Token(); err != nil {
 		t.Fatal(err)
 	}
-
-	tokenSource.Ctx = nil
 
 	token, er := tokenSource.Token()
 
@@ -64,7 +61,6 @@ func TestTokenFailureWithRefreshTokenFailure(t *testing.T) {
 
 func getTokenSource() *token.TokenSource {
 	return &token.TokenSource{
-		Ctx:      context.TODO(),
 		Username: integration.TestUsername,
 		Password: integration.TestPassword,
 		BaseURL:  integration.TestHost,

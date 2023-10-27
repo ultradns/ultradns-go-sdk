@@ -1,7 +1,7 @@
 # UltraDNS SDK for Go
 
 ultradns-go-sdk is the official UltraDNS SDK for the Go programming language.<br/>
-Golang-Version : `1.17`
+Golang-Version : `1.19`
 
 Jump To:
 * [Getting Started](#Getting-Started)
