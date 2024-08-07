@@ -53,14 +53,7 @@ func (s *Service) Create(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*http.Re
 }
 
 func (s *Service) Read(rrSetKey *rrset.RRSetKey) (*http.Response, *rrset.ResponseList, error) {
-	rrSetTarget := &rrset.RRSet{}
-
-	setPoolProfile(rrSetKey.PType, rrSetTarget)
-
-	rrSetResList := &rrset.ResponseList{}
-	rrSetResList.RRSets = make([]*rrset.RRSet, 1)
-	rrSetResList.RRSets[0] = rrSetTarget
-	target := client.Target(rrSetResList)
+	target := client.Target(&rrset.ResponseList{})
 
 	if s.c == nil {
 		return nil, nil, errors.ServiceError(serviceName)
@@ -133,4 +126,22 @@ func (s *Service) Delete(rrSetKey *rrset.RRSetKey) (*http.Response, error) {
 	}
 
 	return res, nil
+}
+
+func (s *Service) List(rrSetKey *rrset.RRSetKey) (*http.Response, *rrset.ResponseList, error) {
+	target := client.Target(&rrset.ResponseList{})
+
+	if s.c == nil {
+		return nil, nil, errors.ServiceError(serviceName)
+	}
+
+	res, err := s.c.Do(http.MethodGet, rrSetKey.RecordURI(), nil, target)
+
+	if err != nil {
+		return nil, nil, errors.ReadError(serviceName, rrSetKey.RecordID(), err)
+	}
+
+	rrsetList := target.Data.(*rrset.ResponseList)
+
+	return res, rrsetList, nil
 }
