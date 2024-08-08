@@ -74,7 +74,7 @@ func (t *IntegrationTest) ReadPoolValidationFailure(rrSetKey *rrset.RRSetKey) {
 		t.Test.Fatal(err)
 	}
 
-	if _, _, er := recordService.Read(rrSetKey); er.Error() != fmt.Sprintf("Record resource of type SB_POOL - %v not found", rrSetKey.RecordID()) {
+	if _, _, er := recordService.Read(rrSetKey); er.Error() != fmt.Sprintf("Resource not found: { name: 'Record', type: 'SB_POOL', key:'%v'}", rrSetKey.RecordID()) {
 		t.Test.Fatal(er)
 	}
 }

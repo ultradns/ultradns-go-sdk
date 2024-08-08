@@ -15,29 +15,27 @@ func TestNewClientWithCredentials(t *testing.T) {
 	}
 }
 
-func TestNewClientWithoutUsername(t *testing.T) {
+func TestNewClientOneMissingParam(t *testing.T) {
 	conf := integration.GetConfig()
 	conf.Username = ""
 
-	if _, err := client.NewClient(conf); err.Error() != "config validation failure: username is missing" {
+	if _, err := client.NewClient(conf); err.Error() != "Missing required parameters: [ username ]" {
 		t.Error(err)
 	}
 }
 
-func TestNewClientWithoutPassword(t *testing.T) {
+func TestNewClientTwoMissingParam(t *testing.T) {
 	conf := integration.GetConfig()
+	conf.Username = ""
 	conf.Password = ""
 
-	if _, err := client.NewClient(conf); err.Error() != "config validation failure: password is missing" {
+	if _, err := client.NewClient(conf); err.Error() != "Missing required parameters: [ username, password ]" {
 		t.Error(err)
 	}
 }
 
-func TestNewClientWithoutHost(t *testing.T) {
-	conf := integration.GetConfig()
-	conf.HostURL = ""
-
-	if _, err := client.NewClient(conf); err.Error() != "config validation failure: host url is missing" {
+func TestNewClientAllMissingParam(t *testing.T) {
+	if _, err := client.NewClient(client.Config{}); err.Error() != "Missing required parameters: [ username, password, host url ]" {
 		t.Error(err)
 	}
 }

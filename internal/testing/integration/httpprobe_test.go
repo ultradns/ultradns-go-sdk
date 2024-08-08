@@ -96,7 +96,7 @@ func (t *IntegrationTest) ReadProbeValidationFailure(rrSetKey *rrset.RRSetKey) {
 
 	rrSetKey.ID = probeID
 
-	if _, _, er := probeService.Read(rrSetKey); er.Error() != fmt.Sprintf("Probe resource of type TCP - %v not found", rrSetKey.PID()) {
+	if _, _, er := probeService.Read(rrSetKey); er.Error() != fmt.Sprintf("Resource not found: { name: 'Probe', type: 'TCP', key:'%v'}", rrSetKey.PID()) {
 		t.Test.Fatal(er)
 	}
 }

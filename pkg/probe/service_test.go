@@ -9,7 +9,7 @@ import (
 	"github.com/ultradns/ultradns-go-sdk/pkg/rrset"
 )
 
-const serviceErrorString = "Probe service is not properly configured"
+const serviceErrorString = "Probe service configuration failed"
 
 func TestNewSuccess(t *testing.T) {
 	conf := integration.GetConfig()
@@ -23,7 +23,7 @@ func TestNewError(t *testing.T) {
 	conf := integration.GetConfig()
 	conf.Password = ""
 
-	if _, err := probe.New(conf); err.Error() != "config error while creating Probe service : config validation failure: password is missing" {
+	if _, err := probe.New(conf); err.Error() != "Probe service configuration failed: Missing required parameters: [ password ]" {
 		t.Fatal(err)
 	}
 }
@@ -91,7 +91,7 @@ func TestCreateProbeFailure(t *testing.T) {
 	rrSetKey := integration.GetTestRRSetKey()
 	rrSetKey.ID = ""
 
-	if _, er := probeService.Create(rrSetKey, testGetHTTPProbe()); er.Error() != "error while creating Probe - www.non-existing-zone.com.:non-existing-zone.com.:A (1): : error from api response - error code : 53006 - error message : Agents must not be empty." {
+	if _, er := probeService.Create(rrSetKey, testGetHTTPProbe()); er.Error() != "Error while creating Probe: Server error Response - { code: '53006', message: 'Agents must not be empty.' }: {key: 'www.non-existing-zone.com.:non-existing-zone.com.:A (1):'}" {
 		t.Fatal(er)
 	}
 }
@@ -103,7 +103,7 @@ func TestUpdateProbeFailure(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if _, er := probeService.Update(integration.GetTestRRSetKey(), testGetHTTPProbe()); er.Error() != "error while updating Probe - www.non-existing-zone.com.:non-existing-zone.com.:A (1):id : error from api response - error code : 53006 - error message : Agents must not be empty." {
+	if _, er := probeService.Update(integration.GetTestRRSetKey(), testGetHTTPProbe()); er.Error() != "Error while updating Probe: Server error Response - { code: '53006', message: 'Agents must not be empty.' }: {key: 'www.non-existing-zone.com.:non-existing-zone.com.:A (1):id'}" {
 		t.Fatal(er)
 	}
 }
@@ -115,7 +115,7 @@ func TestPartialUpdateProbeFailure(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if _, er := probeService.PartialUpdate(integration.GetTestRRSetKey(), testGetHTTPProbe()); er.Error() != "error while partial updating Probe - www.non-existing-zone.com.:non-existing-zone.com.:A (1):id : error from api response - error code : 2911 - error message : Pool does not exist in the system" {
+	if _, er := probeService.PartialUpdate(integration.GetTestRRSetKey(), testGetHTTPProbe()); er.Error() != "Error while partial updating Probe: Server error Response - { code: '2911', message: 'Pool does not exist in the system' }: {key: 'www.non-existing-zone.com.:non-existing-zone.com.:A (1):id'}" {
 		t.Fatal(er)
 	}
 }
@@ -127,7 +127,7 @@ func TestReadProbeFailure(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if _, _, er := probeService.Read(integration.GetTestRRSetKey()); er.Error() != "error while reading Probe - www.non-existing-zone.com.:non-existing-zone.com.:A (1):id : error from api response - error code : 2911 - error message : Pool does not exist in the system" {
+	if _, _, er := probeService.Read(integration.GetTestRRSetKey()); er.Error() != "Error while reading Probe: Server error Response - { code: '2911', message: 'Pool does not exist in the system' }: {key: 'www.non-existing-zone.com.:non-existing-zone.com.:A (1):id'}" {
 		t.Fatal(er)
 	}
 }
@@ -139,7 +139,7 @@ func TestDeleteProbeFailure(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if _, er := probeService.Delete(integration.GetTestRRSetKey()); er.Error() != "error while deleting Probe - www.non-existing-zone.com.:non-existing-zone.com.:A (1):id : error from api response - error code : 2911 - error message : Pool does not exist in the system" {
+	if _, er := probeService.Delete(integration.GetTestRRSetKey()); er.Error() != "Error while deleting Probe: Server error Response - { code: '2911', message: 'Pool does not exist in the system' }: {key: 'www.non-existing-zone.com.:non-existing-zone.com.:A (1):id'}" {
 		t.Fatal(er)
 	}
 }
@@ -154,7 +154,7 @@ func TestListProbeFailure(t *testing.T) {
 	rrSetKey := integration.GetTestRRSetKey()
 	rrSetKey.ID = ""
 
-	if _, _, er := probeService.List(rrSetKey, &probe.Query{}); er.Error() != "error while listing Probe : uri - zones/non-existing-zone.com./rrsets/A/www/probes/ : error from api response - error code : 2911 - error message : Pool does not exist in the system" {
+	if _, _, er := probeService.List(rrSetKey, &probe.Query{}); er.Error() != "Error while listing Probe: Server error Response - { code: '2911', message: 'Pool does not exist in the system' }: {key: 'zones/non-existing-zone.com./rrsets/A/www/probes/'}" {
 		t.Fatal(er)
 	}
 }
@@ -172,7 +172,7 @@ func TestCreateProbeValidationFailure(t *testing.T) {
 	rrSet := testGetHTTPProbe()
 	rrSet.Type = probe.FTP
 
-	if _, er := probeService.Create(rrSetKey, rrSet); er.Error() != "type mismatched : expected - *ftp.Details : found - *http.Details" {
+	if _, er := probeService.Create(rrSetKey, rrSet); er.Error() != "Type mismatch error: { expected: '*ftp.Details', found: '*http.Details' }" {
 		t.Fatal(er)
 	}
 }
@@ -187,7 +187,7 @@ func TestUpdateProbeValidationFailure(t *testing.T) {
 	rrSet := testGetHTTPProbe()
 	rrSet.Type = probe.FTP
 
-	if _, er := probeService.Update(integration.GetTestRRSetKey(), rrSet); er.Error() != "type mismatched : expected - *ftp.Details : found - *http.Details" {
+	if _, er := probeService.Update(integration.GetTestRRSetKey(), rrSet); er.Error() != "Type mismatch error: { expected: '*ftp.Details', found: '*http.Details' }" {
 		t.Fatal(er)
 	}
 }

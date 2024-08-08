@@ -15,11 +15,11 @@ import (
 	"github.com/ultradns/ultradns-go-sdk/pkg/rrset"
 )
 
-const serviceErrorString = "Record service is not properly configured"
+const serviceErrorString = "Record service configuration failed"
 
 const (
 	testString         = "TEST"
-	testPoolOrderError = "Pool order should be any of the following data [FIXED RANDOM ROUND_ROBIN] : found - TEST"
+	testPoolOrderError = "Invalid input error: { key: 'poolOrder', value: 'TEST', valid_values: [FIXED RANDOM ROUND_ROBIN] }"
 )
 
 func TestNewSuccess(t *testing.T) {
@@ -34,7 +34,7 @@ func TestNewError(t *testing.T) {
 	conf := integration.GetConfig()
 	conf.Password = ""
 
-	if _, err := record.New(conf); err.Error() != "config error while creating Record service : config validation failure: password is missing" {
+	if _, err := record.New(conf); err.Error() != "Record service configuration failed: Missing required parameters: [ password ]" {
 		t.Fatal(err)
 	}
 }
@@ -91,7 +91,7 @@ func TestCreateRecordFailure(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if _, er := recordService.Create(integration.GetTestRRSetKey(), &rrset.RRSet{}); er.Error() != "error while creating Record - www.non-existing-zone.com.:non-existing-zone.com.:A (1) : error from api response - error code : 70005 - error message : At least one field must be specified: rdata or profile" {
+	if _, er := recordService.Create(integration.GetTestRRSetKey(), &rrset.RRSet{}); er.Error() != "Error while creating Record: Server error Response - { code: '70005', message: 'At least one field must be specified: rdata or profile' }: {key: 'www.non-existing-zone.com.:non-existing-zone.com.:A (1)'}" {
 		t.Fatal(er)
 	}
 }
@@ -103,7 +103,7 @@ func TestUpdateRecordFailure(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if _, er := recordService.Update(integration.GetTestRRSetKey(), &rrset.RRSet{}); er.Error() != "error while updating Record - www.non-existing-zone.com.:non-existing-zone.com.:A (1) : error from api response - error code : 70005 - error message : At least one field must be specified: rdata or profile" {
+	if _, er := recordService.Update(integration.GetTestRRSetKey(), &rrset.RRSet{}); er.Error() != "Error while updating Record: Server error Response - { code: '70005', message: 'At least one field must be specified: rdata or profile' }: {key: 'www.non-existing-zone.com.:non-existing-zone.com.:A (1)'}" {
 		t.Fatal(er)
 	}
 }
@@ -115,7 +115,7 @@ func TestPartialUpdateRecordFailure(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if _, er := recordService.PartialUpdate(integration.GetTestRRSetKey(), &rrset.RRSet{}); er.Error() != "error while partial updating Record - www.non-existing-zone.com.:non-existing-zone.com.:A (1) : error from api response - error code : 1801 - error message : Zone does not exist in the system." {
+	if _, er := recordService.PartialUpdate(integration.GetTestRRSetKey(), &rrset.RRSet{}); er.Error() != "Error while partial updating Record: Server error Response - { code: '1801', message: 'Zone does not exist in the system.' }: {key: 'www.non-existing-zone.com.:non-existing-zone.com.:A (1)'}" {
 		t.Fatal(er)
 	}
 }
@@ -127,7 +127,7 @@ func TestReadRecordFailure(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if _, _, er := recordService.Read(integration.GetTestRRSetKey()); er.Error() != "error while reading Record - www.non-existing-zone.com.:non-existing-zone.com.:A (1) : error from api response - error code : 1801 - error message : Zone does not exist in the system." {
+	if _, _, er := recordService.Read(integration.GetTestRRSetKey()); er.Error() != "Error while reading Record: Server error Response - { code: '1801', message: 'Zone does not exist in the system.' }: {key: 'www.non-existing-zone.com.:non-existing-zone.com.:A (1)'}" {
 		t.Fatal(er)
 	}
 }
@@ -139,7 +139,7 @@ func TestDeleteRecordFailure(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if _, er := recordService.Delete(integration.GetTestRRSetKey()); er.Error() != "error while deleting Record - www.non-existing-zone.com.:non-existing-zone.com.:A (1) : error from api response - error code : 1801 - error message : Zone does not exist in the system." {
+	if _, er := recordService.Delete(integration.GetTestRRSetKey()); er.Error() != "Error while deleting Record: Server error Response - { code: '1801', message: 'Zone does not exist in the system.' }: {key: 'www.non-existing-zone.com.:non-existing-zone.com.:A (1)'}" {
 		t.Fatal(er)
 	}
 }
@@ -234,7 +234,7 @@ func TestSFPoolMonitorMethodValidationFailure(t *testing.T) {
 		Profile: profile,
 	}
 
-	if _, er := recordService.Create(integration.GetTestRRSetKey(), rrSet); er.Error() != "Pool Monitor Method should be any of the following data [GET POST] : found - TEST" {
+	if _, er := recordService.Create(integration.GetTestRRSetKey(), rrSet); er.Error() != "Invalid input error: { key: 'monitorMethod', value: 'TEST', valid_values: [GET POST] }" {
 		t.Fatal(er)
 	}
 }
@@ -257,7 +257,7 @@ func TestSFPoolRegionFailureSensitivityValidationFailure(t *testing.T) {
 		Profile: profile,
 	}
 
-	if _, er := recordService.Create(integration.GetTestRRSetKey(), rrSet); er.Error() != "Pool Region Failure Sensitivity should be any of the following data [HIGH LOW] : found - TEST" {
+	if _, er := recordService.Create(integration.GetTestRRSetKey(), rrSet); er.Error() != "Invalid input error: { key: 'regionFailureSensitivity', value: 'TEST', valid_values: [HIGH LOW] }" {
 		t.Fatal(er)
 	}
 }
@@ -279,7 +279,7 @@ func TestSLBPoolMonitorMethodValidationFailure(t *testing.T) {
 		Profile: profile,
 	}
 
-	if _, er := recordService.Create(integration.GetTestRRSetKey(), rrSet); er.Error() != "Pool Monitor Method should be any of the following data [GET POST] : found - TEST" {
+	if _, er := recordService.Create(integration.GetTestRRSetKey(), rrSet); er.Error() != "Invalid input error: { key: 'monitorMethod', value: 'TEST', valid_values: [GET POST] }" {
 		t.Fatal(er)
 	}
 }
@@ -302,7 +302,7 @@ func TestSLBPoolRegionFailureSensitivityValidationFailure(t *testing.T) {
 		Profile: profile,
 	}
 
-	if _, er := recordService.Create(integration.GetTestRRSetKey(), rrSet); er.Error() != "Pool Region Failure Sensitivity should be any of the following data [HIGH LOW] : found - TEST" {
+	if _, er := recordService.Create(integration.GetTestRRSetKey(), rrSet); er.Error() != "Invalid input error: { key: 'regionFailureSensitivity', value: 'TEST', valid_values: [HIGH LOW] }" {
 		t.Fatal(er)
 	}
 }
@@ -326,7 +326,7 @@ func TestSLBPoolResponseMethodValidationFailure(t *testing.T) {
 		Profile: profile,
 	}
 
-	if _, er := recordService.Create(integration.GetTestRRSetKey(), rrSet); er.Error() != "Pool Response Method should be any of the following data [PRIORITY_HUNT RANDOM ROUND_ROBIN] : found - TEST" {
+	if _, er := recordService.Create(integration.GetTestRRSetKey(), rrSet); er.Error() != "Invalid input error: { key: 'responseMethod', value: 'TEST', valid_values: [PRIORITY_HUNT RANDOM ROUND_ROBIN] }" {
 		t.Fatal(er)
 	}
 }
@@ -351,7 +351,7 @@ func TestSLBPoolServingPreferenceValidationFailure(t *testing.T) {
 		Profile: profile,
 	}
 
-	if _, er := recordService.Create(integration.GetTestRRSetKey(), rrSet); er.Error() != "Pool Serving Preference should be any of the following data [AUTO_SELECT SERVE_PRIMARY SERVE_ALL_FAIL] : found - TEST" {
+	if _, er := recordService.Create(integration.GetTestRRSetKey(), rrSet); er.Error() != "Invalid input error: { key: 'servingPreference', value: 'TEST', valid_values: [AUTO_SELECT SERVE_PRIMARY SERVE_ALL_FAIL] }" {
 		t.Fatal(er)
 	}
 }
@@ -393,7 +393,7 @@ func TestSBPoolRecordStateValidationFailure(t *testing.T) {
 		Profile: profile,
 	}
 
-	if _, er := recordService.Create(integration.GetTestRRSetKey(), rrSet); er.Error() != "Pool record state should be any of the following data [NORMAL ACTIVE INACTIVE] : found - TEST" {
+	if _, er := recordService.Create(integration.GetTestRRSetKey(), rrSet); er.Error() != "Invalid input error: { key: 'poolRecordState', value: 'TEST', valid_values: [NORMAL ACTIVE INACTIVE] }" {
 		t.Fatal(er)
 	}
 }
@@ -415,7 +415,7 @@ func TestTCPoolRecordStateValidationFailure(t *testing.T) {
 		Profile: profile,
 	}
 
-	if _, er := recordService.Create(integration.GetTestRRSetKey(), rrSet); er.Error() != "Pool record state should be any of the following data [NORMAL ACTIVE INACTIVE] : found - TEST" {
+	if _, er := recordService.Create(integration.GetTestRRSetKey(), rrSet); er.Error() != "Invalid input error: { key: 'poolRecordState', value: 'TEST', valid_values: [NORMAL ACTIVE INACTIVE] }" {
 		t.Fatal(er)
 	}
 }
@@ -434,7 +434,7 @@ func TestDIRPoolConflictResolveValidationFailure(t *testing.T) {
 		Profile: profile,
 	}
 
-	if _, er := recordService.Create(integration.GetTestRRSetKey(), rrSet); er.Error() != "DIR Pool Resolve Conflict should be any of the following data [GEO IP ] : found - TEST" {
+	if _, er := recordService.Create(integration.GetTestRRSetKey(), rrSet); er.Error() != "Invalid input error: { key: 'dirPoolConflict', value: 'TEST', valid_values: [GEO IP ] }" {
 		t.Fatal(er)
 	}
 }
