@@ -57,3 +57,15 @@ func TestGetRecordTypeNumber(t *testing.T) {
 		t.Fatal("record type mismatched")
 	}
 }
+
+func TestGetOwnerFQDNwithEmptyOwner(t *testing.T) {
+	if expected, found := "example.com.", helper.GetOwnerFQDN("", "example.com"); expected != found {
+		t.Fatal("FQDN owner name not returned : owner name - example.com. : zone name - example.com")
+	}
+}
+
+func TestGetOwnerFQDNwithEmptyOwnerZoneFQDN(t *testing.T) {
+	if expected, found := "example.com.", helper.GetOwnerFQDN("", "example.com."); expected != found {
+		t.Fatal("FQDN owner name not returned : owner name - example.com. : zone name - example.com")
+	}
+}
