@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"os"
 	"strings"
 
 	"github.com/ultradns/ultradns-go-sdk/internal/token"
@@ -10,7 +11,7 @@ import (
 )
 
 func NewClient(config Config) (client *Client, err error) {
-	client, err = validateClientConfig(config)
+	client, err = validateClientConfig(&config)
 
 	if err != nil {
 		return nil, err
@@ -27,17 +28,24 @@ func NewClient(config Config) (client *Client, err error) {
 	return
 }
 
-func validateClientConfig(config Config) (*Client, error) {
+func validateClientConfig(config *Config) (*Client, error) {
+	config.checkEnvConfig()
+	errStr := ""
+
 	if ok := validateParameter(config.Username); !ok {
-		return nil, errors.ValidationError("username")
+		errStr += " username,"
 	}
 
 	if ok := validateParameter(config.Password); !ok {
-		return nil, errors.ValidationError("password")
+		errStr += " password,"
 	}
 
 	if ok := validateParameter(config.HostURL); !ok {
-		return nil, errors.ValidationError("host url")
+		errStr += " host url"
+	}
+
+	if errStr != "" {
+		return nil, errors.ValidationError(strings.TrimSuffix(errStr, ","))
 	}
 
 	hostURL := strings.TrimSuffix(config.HostURL, "/")
@@ -51,4 +59,18 @@ func validateClientConfig(config Config) (*Client, error) {
 
 func validateParameter(value string) bool {
 	return value != ""
+}
+
+func (c *Config) checkEnvConfig() {
+	if c.Username == "" {
+		c.Username = os.Getenv("ULTRADNS_USERNAME")
+	}
+
+	if c.Password == "" {
+		c.Password = os.Getenv("ULTRADNS_PASSWORD")
+	}
+
+	if c.HostURL == "" {
+		c.HostURL = os.Getenv("ULTRADNS_HOST_URL")
+	}
 }
