@@ -67,6 +67,10 @@ func (s *Service) Read(rrSetKey *rrset.RRSetKey) (*http.Response, *rrset.Respons
 
 	rrsetList := target.Data.(*rrset.ResponseList)
 
+	if len(rrsetList.RRSets) != 1 {
+		return nil, nil, errors.MultipleResourceFoundError(serviceName, rrSetKey.RecordID())
+	}
+
 	profile := rrsetList.RRSets[0].Profile
 
 	if profile != nil && getPoolSchema(rrSetKey.PType) != profile.GetContext() {
