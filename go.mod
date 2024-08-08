@@ -1,5 +1,7 @@
 module github.com/ultradns/ultradns-go-sdk
 
-go 1.19
+replace github.com/ultradns/ultradns-go-sdk => ../ultradns-go-sdk
 
-require golang.org/x/oauth2 v0.19.0
+go 1.22
+
+require golang.org/x/oauth2 v0.22.0
