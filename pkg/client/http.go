@@ -62,10 +62,13 @@ func validateResponse(res *http.Response, t interface{}) error {
 		return errors.ResponseTargetError("<nil>")
 	}
 
+	// Api Response should be always Response{} struct
+	// or else throw ResponseTargetError
+	// with current Response struct type
 	target, ok := t.(*Response)
 
 	if !ok {
-		return errors.ResponseTargetError(fmt.Sprintf("%T", target))
+		return errors.ResponseTargetError(fmt.Sprintf("%T", t))
 	}
 
 	if res.StatusCode >= http.StatusOK && res.StatusCode < http.StatusMultipleChoices {

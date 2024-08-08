@@ -40,7 +40,7 @@ type SuccessResponse struct {
 }
 
 func (e ErrorResponse) String() string {
-	return fmt.Sprintf("error code : %v - error message : %v", e.ErrorCode, e.ErrorMessage)
+	return fmt.Sprintf("{ code: '%v', message: '%v' }", e.ErrorCode, e.ErrorMessage)
 }
 
 func Target(i interface{}) *Response {

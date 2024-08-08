@@ -38,9 +38,14 @@ func (r RRSetKey) RecordID() string {
 	r.Zone = helper.GetZoneFQDN(r.Zone)
 	r.RecordType = helper.GetRecordTypeFullString(r.RecordType)
 
+	if r.RecordType == "" {
+		r.RecordType = "ANY"
+	}
+
 	return fmt.Sprintf("%s:%s:%s", r.Owner, r.Zone, r.RecordType)
 }
 
+// PID stands for Probe Id
 func (r RRSetKey) PID() string {
 	return fmt.Sprintf("%s:%s", r.RecordID(), r.ID)
 }
