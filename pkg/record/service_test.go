@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/ultradns/ultradns-go-sdk/internal/testing/integration"
+	"github.com/ultradns/ultradns-go-sdk/pkg/helper"
 	"github.com/ultradns/ultradns-go-sdk/pkg/record"
 	"github.com/ultradns/ultradns-go-sdk/pkg/record/dirpool"
 	"github.com/ultradns/ultradns-go-sdk/pkg/record/pool"
@@ -84,6 +85,13 @@ func TestDeleteRecordWithConfigError(t *testing.T) {
 	}
 }
 
+func TestListRecordWithConfigError(t *testing.T) {
+	recordService := record.Service{}
+	if _, _, err := recordService.List(&rrset.RRSetKey{}, &helper.QueryInfo{}); err.Error() != serviceErrorString {
+		t.Fatal(err)
+	}
+}
+
 func TestCreateRecordFailure(t *testing.T) {
 	recordService, err := record.Get(integration.TestClient)
 
@@ -140,6 +148,18 @@ func TestDeleteRecordFailure(t *testing.T) {
 	}
 
 	if _, er := recordService.Delete(integration.GetTestRRSetKey()); er.Error() != "Error while deleting Record: Server error Response - { code: '1801', message: 'Zone does not exist in the system.' }: {key: 'www.non-existing-zone.com.:non-existing-zone.com.:A (1)'}" {
+		t.Fatal(er)
+	}
+}
+
+func TestListRecordFailure(t *testing.T) {
+	recordService, err := record.Get(integration.TestClient)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if _, _, er := recordService.List(integration.GetTestRRSetKey(), &helper.QueryInfo{}); er.Error() != "Error while listing Record: Server error Response - { code: '1801', message: 'Zone does not exist in the system.' }: {key: 'www.non-existing-zone.com.:non-existing-zone.com.:A (1)'}" {
 		t.Fatal(er)
 	}
 }

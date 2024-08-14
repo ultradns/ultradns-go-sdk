@@ -5,6 +5,7 @@ import (
 
 	"github.com/ultradns/ultradns-go-sdk/pkg/client"
 	"github.com/ultradns/ultradns-go-sdk/pkg/errors"
+	"github.com/ultradns/ultradns-go-sdk/pkg/helper"
 	"github.com/ultradns/ultradns-go-sdk/pkg/rrset"
 )
 
@@ -132,17 +133,17 @@ func (s *Service) Delete(rrSetKey *rrset.RRSetKey) (*http.Response, error) {
 	return res, nil
 }
 
-func (s *Service) List(rrSetKey *rrset.RRSetKey) (*http.Response, *rrset.ResponseList, error) {
+func (s *Service) List(rrSetKey *rrset.RRSetKey, queryInfo *helper.QueryInfo) (*http.Response, *rrset.ResponseList, error) {
 	target := client.Target(&rrset.ResponseList{})
 
 	if s.c == nil {
 		return nil, nil, errors.ServiceError(serviceName)
 	}
 
-	res, err := s.c.Do(http.MethodGet, rrSetKey.RecordURI(), nil, target)
+	res, err := s.c.Do(http.MethodGet, rrSetKey.RecordURI()+queryInfo.URI(), nil, target)
 
 	if err != nil {
-		return nil, nil, errors.ReadError(serviceName, rrSetKey.RecordID(), err)
+		return nil, nil, errors.ListError(serviceName, rrSetKey.RecordID()+queryInfo.URI(), err)
 	}
 
 	rrsetList := target.Data.(*rrset.ResponseList)

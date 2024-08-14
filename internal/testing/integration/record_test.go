@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/ultradns/ultradns-go-sdk/internal/testing/integration"
+	"github.com/ultradns/ultradns-go-sdk/pkg/helper"
 	"github.com/ultradns/ultradns-go-sdk/pkg/record"
 	"github.com/ultradns/ultradns-go-sdk/pkg/rrset"
 )
@@ -31,6 +32,11 @@ func (t *IntegrationTest) TestRecordResources(zoneName string) {
 		func(st *testing.T) {
 			it.Test = st
 			it.ReadRecord(integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, ""))
+		})
+	t.Test.Run("TestListRecordResourceTypeA",
+		func(st *testing.T) {
+			it.Test = st
+			it.ListRecord(integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, ""))
 		})
 	t.Test.Run("TestDeleteRecordResourceTypeA",
 		func(st *testing.T) {
@@ -111,6 +117,18 @@ func (t *IntegrationTest) ReadRecord(rrSetKey *rrset.RRSetKey) {
 	}
 
 	if _, _, er := recordService.Read(rrSetKey); er != nil {
+		t.Test.Fatal(er)
+	}
+}
+
+func (t *IntegrationTest) ListRecord(rrSetKey *rrset.RRSetKey) {
+	recordService, err := record.Get(integration.TestClient)
+
+	if err != nil {
+		t.Test.Fatal(err)
+	}
+
+	if _, _, er := recordService.List(rrSetKey, &helper.QueryInfo{}); er != nil {
 		t.Test.Fatal(er)
 	}
 }
