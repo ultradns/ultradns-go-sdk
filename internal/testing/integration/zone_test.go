@@ -12,7 +12,7 @@ func TestZoneResources(t *testing.T) {
 
 	it := IntegrationTest{}
 	primaryZoneName := integration.GetRandomZoneName()
-	// secondaryZoneName := integration.GetRandomSecondaryZoneName()
+	secondaryZoneName := integration.GetRandomSecondaryZoneName()
 	aliasZoneName := integration.GetRandomZoneNameWithSpecialChar()
 
 	t.Run("TestCreatePrimaryZone",
@@ -20,11 +20,11 @@ func TestZoneResources(t *testing.T) {
 			it.Test = st
 			it.CreatePrimaryZone(primaryZoneName)
 		})
-	// t.Run("TestCreateSecondaryZone",
-	// 	func(st *testing.T) {
-	// 		it.Test = st
-	// 		it.CreateSecondaryZone(secondaryZoneName)
-	// 	})
+	t.Run("TestCreateSecondaryZone",
+		func(st *testing.T) {
+			it.Test = st
+			it.CreateSecondaryZone(secondaryZoneName)
+		})
 	t.Run("TestCreateAliasZone",
 		func(st *testing.T) {
 			it.Test = st
@@ -50,11 +50,11 @@ func TestZoneResources(t *testing.T) {
 			it.Test = st
 			it.DeleteZone(aliasZoneName)
 		})
-	// t.Run("TestSecondaryZone",
-	// 	func(st *testing.T) {
-	// 		it.Test = st
-	// 		it.DeleteZone(secondaryZoneName)
-	// 	})
+	t.Run("TestSecondaryZone",
+		func(st *testing.T) {
+			it.Test = st
+			it.DeleteZone(secondaryZoneName)
+		})
 	t.Run("TestDeletePrimaryZone",
 		func(st *testing.T) {
 			it.Test = st
