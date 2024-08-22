@@ -51,7 +51,7 @@ func (c *Client) Do(method, path string, payload, target interface{}) (*http.Res
 	er := validateResponse(res, target)
 
 	if er != nil {
-		return nil, er
+		return res, er
 	}
 
 	return res, nil

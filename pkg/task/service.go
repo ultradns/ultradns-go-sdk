@@ -43,7 +43,7 @@ func (s *Service) GetTaskStatus(taskID string) (*http.Response, *Task, error) {
 
 	res, err := s.c.Do(http.MethodGet, basePath+taskID, nil, target)
 	if err != nil {
-		return nil, nil, errors.ReadError(serviceName, taskID, err)
+		return res, nil, errors.ReadError(serviceName, taskID, err)
 	}
 
 	task := target.Data.(*Task)

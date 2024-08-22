@@ -44,10 +44,9 @@ func (s *Service) Create(dirGroupIP *DirGroupIP) (*http.Response, error) {
 	res, err := s.c.Do(http.MethodPost, helper.GetDirGroupURI(dirGroupIP.DirGroupIPID(), DirGroupType), dirGroupIP, target)
 
 	if err != nil {
-		ipGroupName := ""
-		ipGroupName = dirGroupIP.Name
+		ipGroupName := dirGroupIP.Name
 
-		return nil, errors.CreateError(serviceName, ipGroupName, err)
+		return res, errors.CreateError(serviceName, ipGroupName, err)
 	}
 
 	return res, nil
@@ -63,7 +62,7 @@ func (s *Service) Read(dirGroupID string) (*http.Response, *Response, string, er
 
 	res, err := s.c.Do(http.MethodGet, helper.GetDirGroupURI(dirGroupID, DirGroupType), nil, target)
 	if err != nil {
-		return nil, nil, dirGroupURI, errors.ReadError(serviceName, dirGroupID, err)
+		return res, nil, dirGroupURI, errors.ReadError(serviceName, dirGroupID, err)
 	}
 
 	dirGroupIPResponse := target.Data.(*Response)
@@ -82,7 +81,7 @@ func (s *Service) Update(dirGroupIP *DirGroupIP) (*http.Response, error) {
 	res, err := s.c.Do(http.MethodPut, helper.GetDirGroupURI(dirGroupIP.DirGroupIPID(), DirGroupType), dirGroupIP, target)
 
 	if err != nil {
-		return nil, errors.UpdateError(serviceName, dirGroupIPName, err)
+		return res, errors.UpdateError(serviceName, dirGroupIPName, err)
 	}
 
 	return res, nil
@@ -99,7 +98,7 @@ func (s *Service) PartialUpdate(dirGroupIP *DirGroupIP) (*http.Response, error) 
 	res, err := s.c.Do(http.MethodPatch, helper.GetDirGroupURI(dirGroupIP.DirGroupIPID(), DirGroupType), dirGroupIP, target)
 
 	if err != nil {
-		return nil, errors.PartialUpdateError(serviceName, dirGroupIPName, err)
+		return res, errors.PartialUpdateError(serviceName, dirGroupIPName, err)
 	}
 
 	return res, nil
@@ -115,7 +114,7 @@ func (s *Service) Delete(dirGroupID string) (*http.Response, error) {
 	res, err := s.c.Do(http.MethodDelete, helper.GetDirGroupURI(dirGroupID, DirGroupType), nil, target)
 
 	if err != nil {
-		return nil, errors.DeleteError(serviceName, dirGroupID, err)
+		return res, errors.DeleteError(serviceName, dirGroupID, err)
 	}
 
 	return res, nil
@@ -131,7 +130,7 @@ func (s *Service) List(queryInfo *helper.QueryInfo, dirGroupIP *DirGroupIP) (*ht
 	res, err := s.c.Do(http.MethodGet, helper.GetDirGroupListURI(dirGroupIP.AccountName, DirGroupType), nil, target)
 
 	if err != nil {
-		return nil, nil, errors.ListError(serviceName, helper.GetDirGroupListURI(dirGroupIP.AccountName, DirGroupType), err)
+		return res, nil, errors.ListError(serviceName, helper.GetDirGroupListURI(dirGroupIP.AccountName, DirGroupType), err)
 	}
 
 	dirGroupIPListResponse := target.Data.(*ResponseList)

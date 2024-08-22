@@ -47,7 +47,7 @@ func (s *Service) Create(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*http.Re
 	res, err := s.c.Do(http.MethodPost, rrSetKey.RecordURI(), rrSet, target)
 
 	if err != nil {
-		return nil, errors.CreateError(serviceName, rrSetKey.RecordID(), err)
+		return res, errors.CreateError(serviceName, rrSetKey.RecordID(), err)
 	}
 
 	return res, nil
@@ -63,7 +63,7 @@ func (s *Service) Read(rrSetKey *rrset.RRSetKey) (*http.Response, *rrset.Respons
 	res, err := s.c.Do(http.MethodGet, rrSetKey.RecordURI(), nil, target)
 
 	if err != nil {
-		return nil, nil, errors.ReadError(serviceName, rrSetKey.RecordID(), err)
+		return res, nil, errors.ReadError(serviceName, rrSetKey.RecordID(), err)
 	}
 
 	rrsetList := target.Data.(*rrset.ResponseList)
@@ -95,7 +95,7 @@ func (s *Service) Update(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*http.Re
 	res, err := s.c.Do(http.MethodPut, rrSetKey.RecordURI(), rrSet, target)
 
 	if err != nil {
-		return nil, errors.UpdateError(serviceName, rrSetKey.RecordID(), err)
+		return res, errors.UpdateError(serviceName, rrSetKey.RecordID(), err)
 	}
 
 	return res, nil
@@ -111,7 +111,7 @@ func (s *Service) PartialUpdate(rrSetKey *rrset.RRSetKey, rrSet *rrset.RRSet) (*
 	res, err := s.c.Do(http.MethodPatch, rrSetKey.RecordURI(), rrSet, target)
 
 	if err != nil {
-		return nil, errors.PartialUpdateError(serviceName, rrSetKey.RecordID(), err)
+		return res, errors.PartialUpdateError(serviceName, rrSetKey.RecordID(), err)
 	}
 
 	return res, nil
@@ -127,7 +127,7 @@ func (s *Service) Delete(rrSetKey *rrset.RRSetKey) (*http.Response, error) {
 	res, err := s.c.Do(http.MethodDelete, rrSetKey.RecordURI(), nil, target)
 
 	if err != nil {
-		return nil, errors.DeleteError(serviceName, rrSetKey.RecordID(), err)
+		return res, errors.DeleteError(serviceName, rrSetKey.RecordID(), err)
 	}
 
 	return res, nil
@@ -143,7 +143,7 @@ func (s *Service) List(rrSetKey *rrset.RRSetKey, queryInfo *helper.QueryInfo) (*
 	res, err := s.c.Do(http.MethodGet, rrSetKey.RecordURI()+queryInfo.URI(), nil, target)
 
 	if err != nil {
-		return nil, nil, errors.ListError(serviceName, rrSetKey.RecordID()+queryInfo.URI(), err)
+		return res, nil, errors.ListError(serviceName, rrSetKey.RecordID()+queryInfo.URI(), err)
 	}
 
 	rrsetList := target.Data.(*rrset.ResponseList)

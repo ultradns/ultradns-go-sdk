@@ -56,7 +56,7 @@ func (s *Service) CreateZone(zone *Zone) (*http.Response, error) {
 			zoneName = zone.Properties.Name
 		}
 
-		return nil, errors.CreateError(serviceName, zoneName, err)
+		return res, errors.CreateError(serviceName, zoneName, err)
 	}
 
 	if er := s.checkZoneTask(res); er != nil {
@@ -77,7 +77,7 @@ func (s *Service) ReadZone(zoneName string) (*http.Response, *Response, error) {
 	res, err := s.c.Do(http.MethodGet, basePath+zoneName, nil, target)
 
 	if err != nil {
-		return nil, nil, errors.ReadError(serviceName, zoneName, err)
+		return res, nil, errors.ReadError(serviceName, zoneName, err)
 	}
 
 	zoneResponse := target.Data.(*Response)
@@ -96,7 +96,7 @@ func (s *Service) UpdateZone(zoneName string, zone *Zone) (*http.Response, error
 	res, err := s.c.Do(http.MethodPut, basePath+zoneName, zone, target)
 
 	if err != nil {
-		return nil, errors.UpdateError(serviceName, zoneName, err)
+		return res, errors.UpdateError(serviceName, zoneName, err)
 	}
 
 	return res, nil
@@ -113,7 +113,7 @@ func (s *Service) PartialUpdateZone(zoneName string, zone *Zone) (*http.Response
 	res, err := s.c.Do(http.MethodPatch, basePath+zoneName, zone, target)
 
 	if err != nil {
-		return nil, errors.PartialUpdateError(serviceName, zoneName, err)
+		return res, errors.PartialUpdateError(serviceName, zoneName, err)
 	}
 
 	return res, nil
@@ -130,7 +130,7 @@ func (s *Service) DeleteZone(zoneName string) (*http.Response, error) {
 	res, err := s.c.Do(http.MethodDelete, basePath+zoneName, nil, target)
 
 	if err != nil {
-		return nil, errors.DeleteError(serviceName, zoneName, err)
+		return res, errors.DeleteError(serviceName, zoneName, err)
 	}
 
 	return res, nil
@@ -146,7 +146,7 @@ func (s *Service) ListZone(queryInfo *helper.QueryInfo) (*http.Response, *Respon
 	res, err := s.c.Do(http.MethodGet, basePathForList+queryInfo.URI(), nil, target)
 
 	if err != nil {
-		return nil, nil, errors.ListError(serviceName, basePathForList+queryInfo.URI(), err)
+		return res, nil, errors.ListError(serviceName, basePathForList+queryInfo.URI(), err)
 	}
 
 	zoneListResponse := target.Data.(*ResponseList)

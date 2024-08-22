@@ -43,10 +43,8 @@ func (s *Service) Create(dirGroupGeo *DirGroupGeo) (*http.Response, error) {
 	res, err := s.c.Do(http.MethodPost, helper.GetDirGroupURI(dirGroupGeo.DirGroupGeoID(), DirGroupType), dirGroupGeo, target)
 
 	if err != nil {
-		geoGroupName := ""
-		geoGroupName = dirGroupGeo.Name
-
-		return nil, errors.CreateError(serviceName, geoGroupName, err)
+		geoGroupName := dirGroupGeo.Name
+		return res, errors.CreateError(serviceName, geoGroupName, err)
 	}
 
 	return res, nil
@@ -62,7 +60,7 @@ func (s *Service) Read(dirGroupID string) (*http.Response, *Response, string, er
 
 	res, err := s.c.Do(http.MethodGet, dirGroupURI, nil, target)
 	if err != nil {
-		return nil, nil, dirGroupURI, errors.ReadError(serviceName, dirGroupID, err)
+		return res, nil, dirGroupURI, errors.ReadError(serviceName, dirGroupID, err)
 	}
 
 	dirGroupGeoResponse := target.Data.(*Response)
@@ -80,7 +78,7 @@ func (s *Service) Update(dirGroupGeo *DirGroupGeo) (*http.Response, error) {
 	res, err := s.c.Do(http.MethodPut, helper.GetDirGroupURI(dirGroupGeo.DirGroupGeoID(), DirGroupType), dirGroupGeo, target)
 
 	if err != nil {
-		return nil, errors.UpdateError(serviceName, dirGroupGeo.Name, err)
+		return res, errors.UpdateError(serviceName, dirGroupGeo.Name, err)
 	}
 
 	return res, nil
@@ -96,7 +94,7 @@ func (s *Service) PartialUpdate(dirGroupGeo *DirGroupGeo) (*http.Response, error
 	res, err := s.c.Do(http.MethodPatch, helper.GetDirGroupURI(dirGroupGeo.DirGroupGeoID(), DirGroupType), dirGroupGeo, target)
 
 	if err != nil {
-		return nil, errors.PartialUpdateError(serviceName, dirGroupGeo.Name, err)
+		return res, errors.PartialUpdateError(serviceName, dirGroupGeo.Name, err)
 	}
 
 	return res, nil
@@ -112,7 +110,7 @@ func (s *Service) Delete(dirGroupID string) (*http.Response, error) {
 	res, err := s.c.Do(http.MethodDelete, helper.GetDirGroupURI(dirGroupID, DirGroupType), nil, target)
 
 	if err != nil {
-		return nil, errors.DeleteError(serviceName, dirGroupID, err)
+		return res, errors.DeleteError(serviceName, dirGroupID, err)
 	}
 
 	return res, nil
@@ -128,7 +126,7 @@ func (s *Service) List(queryInfo *helper.QueryInfo, dirGroupGeo *DirGroupGeo) (*
 	res, err := s.c.Do(http.MethodGet, helper.GetDirGroupListURI(dirGroupGeo.AccountName, DirGroupType), nil, target)
 
 	if err != nil {
-		return nil, nil, errors.ListError(serviceName, helper.GetDirGroupListURI(dirGroupGeo.AccountName, DirGroupType), err)
+		return res, nil, errors.ListError(serviceName, helper.GetDirGroupListURI(dirGroupGeo.AccountName, DirGroupType), err)
 	}
 
 	dirGroupGeoListResponse := target.Data.(*ResponseList)
