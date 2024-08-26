@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/ultradns/ultradns-go-sdk/internal/version"
 	"github.com/ultradns/ultradns-go-sdk/pkg/client"
 	"github.com/ultradns/ultradns-go-sdk/pkg/errors"
 	"github.com/ultradns/ultradns-go-sdk/pkg/helper"
@@ -41,13 +42,17 @@ func (s *Service) Create(dirGroupIP *DirGroupIP) (*http.Response, error) {
 		return nil, errors.ServiceError(serviceName)
 	}
 
+	s.c.Trace("[%s] %s create started", version.GetSDKVersion(), serviceName)
+
 	res, err := s.c.Do(http.MethodPost, helper.GetDirGroupURI(dirGroupIP.DirGroupIPID(), DirGroupType), dirGroupIP, target)
 
 	if err != nil {
 		ipGroupName := dirGroupIP.Name
-
+		s.c.Error("[%s] %s create failed with error: %v", version.GetSDKVersion(), serviceName, err)
 		return res, errors.CreateError(serviceName, ipGroupName, err)
 	}
+
+	s.c.Trace("[%s] %s create completed successfully", version.GetSDKVersion(), serviceName)
 
 	return res, nil
 }
@@ -60,12 +65,17 @@ func (s *Service) Read(dirGroupID string) (*http.Response, *Response, string, er
 		return nil, nil, dirGroupURI, errors.ServiceError(serviceName)
 	}
 
+	s.c.Trace("[%s] %s read started", version.GetSDKVersion(), serviceName)
+
 	res, err := s.c.Do(http.MethodGet, helper.GetDirGroupURI(dirGroupID, DirGroupType), nil, target)
 	if err != nil {
+		s.c.Error("[%s] %s read failed with error: %v", version.GetSDKVersion(), serviceName, err)
 		return res, nil, dirGroupURI, errors.ReadError(serviceName, dirGroupID, err)
 	}
 
 	dirGroupIPResponse := target.Data.(*Response)
+
+	s.c.Trace("[%s] %s read completed successfully", version.GetSDKVersion(), serviceName)
 
 	return res, dirGroupIPResponse, dirGroupURI, nil
 }
@@ -78,11 +88,16 @@ func (s *Service) Update(dirGroupIP *DirGroupIP) (*http.Response, error) {
 		return nil, errors.ServiceError(serviceName)
 	}
 
+	s.c.Trace("[%s] %s update started", version.GetSDKVersion(), serviceName)
+
 	res, err := s.c.Do(http.MethodPut, helper.GetDirGroupURI(dirGroupIP.DirGroupIPID(), DirGroupType), dirGroupIP, target)
 
 	if err != nil {
+		s.c.Error("[%s] %s update failed with error: %v", version.GetSDKVersion(), serviceName, err)
 		return res, errors.UpdateError(serviceName, dirGroupIPName, err)
 	}
+
+	s.c.Trace("[%s] %s update completed successfully", version.GetSDKVersion(), serviceName)
 
 	return res, nil
 }
@@ -95,11 +110,16 @@ func (s *Service) PartialUpdate(dirGroupIP *DirGroupIP) (*http.Response, error) 
 		return nil, errors.ServiceError(serviceName)
 	}
 
+	s.c.Trace("[%s] %s partial update started", version.GetSDKVersion(), serviceName)
+
 	res, err := s.c.Do(http.MethodPatch, helper.GetDirGroupURI(dirGroupIP.DirGroupIPID(), DirGroupType), dirGroupIP, target)
 
 	if err != nil {
+		s.c.Error("[%s] %s partial update failed with error: %v", version.GetSDKVersion(), serviceName, err)
 		return res, errors.PartialUpdateError(serviceName, dirGroupIPName, err)
 	}
+
+	s.c.Trace("[%s] %s partial update completed successfully", version.GetSDKVersion(), serviceName)
 
 	return res, nil
 }
@@ -111,11 +131,16 @@ func (s *Service) Delete(dirGroupID string) (*http.Response, error) {
 		return nil, errors.ServiceError(serviceName)
 	}
 
+	s.c.Trace("[%s] %s delete started", version.GetSDKVersion(), serviceName)
+
 	res, err := s.c.Do(http.MethodDelete, helper.GetDirGroupURI(dirGroupID, DirGroupType), nil, target)
 
 	if err != nil {
+		s.c.Error("[%s] %s delete failed with error: %v", version.GetSDKVersion(), serviceName, err)
 		return res, errors.DeleteError(serviceName, dirGroupID, err)
 	}
+
+	s.c.Trace("[%s] %s delete completed successfully", version.GetSDKVersion(), serviceName)
 
 	return res, nil
 }
@@ -127,13 +152,18 @@ func (s *Service) List(queryInfo *helper.QueryInfo, dirGroupIP *DirGroupIP) (*ht
 		return nil, nil, errors.ServiceError(serviceName)
 	}
 
+	s.c.Trace("[%s] %s list started", version.GetSDKVersion(), serviceName)
+
 	res, err := s.c.Do(http.MethodGet, helper.GetDirGroupListURI(dirGroupIP.AccountName, DirGroupType), nil, target)
 
 	if err != nil {
+		s.c.Error("[%s] %s list failed with error: %v", version.GetSDKVersion(), serviceName, err)
 		return res, nil, errors.ListError(serviceName, helper.GetDirGroupListURI(dirGroupIP.AccountName, DirGroupType), err)
 	}
 
 	dirGroupIPListResponse := target.Data.(*ResponseList)
+
+	s.c.Trace("[%s] %s list completed successfully", version.GetSDKVersion(), serviceName)
 
 	return res, dirGroupIPListResponse, nil
 }

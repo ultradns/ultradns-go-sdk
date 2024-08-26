@@ -18,6 +18,7 @@ type Client struct {
 	httpClient *http.Client
 	baseURL    string
 	userAgent  string
+	logger     logger
 }
 
 // Response wraps the success and error response data.

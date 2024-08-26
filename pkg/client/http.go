@@ -40,10 +40,16 @@ func (c *Client) Do(method, path string, payload, target interface{}) (*http.Res
 	req.Header.Add("Accept", contentType)
 	req.Header.Add("User-Agent", userAgent)
 
+	c.logger.logHttpRequest(req)
 	res, err := c.httpClient.Do(req)
+	c.logger.logHttpResponse(res)
+
+	resp := &http.Response{
+		Status: res.Status,
+	}
 
 	if err != nil {
-		return nil, err
+		return resp, err
 	}
 
 	defer res.Body.Close()
@@ -51,7 +57,7 @@ func (c *Client) Do(method, path string, payload, target interface{}) (*http.Res
 	er := validateResponse(res, target)
 
 	if er != nil {
-		return res, er
+		return resp, er
 	}
 
 	return res, nil
