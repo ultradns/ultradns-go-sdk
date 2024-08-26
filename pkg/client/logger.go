@@ -4,7 +4,6 @@ import (
 	"log"
 	"net/http"
 	"net/http/httputil"
-	"os"
 	"regexp"
 )
 
@@ -20,14 +19,9 @@ const (
 type logger struct {
 	logLevel logLevelType
 	logger   *log.Logger
-	prefix   bool
 }
 
 func (l logger) getLogPrefix(logLevel logLevelType) string {
-	if !l.prefix {
-		return ""
-	}
-
 	switch logLevel {
 	case LogError:
 		return "[ERROR] "
@@ -80,13 +74,15 @@ func (c *Client) Trace(format string, v ...any) {
 }
 
 func (c *Client) EnableDefaultDebugLogger() {
-	c.logger.logLevel = LogDebug
-	c.logger.prefix = true
-	c.logger.logger = log.New(os.Stdout, "", log.Ldate|log.Lmicroseconds|log.Lmsgprefix)
+	c.EnableLogger(LogDebug, log.Ldate|log.Lmicroseconds|log.Lmsgprefix)
 }
 
 func (c *Client) EnableDefaultTraceLogger() {
-	c.logger.logLevel = LogTrace
-	c.logger.prefix = true
-	c.logger.logger = log.New(os.Stdout, "", log.Ldate|log.Lmicroseconds|log.Lmsgprefix)
+	c.EnableLogger(LogTrace, log.Ldate|log.Lmicroseconds|log.Lmsgprefix)
+}
+
+func (c *Client) EnableLogger(logLevel logLevelType, flags int) {
+	c.logger.logLevel = logLevel
+	c.logger.logger = log.Default()
+	c.logger.logger.SetFlags(flags)
 }
