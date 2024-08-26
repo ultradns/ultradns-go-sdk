@@ -44,8 +44,10 @@ func (c *Client) Do(method, path string, payload, target interface{}) (*http.Res
 	res, err := c.httpClient.Do(req)
 	c.logger.logHttpResponse(res)
 
-	resp := &http.Response{
-		Status: res.Status,
+	resp := &http.Response{}
+
+	if res != nil {
+		resp.Status = res.Status
 	}
 
 	if err != nil {
