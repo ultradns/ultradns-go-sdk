@@ -62,7 +62,7 @@ func (c *Client) Do(method, path string, payload, target interface{}) (*http.Res
 		return resp, er
 	}
 
-	return res, nil
+	return resp, nil
 }
 
 func validateResponse(res *http.Response, t interface{}) error {

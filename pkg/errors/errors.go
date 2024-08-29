@@ -65,6 +65,10 @@ func ListError(service, uri string, err error) error {
 	return processError(service, "listing", uri, err)
 }
 
+func MigrateError(service, uri string, err error) error {
+	return processError(service, "migrating", uri, err)
+}
+
 func TypeMismatchError(expected, found string) error {
 	return fmt.Errorf("%w: { expected: '%s', found: '%s' }", errTypeMismatch, expected, found)
 }

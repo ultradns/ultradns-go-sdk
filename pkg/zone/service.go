@@ -18,6 +18,8 @@ const (
 	zoneTaskRetries = 5
 	zoneTaskTimeGap = 10
 	taskHeader      = "X-Task-Id"
+	migratePrefix   = "v2/accounts/"
+	migrateSuffix   = "/zones/move"
 )
 
 type Service struct {
@@ -206,4 +208,27 @@ func (s *Service) checkZoneTask(res *http.Response) error {
 	s.c.Trace("[%s] check zone %s completed successfully", version.GetSDKVersion(), serviceName)
 
 	return nil
+}
+
+func (s *Service) MigrateZoneAccount(zones []string, old, new string) (*http.Response, error) {
+	target := client.Target(&client.SuccessResponse{})
+	old = url.PathEscape(old)
+
+	if s.c == nil {
+		return nil, errors.ServiceError(serviceName)
+	}
+
+	s.c.Trace("[%s] %s account migration started", version.GetSDKVersion(), serviceName)
+
+	data := &ZoneAccountChange{Zones: zones, TargetAccount: new}
+	res, err := s.c.Do(http.MethodPut, migratePrefix+old+migrateSuffix, data, target)
+
+	if err != nil {
+		s.c.Error("[%s] %s account migration failed with error: %v", version.GetSDKVersion(), serviceName, err)
+		return res, errors.MigrateError(serviceName, "", err)
+	}
+
+	s.c.Trace("[%s] %s account migration completed successfully", version.GetSDKVersion(), serviceName)
+
+	return res, nil
 }
