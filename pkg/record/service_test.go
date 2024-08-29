@@ -159,7 +159,7 @@ func TestListRecordFailure(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if _, _, er := recordService.List(integration.GetTestRRSetKey(), &helper.QueryInfo{}); er.Error() != "Error while listing Record: Server error Response - { code: '1801', message: 'Zone does not exist in the system.' }: {key: 'www.non-existing-zone.com.:non-existing-zone.com.:A (1)'}" {
+	if _, _, er := recordService.List(integration.GetTestRRSetKey(), &helper.QueryInfo{}); er.Error() != "Error while listing Record: Server error Response - { code: '1801', message: 'Zone does not exist in the system.' }: {key: 'www.non-existing-zone.com.:non-existing-zone.com.:A (1)?&q=&offset=0&cursor=&limit=100&sort=&reverse=false'}" {
 		t.Fatal(er)
 	}
 }

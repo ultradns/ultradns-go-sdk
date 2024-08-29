@@ -18,6 +18,11 @@ func (t *IntegrationTest) TestRecordResources(zoneName string) {
 			it.Test = st
 			it.CreateRecordTypeA(ownerName, zoneName)
 		})
+	t.Test.Run("TestCreateRecordResourceTypeAAAA",
+		func(st *testing.T) {
+			it.Test = st
+			it.CreateRecordTypeAAAA(ownerName, zoneName)
+		})
 	t.Test.Run("TestUpdateRecordResourceTypeA",
 		func(st *testing.T) {
 			it.Test = st
@@ -38,6 +43,11 @@ func (t *IntegrationTest) TestRecordResources(zoneName string) {
 			it.Test = st
 			it.ListRecord(integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, ""))
 		})
+	t.Test.Run("TestReadRecordResourceError",
+		func(st *testing.T) {
+			it.Test = st
+			it.ReadRecordError(integration.GetRRSetKey(ownerName, zoneName, "ANY", ""))
+		})
 	t.Test.Run("TestDeleteRecordResourceTypeA",
 		func(st *testing.T) {
 			it.Test = st
@@ -48,6 +58,12 @@ func (t *IntegrationTest) TestRecordResources(zoneName string) {
 func (t *IntegrationTest) CreateRecordTypeA(ownerName, zoneName string) {
 	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeA, "")
 	rrSet := getRRSetTypeA(ownerName)
+	t.CreateRecord(rrSetKey, rrSet)
+}
+
+func (t *IntegrationTest) CreateRecordTypeAAAA(ownerName, zoneName string) {
+	rrSetKey := integration.GetRRSetKey(ownerName, zoneName, testRecordTypeAAAA, "")
+	rrSet := getRRSetTypeAAAA(ownerName)
 	t.CreateRecord(rrSetKey, rrSet)
 }
 
@@ -70,6 +86,14 @@ func getRRSetTypeA(ownerName string) *rrset.RRSet {
 		OwnerName: ownerName,
 		RRType:    testRecordTypeA,
 		RData:     []string{"192.168.1.1"},
+	}
+}
+
+func getRRSetTypeAAAA(ownerName string) *rrset.RRSet {
+	return &rrset.RRSet{
+		OwnerName: ownerName,
+		RRType:    testRecordTypeAAAA,
+		RData:     []string{"0:0:0:0:0:0:0:1"},
 	}
 }
 
@@ -118,6 +142,18 @@ func (t *IntegrationTest) ReadRecord(rrSetKey *rrset.RRSetKey) {
 
 	if _, _, er := recordService.Read(rrSetKey); er != nil {
 		t.Test.Fatal(er)
+	}
+}
+
+func (t *IntegrationTest) ReadRecordError(rrSetKey *rrset.RRSetKey) {
+	recordService, err := record.Get(integration.TestClient)
+
+	if err != nil {
+		t.Test.Fatal(err)
+	}
+
+	if _, _, er := recordService.Read(rrSetKey); er == nil {
+		t.Test.Fatal("MultipleResourceFoundError not invoked")
 	}
 }
 

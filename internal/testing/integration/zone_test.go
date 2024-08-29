@@ -12,7 +12,7 @@ func TestZoneResources(t *testing.T) {
 
 	it := IntegrationTest{}
 	primaryZoneName := integration.GetRandomZoneName()
-	secondaryZoneName := integration.GetRandomSecondaryZoneName()
+	secondaryZoneName := "sdk-plugins-qualification-zone.com"
 	aliasZoneName := integration.GetRandomZoneNameWithSpecialChar()
 
 	t.Run("TestCreatePrimaryZone",

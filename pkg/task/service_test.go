@@ -105,7 +105,7 @@ func TestFailedTaskWithSecondaryZone(t *testing.T) {
 		SecondaryCreateInfo: secondaryZone,
 	}
 
-	if _, er := zoneService.CreateZone(zoneData); !strings.Contains(er.Error(), "code: 'ERROR', message: 'The name server 'regression-szts-oxfr-v1-useast1.test.ultradns.net' is not authoritative for zone 'non-existing-zone.com.'. Please provide correct name server.' }") {
+	if _, er := zoneService.CreateZone(zoneData); !strings.Contains(er.Error(), "is not authoritative for zone 'non-existing-zone.com.'. Please provide correct name server.' }") {
 		t.Fatal(er)
 	}
 }

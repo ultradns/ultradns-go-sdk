@@ -35,7 +35,7 @@ func (l logger) getLogPrefix(logLevel logLevelType) string {
 }
 
 func (l logger) logHttpRequest(req *http.Request) {
-	if l.logLevel > LogOff && l.logger != nil && req != nil {
+	if l.logLevel >= LogDebug && l.logger != nil && req != nil {
 		l.logger.SetPrefix(l.getLogPrefix(LogDebug))
 		data, _ := httputil.DumpRequest(req, true)
 		re := regexp.MustCompile(`\r?\n`)
@@ -45,7 +45,7 @@ func (l logger) logHttpRequest(req *http.Request) {
 }
 
 func (l logger) logHttpResponse(res *http.Response) {
-	if l.logLevel > LogOff && l.logger != nil && res != nil {
+	if l.logLevel >= LogDebug && l.logger != nil && res != nil {
 		l.logger.SetPrefix(l.getLogPrefix(LogDebug))
 		data, _ := httputil.DumpResponse(res, true)
 		re := regexp.MustCompile(`\r?\n`)
@@ -65,9 +65,9 @@ func (c *Client) Error(format string, v ...any) {
 	c.logger.logf(LogError, format, v...)
 }
 
-func (c *Client) Debug(format string, v ...any) {
-	c.logger.logf(LogDebug, format, v...)
-}
+// func (c *Client) Debug(format string, v ...any) {
+// 	c.logger.logf(LogDebug, format, v...)
+// }
 
 func (c *Client) Trace(format string, v ...any) {
 	c.logger.logf(LogTrace, format, v...)
@@ -85,4 +85,8 @@ func (c *Client) EnableLogger(logLevel logLevelType, flags int) {
 	c.logger.logLevel = logLevel
 	c.logger.logger = log.Default()
 	c.logger.logger.SetFlags(flags)
+}
+
+func (c *Client) DisableLogger() {
+	c.logger.logLevel = LogOff
 }

@@ -28,11 +28,13 @@ func TestRecordResources(t *testing.T) {
 
 	t.Run("TestCreateZoneRecordResources",
 		func(st *testing.T) {
+			integration.TestClient.EnableDefaultDebugLogger()
 			it.Test = st
 			it.CreatePrimaryZone(zoneName)
 		})
 	t.Run("TestStandandRecordResources",
 		func(st *testing.T) {
+			integration.TestClient.DisableLogger()
 			it.Test = st
 			it.TestRecordResources(zoneName)
 		})
@@ -82,8 +84,8 @@ func TestRecordResources(t *testing.T) {
 			it.TestDirGroupIPResources(getDirGroupIP(groupNameIP), groupNameIP)
 		})
 	t.Run("TestDeleteZoneRecordResources",
-
 		func(st *testing.T) {
+			integration.TestClient.EnableDefaultTraceLogger()
 			it.Test = st
 			it.DeleteZone(zoneName)
 		})

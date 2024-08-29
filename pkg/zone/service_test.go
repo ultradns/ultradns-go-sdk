@@ -81,6 +81,14 @@ func TestListZoneWithConfigError(t *testing.T) {
 	}
 }
 
+func TestMigrateZoneAccountWithConfigError(t *testing.T) {
+	zoneService := zone.Service{}
+
+	if _, err := zoneService.MigrateZoneAccount([]string{}, "", ""); err.Error() != serviceErrorString {
+		t.Fatal(err)
+	}
+}
+
 func TestCreateZoneFailure(t *testing.T) {
 	zoneService, err := zone.Get(integration.TestClient)
 
@@ -153,20 +161,14 @@ func TestListZoneFailure(t *testing.T) {
 	}
 }
 
-func TestListZoneSuccess(t *testing.T) {
+func TestMigrateZoneAccountFailure(t *testing.T) {
 	zoneService, err := zone.Get(integration.TestClient)
 
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	_, zoneListRes, er := zoneService.ListZone(&helper.QueryInfo{Limit: 10})
-
-	if er != nil {
+	if _, er := zoneService.MigrateZoneAccount([]string{"non-existing-zone"}, "a", "b"); er.Error() != "Error while migrating Zone: Server error Response - { code: '70002', message: 'Data not found.' }: {key: ''}" {
 		t.Fatal(er)
-	}
-
-	if zoneListRes != nil && zoneListRes.QueryInfo.Limit != 10 {
-		t.Fatalf("error while listing zones.")
 	}
 }

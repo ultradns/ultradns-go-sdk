@@ -69,3 +69,15 @@ func TestGetOwnerFQDNwithEmptyOwnerZoneFQDN(t *testing.T) {
 		t.Fatal("FQDN owner name not returned : owner name - example.com. : zone name - example.com")
 	}
 }
+
+func TestGetAccountName(t *testing.T) {
+	if expected, found := "account", helper.GetAccountName("user:account"); expected != found {
+		t.Fatal("GetAccountName failed")
+	}
+}
+
+func TestGetAccountNameFromURI(t *testing.T) {
+	if expected, found := "account", helper.GetAccountNameFromURI("user/account"); expected != found {
+		t.Fatal("GetAccountName failed")
+	}
+}

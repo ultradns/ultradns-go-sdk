@@ -48,6 +48,8 @@ func (c *Client) Do(method, path string, payload, target interface{}) (*http.Res
 
 	if res != nil {
 		resp.Status = res.Status
+		resp.StatusCode = res.StatusCode
+		resp.Header = res.Header
 	}
 
 	if err != nil {
