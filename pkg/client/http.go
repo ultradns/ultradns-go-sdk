@@ -40,9 +40,9 @@ func (c *Client) Do(method, path string, payload, target interface{}) (*http.Res
 	req.Header.Add("Accept", contentType)
 	req.Header.Add("User-Agent", userAgent)
 
-	c.logger.logHttpRequest(req)
+	c.logHttpRequest(req)
 	res, err := c.httpClient.Do(req)
-	c.logger.logHttpResponse(res)
+	c.logHttpResponse(res)
 
 	resp := &http.Response{}
 

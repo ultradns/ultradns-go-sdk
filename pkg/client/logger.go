@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"regexp"
+	"strings"
 )
 
 type logLevelType int
@@ -34,24 +35,24 @@ func (l logger) getLogPrefix(logLevel logLevelType) string {
 	return ""
 }
 
-func (l logger) logHttpRequest(req *http.Request) {
-	if l.logLevel >= LogDebug && l.logger != nil && req != nil {
-		l.logger.SetPrefix(l.getLogPrefix(LogDebug))
+func (c *Client) logHttpRequest(req *http.Request) {
+	if c.logger.logLevel >= LogDebug && req != nil {
 		data, _ := httputil.DumpRequest(req, true)
-		re := regexp.MustCompile(`\r?\n`)
-		str := re.ReplaceAllString(string(data), "\r\n\t")
-		l.logger.Printf("HTTP Request Sent:\n\t%s", str)
+		c.Debug("HTTP Request Sent:\n\t%s", formatHttpLog(data))
 	}
 }
 
-func (l logger) logHttpResponse(res *http.Response) {
-	if l.logLevel >= LogDebug && l.logger != nil && res != nil {
-		l.logger.SetPrefix(l.getLogPrefix(LogDebug))
+func (c *Client) logHttpResponse(res *http.Response) {
+	if c.logger.logLevel >= LogDebug && res != nil {
 		data, _ := httputil.DumpResponse(res, true)
-		re := regexp.MustCompile(`\r?\n`)
-		str := re.ReplaceAllString(string(data), "\r\n\t")
-		l.logger.Printf("HTTP Response Received:\n\t%s", str)
+		c.Debug("HTTP Response Received:\n\t%s", formatHttpLog(data))
 	}
+}
+
+func formatHttpLog(data []byte) string {
+	str := strings.TrimRight(string(data), "\n")
+	str = regexp.MustCompile(`\r?\n`).ReplaceAllString(str, "\r\n\t")
+	return str
 }
 
 func (l logger) logf(logType logLevelType, format string, v ...any) {
@@ -65,9 +66,9 @@ func (c *Client) Error(format string, v ...any) {
 	c.logger.logf(LogError, format, v...)
 }
 
-// func (c *Client) Debug(format string, v ...any) {
-// 	c.logger.logf(LogDebug, format, v...)
-// }
+func (c *Client) Debug(format string, v ...any) {
+	c.logger.logf(LogDebug, format, v...)
+}
 
 func (c *Client) Trace(format string, v ...any) {
 	c.logger.logf(LogTrace, format, v...)
