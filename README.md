@@ -102,7 +102,7 @@ func main() {
 
 ### Configuring Credentials
 
-The UltraDNS credentials to authenticate with services must be provided either as a config struct or as environment variable or a combination of both. Config struct values will be taken as priority if same config is provided as struct and environment variable. The required configs are: `USERNAME`, `PASSWORD`,`ENDPOINT`.
+The UltraDNS credentials to authenticate with services must be provided either as a config struct or as environment variable or a combination of both. Config struct values will be taken as priority if same config is provided as struct and environment variable. The required configs are: `USERNAME`, `PASSWORD`, `ENDPOINT`.
 
 * Config Struct - SDK has config struct (`client.Config`) which has Username, Password, HostURL fields.
 
