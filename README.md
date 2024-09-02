@@ -10,17 +10,18 @@ ultradns-go-sdk is able to do CRUD operations on UltraDNS resources:
 * Zones<br/>
 	`Primary Zone`, `Secondary Zone`, `Alias Zone`
 * Records<br/>
-	`A`, `NS`, `CNAME`, `SOA`, `PTR`, `HINFO`, `MX`, `TXT`, `RP`, `AAAA`, `SRV`, `NAPTR`, `DS`, `SSHFP`, `TLSA`, `CDS`, `CDNSKEY`, `SVCB`, `HTTPS`, `SPF`, `CAA`, `APEXALIAS`
+	`A`, `NS`, `CNAME`, `SOA`, `PTR`, `HINFO`, `MX`, `TXT`, `RP`, `AAAA`, `SRV`, `NAPTR`, `DS`, `SSHFP`, `TLSA`, `SVCB`, `HTTPS`, `SPF`, `CAA`, `APEXALIAS`
 * Pools<br/>
 	`Simple Failover(SF) Pool`, `Simple Load Balancing(SLB) Pool`, `Resource Distribution(RD) Pool`, `Directional(Dir) Pool`, `Sitebacker Pool(SB) Pool`, `Traffic Controller(TC) Pool`
 * Probes<br/>
 	`DNS`, `FTP`, `TCP`, `HTTP`, `PING`, `SMTP`, `SMTPSEND`
 * Directional Group Geo
-* Directional Group Geo
+* Directional Group IP
 
-Also able to do read only operation on:
+Other specific features:
 
-* Tasks
+* Read only operation on UltraDNS background `Tasks`.
+* Move zone from one account to another.
 
 Jump To:
 * [Getting Started](#Getting-Started)
