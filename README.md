@@ -7,13 +7,13 @@ Golang-Version : `1.22`
 
 ultradns-go-sdk is able to do CRUD operations on UltraDNS resources:
 
-* Zones
+* Zones<br/>
 	`Primary Zone`, `Secondary Zone`, `Alias Zone`
-* Records
+* Records<br/>
 	`A`, `NS`, `CNAME`, `SOA`, `PTR`, `HINFO`, `MX`, `TXT`, `RP`, `AAAA`, `SRV`, `NAPTR`, `DS`, `SSHFP`, `TLSA`, `CDS`, `CDNSKEY`, `SVCB`, `HTTPS`, `SPF`, `CAA`, `APEXALIAS`
-* Pools
+* Pools<br/>
 	`Simple Failover(SF) Pool`, `Simple Load Balancing(SLB) Pool`, `Resource Distribution(RD) Pool`, `Directional(Dir) Pool`, `Sitebacker Pool(SB) Pool`, `Traffic Controller(TC) Pool`
-* Probes
+* Probes<br/>
 	`DNS`, `FTP`, `TCP`, `HTTP`, `PING`, `SMTP`, `SMTPSEND`
 * Directional Group Geo
 * Directional Group Geo
