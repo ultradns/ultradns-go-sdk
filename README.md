@@ -107,13 +107,13 @@ The UltraDNS credentials to authenticate with services must be provided either a
 * Config Struct - SDK has config struct (`client.Config`) which has Username, Password, HostURL fields.
 
 ```go
-	conf := client.Config{
-		Username: "username",
-		Password: "password",
-		HostURL:  "https://api.ultradns.com/",
-	}
+conf := client.Config{
+	Username: "username",
+	Password: "password",
+	HostURL:  "https://api.ultradns.com/",
+}
 
-	client, err := client.NewClient(conf)
+client, err := client.NewClient(conf)
 ```
 
 * Environment Variables - The required fields can be passed as environment variables.
@@ -125,7 +125,7 @@ export ULTRADNS_HOST_URL="https://api.ultradns.com/"
 ```
 
 ```go
-	client, err := client.NewClient(client.Config{})
+client, err := client.NewClient(client.Config{})
 ```
 
 * Combination of Struct and Environment Variable - Few configs can be set as environment variable and other can be passed on config struct.
@@ -136,7 +136,7 @@ export ULTRADNS_HOST_URL="https://api.ultradns.com/"
 ```
 
 ```go
-	client, err := client.NewClient(client.Config{Username: "username",})
+client, err := client.NewClient(client.Config{Username: "username",})
 ```
 
 ### Configuring Service Clients
@@ -148,17 +148,17 @@ Once the service's client is created you can use it to make CRUD operations on U
 * Service Client with New Config:
 
 ```go
-	zoneService, err := zone.New(client.Config{Username: "username",})
-	recordService, err := record.New(client.Config{Username: "username",})
+zoneService, err := zone.New(client.Config{Username: "username",})
+recordService, err := record.New(client.Config{Username: "username",})
 ```
 
 * Service Client with Existing Client:
 
 ```go
-	client, err := client.NewClient(client.Config{Username: "username",})
+client, err := client.NewClient(client.Config{Username: "username",})
 
-	zoneService, err := zone.Get(client)
-	recordService, err := record.Get(client)
+zoneService, err := zone.Get(client)
+recordService, err := record.Get(client)
 ```
 
 ### Configuring Client Loggers
@@ -166,19 +166,19 @@ Once the service's client is created you can use it to make CRUD operations on U
 Loggers can be enabled and disabled on demand for debugging purposes. By default the loggers will be disabled. Custom logger can be enabled with avialable loglevel (`client.logLevelType`) and flags ([GO Log Flags](https://pkg.go.dev/log#pkg-constants)).
 
 ```go
-	client, err := client.NewClient(client.Config{Username: "username",})
+client, err := client.NewClient(client.Config{Username: "username",})
 
-	// Enable default debug logger.
-	client.EnableDefaultDebugLogger()
+// Enable default debug logger.
+client.EnableDefaultDebugLogger()
 
-	// Enable default trace logger.
-	client.EnableDefaultDebugLogger()
+// Enable default trace logger.
+client.EnableDefaultDebugLogger()
 
-	// Enable custom logger.
-	client.EnableLogger(client.LogError, log.LstdFlags)
+// Enable custom logger.
+client.EnableLogger(client.LogError, log.LstdFlags)
 
-	// Disble logger.
-	client.DisableLogger()
+// Disble logger.
+client.DisableLogger()
 ```
 
 ### Service Client Usage
@@ -186,171 +186,170 @@ Loggers can be enabled and disabled on demand for debugging purposes. By default
 * CREATE:
 
 ```go
-	zoneProp := &zone.Properties{
-		Name:        "zone_name",
-		AccountName: "account_name",
-		Type:        "PRIMARY",
-	}
+zoneProp := &zone.Properties{
+	Name:        "zone_name",
+	AccountName: "account_name",
+	Type:        "PRIMARY",
+}
 
-	primaryZone := &zone.PrimaryZone{
-		CreateType: "NEW",
-	}
+primaryZone := &zone.PrimaryZone{
+	CreateType: "NEW",
+}
 
-	zone := &zone.Zone{
-		Properties:        zoneProp,
-		PrimaryCreateInfo: primaryZone,
-	}
+zone := &zone.Zone{
+	Properties:        zoneProp,
+	PrimaryCreateInfo: primaryZone,
+}
 
-	// create zone
-	res, err := zoneService.CreateZone(zone)
+// create zone
+res, err := zoneService.CreateZone(zone)
 ```
 
 ```go
-	rrSetKey := &rrset.RRSetKey{
-		Owner:      "owner",
-		Zone:       "zone.com.",
-		RecordType: "A",
-    }
+rrSetKey := &rrset.RRSetKey{
+	Owner:      "owner",
+	Zone:       "zone.com.",
+	RecordType: "A",
+}
 
-    rdataInfo := &pool.RDataInfo{
-		State:         "NORMAL",
-		RunProbes:     true,
-		Priority:      1,
-		FailoverDelay: 0,
-		Threshold:     1,
-    }
+rdataInfo := &pool.RDataInfo{
+	State:         "NORMAL",
+	RunProbes:     true,
+	Priority:      1,
+	FailoverDelay: 0,
+	Threshold:     1,
+}
 
-    profile := &sbpool.Profile{
-     RDataInfo:        []*pool.RDataInfo{rdataInfo},
-     RunProbes:        true,
-     ActOnProbes:      true,
-     FailureThreshold: 0,
-     Order:            "FIXED",
-     MaxActive:        1,
-     MaxServed:        1,
-    }
+profile := &sbpool.Profile{
+	RDataInfo:        []*pool.RDataInfo{rdataInfo},
+	RunProbes:        true,
+	ActOnProbes:      true,
+	FailureThreshold: 0,
+	Order:            "FIXED",
+	MaxActive:        1,
+	MaxServed:        1,
+}
 
-    rrSet := &rrset.RRSet{
-     OwnerName: "",
-     RRType:    "A",
-     RData:     []string{"1.1.1.1"},
-     Profile:   profile,
-    }
+rrSet := &rrset.RRSet{
+	OwnerName: "",
+	RRType:    "A",
+	RData:     []string{"1.1.1.1"},
+	Profile:   profile,
+}
 
-	//Create Record or pools
-    res, err := recordService.Create(rrSetKey, rrSet)
+//Create Record or pools
+res, err := recordService.Create(rrSetKey, rrSet)
 ```
 
 * READ:
 
 ```go
-	// Read a zone
-	// returns *http.Response, *zone.Response, error
-	res, resZone, err := zoneService.ReadZone("<zonename>")
+// Read a zone
+// returns *http.Response, *zone.Response, error
+res, resZone, err := zoneService.ReadZone("<zonename>")
 
-	
-	rrSetKey := &rrset.RRSetKey{
-		Owner:      "owner",
-		Zone:       "zone.com.",
-		RecordType: "A",
-    }
-	// Read a record
-	//returns *http.Response, *rrset.ResponseList, error
-	res, resList, err := recordService.Read(rrSetKey)
+
+rrSetKey := &rrset.RRSetKey{
+	Owner:      "owner",
+	Zone:       "zone.com.",
+	RecordType: "A",
+}
+// Read a record
+//returns *http.Response, *rrset.ResponseList, error
+res, resList, err := recordService.Read(rrSetKey)
 ```
 
 * UPDATE:
 
 ```go
-	zoneProp := &zone.Properties{
-		Name:        "zone_name",
-		AccountName: "account_name",
-		Type:        "PRIMARY",
-	}
+zoneProp := &zone.Properties{
+	Name:        "zone_name",
+	AccountName: "account_name",
+	Type:        "PRIMARY",
+}
 
-	primaryZone := &zone.PrimaryZone{
-		CreateType: "NEW",
-	}
+primaryZone := &zone.PrimaryZone{
+	CreateType: "NEW",
+}
 
-	zone := &zone.Zone{
-		Properties:        zoneProp,
-		PrimaryCreateInfo: primaryZone,
-	}
+zone := &zone.Zone{
+	Properties:        zoneProp,
+	PrimaryCreateInfo: primaryZone,
+}
 
-	// Update zone
-	res, err := zoneService.UpdateZone(zone)
+// Update zone
+res, err := zoneService.UpdateZone(zone)
 ```
 
 ```go
-	rrSetKey := &rrset.RRSetKey{
-		Owner:      "owner",
-		Zone:       "zone.com.",
-		RecordType: "A",
-    }
+rrSetKey := &rrset.RRSetKey{
+	Owner:      "owner",
+	Zone:       "zone.com.",
+	RecordType: "A",
+}
 
-    rdataInfo := &pool.RDataInfo{
-		State:         "NORMAL",
-		RunProbes:     true,
-		Priority:      1,
-		FailoverDelay: 0,
-		Threshold:     1,
-    }
+rdataInfo := &pool.RDataInfo{
+	State:         "NORMAL",
+	RunProbes:     true,
+	Priority:      1,
+	FailoverDelay: 0,
+	Threshold:     1,
+}
 
-    profile := &sbpool.Profile{
-     RDataInfo:        []*pool.RDataInfo{rdataInfo},
-     RunProbes:        true,
-     ActOnProbes:      true,
-     FailureThreshold: 0,
-     Order:            "FIXED",
-     MaxActive:        1,
-     MaxServed:        1,
-    }
+profile := &sbpool.Profile{
+	RDataInfo:        []*pool.RDataInfo{rdataInfo},
+	RunProbes:        true,
+	ActOnProbes:      true,
+	FailureThreshold: 0,
+	Order:            "FIXED",
+	MaxActive:        1,
+	MaxServed:        1,
+}
 
-    rrSet := &rrset.RRSet{
-     OwnerName: "",
-     RRType:    "A",
-     RData:     []string{"1.1.1.1"},
-     Profile:   profile,
-    }
+rrSet := &rrset.RRSet{
+	OwnerName: "",
+	RRType:    "A",
+	RData:     []string{"1.1.1.1"},
+	Profile:   profile,
+}
 
-	//Update Record or pools
-    res, err := recordService.Update(rrSetKey, rrSet)
+//Update Record or pools
+res, err := recordService.Update(rrSetKey, rrSet)
 ```
 
 * DELETE:
 
 ```go
+// Delete a zone
+res, err := zoneService.DeleteZone("<zonename>")
 
-	// Delete a zone
-	res, err := zoneService.DeleteZone("<zonename>")
-
-	rrSetKey := &rrset.RRSetKey{
-		Owner:      "owner",
-		Zone:       "zone.com.",
-		RecordType: "A",
-    }
-	// Delete a record
-	res, err := recordService.Delete(rrSetKey)
+rrSetKey := &rrset.RRSetKey{
+	Owner:      "owner",
+	Zone:       "zone.com.",
+	RecordType: "A",
+}
+// Delete a record
+res, err := recordService.Delete(rrSetKey)
 ```
 
 * LIST:
 
 ```go
-	query := &helper.QueryInfo{Limit: 1, Offset: 1}
-	
-	// List a zone
-	// returns *http.Response, *zone.ResponseList, error
-	res, resZone, err := zoneService.ListZone(query)
+query := &helper.QueryInfo{Limit: 1, Offset: 1}
 
-	
-	rrSetKey := &rrset.RRSetKey{
-		Owner:      "owner",
-		Zone:       "zone.com.",
-		RecordType: "ANY",
-    }
-	// List a record
-	//returns *http.Response, *rrset.ResponseList, error
-	res, resList, err := recordService.List(rrSetKey, query)
+// List a zone
+// returns *http.Response, *zone.ResponseList, error
+res, resZone, err := zoneService.ListZone(query)
+
+
+rrSetKey := &rrset.RRSetKey{
+	Owner:      "owner",
+	Zone:       "zone.com.",
+	RecordType: "ANY",
+}
+// List a record
+//returns *http.Response, *rrset.ResponseList, error
+res, resList, err := recordService.List(rrSetKey, query)
 ```
 
 ## Getting Help
