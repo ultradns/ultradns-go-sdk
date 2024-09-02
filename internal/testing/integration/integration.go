@@ -26,9 +26,11 @@ var (
 	TestUsername                         = os.Getenv("ULTRADNS_UNIT_TEST_USERNAME")
 	TestPassword                         = os.Getenv("ULTRADNS_UNIT_TEST_PASSWORD")
 	TestAccount                          = os.Getenv("ULTRADNS_UNIT_TEST_ACCOUNT")
+	TestAccountMigrate                   = os.Getenv("ULTRADNS_UNIT_TEST_ACCOUNT_MIGRATE")
 	TestHost                             = os.Getenv("ULTRADNS_UNIT_TEST_HOST_URL")
 	TestUserAgent                        = os.Getenv("ULTRADNS_UNIT_TEST_USER_AGENT")
 	TestPrimaryNameServer                = os.Getenv("ULTRADNS_UNIT_TEST_NAME_SERVER")
+	TestSecondaryZoneName                = os.Getenv("ULTRADNS_UNIT_TEST_SECONDARY_ZONE_NAME")
 	TestClient            *client.Client = initializeTestClient()
 )
 

@@ -76,8 +76,20 @@ func TestGetAccountName(t *testing.T) {
 	}
 }
 
+func TestGetAccountNameEmptyString(t *testing.T) {
+	if expected, found := "", helper.GetAccountName(""); expected != found {
+		t.Fatal("TestGetAccountNameEmptyString failed")
+	}
+}
+
 func TestGetAccountNameFromURI(t *testing.T) {
 	if expected, found := "account", helper.GetAccountNameFromURI("user/account"); expected != found {
 		t.Fatal("GetAccountName failed")
+	}
+}
+
+func TestGetAccountNameFromURIEmptyString(t *testing.T) {
+	if expected, found := "", helper.GetAccountNameFromURI(""); expected != found {
+		t.Fatal("TestGetAccountNameFromURIEmptyString failed")
 	}
 }

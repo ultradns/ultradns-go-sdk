@@ -141,17 +141,27 @@ func GetRecordTypeNumber(key string) string {
 
 func GetAccountName(id string) string {
 	geoAccount := strings.Split(id, ":")
+	if len(geoAccount) < 2 {
+		return id
+	}
 	return geoAccount[1]
 }
 
 func GetAccountNameFromURI(uri string) string {
 	geoAccount := strings.Split(uri, "/")
+	if len(geoAccount) < 2 {
+		return uri
+	}
 	return geoAccount[1]
 }
 
 func GetDirGroupURI(groupID, groupType string) string {
 	groupID = url.PathEscape(groupID)
 	groupData := strings.Split(groupID, ":")
+
+	if len(groupData) < 2 {
+		return fmt.Sprintf("accounts/%s/dirgroups/%s/%s", "", groupType, "")
+	}
 
 	return fmt.Sprintf("accounts/%s/dirgroups/%s/%s", groupData[1], groupType, groupData[0])
 }
