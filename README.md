@@ -172,7 +172,7 @@ client, err := client.NewClient(client.Config{Username: "username",})
 client.EnableDefaultDebugLogger()
 
 // Enable default trace logger.
-client.EnableDefaultDebugLogger()
+client.EnableDefaultTraceLogger()
 
 // Enable custom logger.
 client.EnableLogger(client.LogError, log.LstdFlags)
