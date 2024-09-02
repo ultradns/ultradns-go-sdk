@@ -60,7 +60,7 @@ func formatHttpLog(data []byte) string {
 func (l logger) logf(logType logLevelType, format string, v ...any) {
 	if l.logLevel >= logType && l.logger != nil {
 		l.logger.SetPrefix(l.getLogPrefix(logType))
-		l.logger.Printf("[%s] "+format+"\n", version.GetSDKVersion(), v...)
+		l.logger.Printf("["+version.GetSDKVersion()+"] "+format+"\n", v...)
 	}
 }
 
