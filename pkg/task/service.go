@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ultradns/ultradns-go-sdk/internal/version"
 	"github.com/ultradns/ultradns-go-sdk/pkg/client"
 	"github.com/ultradns/ultradns-go-sdk/pkg/errors"
 )
@@ -42,17 +41,17 @@ func (s *Service) GetTaskStatus(taskID string) (*http.Response, *Task, error) {
 		return nil, nil, errors.ServiceError(serviceName)
 	}
 
-	s.c.Trace("[%s] %s read started", version.GetSDKVersion(), serviceName)
+	s.c.Trace("%s read started", serviceName)
 
 	res, err := s.c.Do(http.MethodGet, basePath+taskID, nil, target)
 	if err != nil {
-		s.c.Error("[%s] %s read failed with error: %v", version.GetSDKVersion(), serviceName, err)
+		s.c.Error("%s read failed with error: %v", serviceName, err)
 		return res, nil, errors.ReadError(serviceName, taskID, err)
 	}
 
 	task := target.Data.(*Task)
 
-	s.c.Trace("[%s] %s read completed successfully", version.GetSDKVersion(), serviceName)
+	s.c.Trace("%s read completed successfully", serviceName)
 
 	return res, task, nil
 }
@@ -61,7 +60,7 @@ func (s *Service) TaskWait(taskID string, retries, timegap int) error {
 	var taskStatus *Task
 
 	for i := 0; i < retries; i++ {
-		s.c.Trace("[%s] sleeping for %d seconds", version.GetSDKVersion(), timegap)
+		s.c.Trace("sleeping for %d seconds", timegap)
 		time.Sleep(time.Duration(timegap) * time.Second)
 
 		_, task, err := s.GetTaskStatus(taskID)
@@ -72,10 +71,10 @@ func (s *Service) TaskWait(taskID string, retries, timegap int) error {
 		if task != nil {
 			switch task.Code {
 			case "COMPLETE":
-				s.c.Trace("[%s] %s completed with status: 'COMPLETE'", version.GetSDKVersion(), serviceName)
+				s.c.Trace("%s completed with status: 'COMPLETE'", serviceName)
 				return nil
 			case "ERROR":
-				s.c.Trace("[%s] %s completed with status: 'ERROR'", version.GetSDKVersion(), serviceName)
+				s.c.Trace("%s completed with status: 'ERROR'", serviceName)
 				return FailedTaskError(task)
 			}
 		}
@@ -83,7 +82,7 @@ func (s *Service) TaskWait(taskID string, retries, timegap int) error {
 		taskStatus = task
 	}
 
-	s.c.Error("[%s] %s check timed out", version.GetSDKVersion(), serviceName)
+	s.c.Error("%s check timed out", serviceName)
 
 	return TimeoutError(taskStatus)
 }

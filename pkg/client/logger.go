@@ -6,6 +6,8 @@ import (
 	"net/http/httputil"
 	"regexp"
 	"strings"
+
+	"github.com/ultradns/ultradns-go-sdk/internal/version"
 )
 
 type logLevelType int
@@ -58,7 +60,7 @@ func formatHttpLog(data []byte) string {
 func (l logger) logf(logType logLevelType, format string, v ...any) {
 	if l.logLevel >= logType && l.logger != nil {
 		l.logger.SetPrefix(l.getLogPrefix(logType))
-		l.logger.Printf(format+"\n", v...)
+		l.logger.Printf("[%s] "+format+"\n", version.GetSDKVersion(), v...)
 	}
 }
 
