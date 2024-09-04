@@ -66,11 +66,12 @@ jobs:
       - 
         name: Create Release Info
         run: |
-          echo "SDK_VERSION=$(cat .sdk-version)" >> $GITHUB_ENV
-          echo "CURRENT_TIME=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
-          echo "COMMIT_ID=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_ENV
-      - 
-        run: echo "RELEASE_VERSION=${{ env.SDK_VERSION }}-${{ env.CURRENT_TIME }}-${{ env.COMMIT_ID }}" >> $GITHUB_ENV
+          SDK_VERSION=$(cat .sdk-version)
+          CURRENT_TIME=$(date +'%Y%m%d%H%M%S')
+          COMMIT_ID=$(git rev-parse --short "$GITHUB_SHA")
+          OLD_RELEASE_VERSION=$(git ls-remote --tags | cut -d/ -f3- | cut -d- -f1 | tail -1)
+          if [ "$OLD_RELEASE_VERSION" = "$SDK_VERSION" ]; then echo "Release version not incremented"; exit 1; fi
+          echo "RELEASE_VERSION=${SDK_VERSION}-${CURRENT_TIME}-${COMMIT_ID}" >> $GITHUB_ENV
       -
         name: Update release version using go generate
         run: go generate ./internal/version
