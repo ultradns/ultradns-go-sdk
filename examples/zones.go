@@ -14,9 +14,9 @@ import (
 
 func main() {
 	conf := client.Config{
-		// Username: "<username>",
-		// Password: "<password>",
-		// HostURL:  "https://api.ultradns.com/",
+		Username: "<username>",
+		Password: "<password>",
+		HostURL:  "https://api.ultradns.com/",
 	}
 
 	client, err := client.NewClient(conf)
@@ -26,7 +26,7 @@ func main() {
 	}
 
 	// Enabling the default trace logger
-	// client.EnableDefaultTraceLogger()
+	client.EnableDefaultTraceLogger()
 
 	zoneService, err := zone.Get(client)
 
