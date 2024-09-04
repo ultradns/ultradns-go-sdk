@@ -355,7 +355,6 @@ res, resList, err := recordService.List(rrSetKey, query)
 
 ## Getting Help
 
-* Open a support ticket with [Customer Support Ticket]().
 * If you think you may have found a bug, please open an [issue](https://github.com/ultradns/ultradns-go-sdk/issues/new).
 * Contact customer support [email]().
 
