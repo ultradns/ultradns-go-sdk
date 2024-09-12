@@ -25,7 +25,7 @@ func TestDoSuccess(t *testing.T) {
 func TestDoNilTarget(t *testing.T) {
 	_, err := integration.TestClient.Do(http.MethodGet, "zones", nil, nil)
 
-	if err.Error() != "response target type mismatched : returned type - <nil>" {
+	if err.Error() != "Unexpected response type received: '<nil>'" {
 		t.Fatal(err)
 	}
 }
@@ -33,7 +33,7 @@ func TestDoNilTarget(t *testing.T) {
 func TestDoWrongTarget(t *testing.T) {
 	_, err := integration.TestClient.Do(http.MethodGet, "zones", nil, &zone.Zone{})
 
-	if err.Error() != "response target type mismatched : returned type - *client.Response" {
+	if err.Error() != "Unexpected response type received: '*zone.Zone'" {
 		t.Fatal(err)
 	}
 }
@@ -42,7 +42,7 @@ func TestDoNonExistingZone(t *testing.T) {
 	target := client.Target(&zone.Response{})
 	_, err := integration.TestClient.Do(http.MethodGet, "zones/unit-test-non-existing-zone.com", nil, target)
 
-	if err.Error() != "error from api response - error code : 1801 - error message : Zone does not exist in the system." {
+	if err.Error() != "Server error Response - { code: '1801', message: 'Zone does not exist in the system.' }" {
 		t.Error(err)
 	}
 }

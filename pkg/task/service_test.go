@@ -9,7 +9,7 @@ import (
 	"github.com/ultradns/ultradns-go-sdk/pkg/zone"
 )
 
-const serviceErrorString = "Task service is not properly configured"
+const serviceErrorString = "Task service configuration failed"
 
 func TestNewSuccess(t *testing.T) {
 	conf := integration.GetConfig()
@@ -23,7 +23,7 @@ func TestNewError(t *testing.T) {
 	conf := integration.GetConfig()
 	conf.Password = ""
 
-	if _, err := task.New(conf); err.Error() != "config error while creating Task service : config validation failure: password is missing" {
+	if _, err := task.New(conf); err.Error() != "Task service configuration failed: Missing required parameters: [ password ]" {
 		t.Fatal(err)
 	}
 }
@@ -49,7 +49,7 @@ func TestGetTaskStatusWithInvalidTaskID(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if _, _, er := taskService.GetTaskStatus("a"); er.Error() != "error while getting task status : task id - a : error from api response - error code : 54001 - error message : Cannot find the task status for the input taskId" {
+	if _, _, er := taskService.GetTaskStatus("a"); er.Error() != "Error while reading Task: Server error Response - { code: '54001', message: 'Cannot find the task status for the input taskId' }: {key: 'a'}" {
 		t.Fatal(er)
 	}
 }
@@ -61,7 +61,7 @@ func TestTaskWaitError(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if er := taskService.TaskWait("a", 2, 1); er.Error() != "error while getting task status : task id - a : error from api response - error code : 54001 - error message : Cannot find the task status for the input taskId" {
+	if er := taskService.TaskWait("a", 2, 1); er.Error() != "Error while reading Task: Server error Response - { code: '54001', message: 'Cannot find the task status for the input taskId' }: {key: 'a'}" {
 		t.Fatal(er)
 	}
 }
@@ -73,7 +73,7 @@ func TestTaskWaitTimeoutError(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if er := taskService.TaskWait("a", 0, 0); er.Error() != "timeout for checking task status : last returned task status - <nil>" {
+	if er := taskService.TaskWait("a", 0, 0); er.Error() != "Timeout task status check: { status: '<nil>' }" {
 		t.Fatal(er)
 	}
 }
@@ -105,7 +105,7 @@ func TestFailedTaskWithSecondaryZone(t *testing.T) {
 		SecondaryCreateInfo: secondaryZone,
 	}
 
-	if _, er := zoneService.CreateZone(zoneData); !strings.Contains(er.Error(), "is not authoritative for zone 'non-existing-zone.com.'. Please provide correct name server.") {
+	if _, er := zoneService.CreateZone(zoneData); !strings.Contains(er.Error(), "is not authoritative for zone 'non-existing-zone.com.'. Please provide correct name server.' }") {
 		t.Fatal(er)
 	}
 }

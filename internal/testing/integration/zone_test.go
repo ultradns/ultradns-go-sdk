@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/ultradns/ultradns-go-sdk/internal/testing/integration"
+	"github.com/ultradns/ultradns-go-sdk/pkg/helper"
 	"github.com/ultradns/ultradns-go-sdk/pkg/zone"
 )
 
@@ -12,7 +13,7 @@ func TestZoneResources(t *testing.T) {
 
 	it := IntegrationTest{}
 	primaryZoneName := integration.GetRandomZoneName()
-	secondaryZoneName := integration.GetRandomSecondaryZoneName()
+	secondaryZoneName := integration.TestSecondaryZoneName
 	aliasZoneName := integration.GetRandomZoneNameWithSpecialChar()
 
 	t.Run("TestCreatePrimaryZone",
@@ -44,6 +45,16 @@ func TestZoneResources(t *testing.T) {
 		func(st *testing.T) {
 			it.Test = st
 			it.PartialUpdatePrimaryZone(primaryZoneName)
+		})
+	t.Run("TestMigrateZoneAccount",
+		func(st *testing.T) {
+			it.Test = st
+			it.MigrateZone(primaryZoneName)
+		})
+	t.Run("TestListZones",
+		func(st *testing.T) {
+			it.Test = st
+			it.ListZones()
 		})
 	t.Run("TestDeleteAliasZone",
 		func(st *testing.T) {
@@ -153,5 +164,39 @@ func (t *IntegrationTest) DeleteZone(zoneName string) {
 
 	if _, er := zoneService.DeleteZone(zoneName); er != nil {
 		t.Test.Fatalf("unable to delete zone - %s : error - %s", zoneName, er.Error())
+	}
+}
+
+func (t *IntegrationTest) ListZones() {
+
+	zoneService, err := zone.Get(integration.TestClient)
+
+	if err != nil {
+		t.Test.Fatal(err)
+	}
+
+	_, zoneListRes, er := zoneService.ListZone(&helper.QueryInfo{Limit: 10})
+
+	if er != nil {
+		t.Test.Fatalf("unable to list zones: error - %s", er.Error())
+	}
+
+	if zoneListRes != nil && zoneListRes.QueryInfo.Limit != 10 {
+		t.Test.Fatalf("error while listing zones.")
+	}
+}
+
+func (t *IntegrationTest) MigrateZone(zoneName string) {
+	zoneService, err := zone.Get(integration.TestClient)
+
+	if err != nil {
+		t.Test.Fatal(err)
+	}
+
+	if _, er := zoneService.MigrateZoneAccount(
+		[]string{zoneName},
+		integration.TestAccount,
+		integration.TestAccountMigrate); er != nil {
+		t.Test.Fatalf("unable to migrate account of zone - %s : error - %s", zoneName, er.Error())
 	}
 }

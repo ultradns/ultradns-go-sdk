@@ -11,5 +11,5 @@ type Task struct {
 }
 
 func (t Task) String() string {
-	return fmt.Sprintf("taskId : %v - code : %v - message : %v", t.TaskID, t.Code, t.Message)
+	return fmt.Sprintf("{ taskId: '%v', code: '%v', message: '%v' }", t.TaskID, t.Code, t.Message)
 }

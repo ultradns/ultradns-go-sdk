@@ -57,3 +57,39 @@ func TestGetRecordTypeNumber(t *testing.T) {
 		t.Fatal("record type mismatched")
 	}
 }
+
+func TestGetOwnerFQDNwithEmptyOwner(t *testing.T) {
+	if expected, found := "example.com.", helper.GetOwnerFQDN("", "example.com"); expected != found {
+		t.Fatal("FQDN owner name not returned : owner name - example.com. : zone name - example.com")
+	}
+}
+
+func TestGetOwnerFQDNwithEmptyOwnerZoneFQDN(t *testing.T) {
+	if expected, found := "example.com.", helper.GetOwnerFQDN("", "example.com."); expected != found {
+		t.Fatal("FQDN owner name not returned : owner name - example.com. : zone name - example.com")
+	}
+}
+
+func TestGetAccountName(t *testing.T) {
+	if expected, found := "account", helper.GetAccountName("user:account"); expected != found {
+		t.Fatal("GetAccountName failed")
+	}
+}
+
+func TestGetAccountNameEmptyString(t *testing.T) {
+	if expected, found := "", helper.GetAccountName(""); expected != found {
+		t.Fatal("TestGetAccountNameEmptyString failed")
+	}
+}
+
+func TestGetAccountNameFromURI(t *testing.T) {
+	if expected, found := "account", helper.GetAccountNameFromURI("user/account"); expected != found {
+		t.Fatal("GetAccountName failed")
+	}
+}
+
+func TestGetAccountNameFromURIEmptyString(t *testing.T) {
+	if expected, found := "", helper.GetAccountNameFromURI(""); expected != found {
+		t.Fatal("TestGetAccountNameFromURIEmptyString failed")
+	}
+}

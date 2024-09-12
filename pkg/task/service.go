@@ -41,12 +41,17 @@ func (s *Service) GetTaskStatus(taskID string) (*http.Response, *Task, error) {
 		return nil, nil, errors.ServiceError(serviceName)
 	}
 
+	s.c.Trace("%s read started", serviceName)
+
 	res, err := s.c.Do(http.MethodGet, basePath+taskID, nil, target)
 	if err != nil {
-		return nil, nil, StatusError(taskID, err)
+		s.c.Error("%s read failed with error: %v", serviceName, err)
+		return res, nil, errors.ReadError(serviceName, taskID, err)
 	}
 
 	task := target.Data.(*Task)
+
+	s.c.Trace("%s read completed successfully", serviceName)
 
 	return res, task, nil
 }
@@ -55,6 +60,7 @@ func (s *Service) TaskWait(taskID string, retries, timegap int) error {
 	var taskStatus *Task
 
 	for i := 0; i < retries; i++ {
+		s.c.Trace("sleeping for %d seconds", timegap)
 		time.Sleep(time.Duration(timegap) * time.Second)
 
 		_, task, err := s.GetTaskStatus(taskID)
@@ -65,14 +71,18 @@ func (s *Service) TaskWait(taskID string, retries, timegap int) error {
 		if task != nil {
 			switch task.Code {
 			case "COMPLETE":
+				s.c.Trace("%s completed with status: 'COMPLETE'", serviceName)
 				return nil
 			case "ERROR":
+				s.c.Trace("%s completed with status: 'ERROR'", serviceName)
 				return FailedTaskError(task)
 			}
 		}
 
 		taskStatus = task
 	}
+
+	s.c.Error("%s check timed out", serviceName)
 
 	return TimeoutError(taskStatus)
 }

@@ -147,3 +147,8 @@ type ResponseList struct {
 	CursorInfo *helper.CursorInfo `json:"cursorInfo,omitempty"`
 	Zones      []*Response        `json:"zones,omitempty"`
 }
+
+type ZoneAccountChange struct {
+	Zones         []string `json:"zones,omitempty"`
+	TargetAccount string   `json:"targetAccountName,omitempty"`
+}

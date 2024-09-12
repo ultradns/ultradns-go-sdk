@@ -6,8 +6,6 @@ import (
 	"os"
 
 	"github.com/ultradns/ultradns-go-sdk/pkg/client"
-	"github.com/ultradns/ultradns-go-sdk/pkg/dirgroup/geo"
-	"github.com/ultradns/ultradns-go-sdk/pkg/dirgroup/ip"
 	"github.com/ultradns/ultradns-go-sdk/pkg/rrset"
 	"github.com/ultradns/ultradns-go-sdk/pkg/zone"
 )
@@ -28,9 +26,11 @@ var (
 	TestUsername                         = os.Getenv("ULTRADNS_UNIT_TEST_USERNAME")
 	TestPassword                         = os.Getenv("ULTRADNS_UNIT_TEST_PASSWORD")
 	TestAccount                          = os.Getenv("ULTRADNS_UNIT_TEST_ACCOUNT")
+	TestAccountMigrate                   = os.Getenv("ULTRADNS_UNIT_TEST_ACCOUNT_MIGRATE")
 	TestHost                             = os.Getenv("ULTRADNS_UNIT_TEST_HOST_URL")
 	TestUserAgent                        = os.Getenv("ULTRADNS_UNIT_TEST_USER_AGENT")
 	TestPrimaryNameServer                = os.Getenv("ULTRADNS_UNIT_TEST_NAME_SERVER")
+	TestSecondaryZoneName                = os.Getenv("ULTRADNS_UNIT_TEST_SECONDARY_ZONE_NAME")
 	TestClient            *client.Client = initializeTestClient()
 )
 
@@ -53,13 +53,13 @@ func GetRandomZoneName() string {
 	return randZoneNamePrefix + GetRandomString() + randZoneNameSuffix
 }
 
-func GetRandomSecondaryZoneName() string {
-	if num, err := rand.Int(rand.Reader, big.NewInt(randSecondaryZoneCount)); err == nil {
-		return randZoneNamePrefix + num.String() + randZoneNameSuffix
-	}
+// func GetRandomSecondaryZoneName() string {
+// 	if num, err := rand.Int(rand.Reader, big.NewInt(randSecondaryZoneCount)); err == nil {
+// 		return randZoneNamePrefix + num.String() + randZoneNameSuffix
+// 	}
 
-	return randZoneNamePrefix + "0" + randZoneNameSuffix
-}
+// 	return randZoneNamePrefix + "0" + randZoneNameSuffix
+// }
 
 func GetRandomZoneNameWithSpecialChar() string {
 	return randZoneNamePrefix + "/" + GetRandomString() + "/" + GetRandomString() + randZoneNameWithSpecialCharSuffix
@@ -158,54 +158,4 @@ func GetTestRRSetKey() *rrset.RRSetKey {
 		Zone:       "non-existing-zone.com.",
 		RecordType: "A",
 	}
-}
-
-func GetDirGroupGeo(geoName, geoDescription string, geoCodes []string) *geo.DirGroupGeo {
-	return &geo.DirGroupGeo{
-		Name:        geoName,
-		Description: geoDescription,
-		AccountName: TestAccount,
-		Codes:       geoCodes,
-	}
-}
-
-func GetTestDirGroupGeo() *geo.DirGroupGeo {
-	return &geo.DirGroupGeo{
-		Name:        "testDirGroupGeo",
-		Description: "Test GEO directional group",
-		AccountName: TestAccount,
-		Codes:       []string{"CA", "US", "MX"},
-	}
-}
-
-func GetDirGroupIP(IPName, IPDescription string, IPs []*ip.IPAddress) *ip.DirGroupIP {
-	return &ip.DirGroupIP{
-		Name:        IPName,
-		Description: IPDescription,
-		AccountName: TestAccount,
-		IPs:         IPs,
-	}
-}
-
-func GetTestDirGroupIP() *ip.DirGroupIP {
-
-	ipProp := &ip.DirGroupIP{
-		AccountName: TestAccount,
-		Name:        "Test SourceIP directional group",
-		Description: "A test DirIP group",
-		IPs: []*ip.IPAddress{
-			&ip.IPAddress{
-				Start: "192.168.1.1",
-				End:   "192.168.1.10",
-			},
-			&ip.IPAddress{
-				Cidr: "192.168.2.0/24",
-			},
-			&ip.IPAddress{
-				Address: "192.168.3.3",
-			},
-		},
-	}
-
-	return ipProp
 }
