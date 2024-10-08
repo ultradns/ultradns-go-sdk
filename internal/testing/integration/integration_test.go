@@ -40,11 +40,13 @@ func TestRecordResources(t *testing.T) {
 		})
 	t.Run("TestRDPoolRecordResources",
 		func(st *testing.T) {
+			integration.TestClient.EnableDefaultWarnLogger()
 			it.Test = st
 			it.TestRDPoolResources(zoneName)
 		})
 	t.Run("TestSFPoolRecordResources",
 		func(st *testing.T) {
+			integration.TestClient.DisableLogger()
 			it.Test = st
 			it.TestSFPoolResources(zoneName)
 		})

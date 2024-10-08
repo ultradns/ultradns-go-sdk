@@ -18,7 +18,7 @@ func TestDoSuccess(t *testing.T) {
 	}
 
 	if res.StatusCode != http.StatusOK {
-		t.Error(target.Error[0].String())
+		t.Error(target.ErrorList[0].String())
 	}
 }
 
