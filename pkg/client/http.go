@@ -4,13 +4,16 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"time"
 
 	"github.com/ultradns/ultradns-go-sdk/internal/version"
 	"github.com/ultradns/ultradns-go-sdk/pkg/errors"
 )
 
 const contentType = "application/json"
+const throttleSleep = 1 * time.Second
 
 var (
 	defaultUserAgent = version.GetSDKVersion()
@@ -50,6 +53,12 @@ func (c *Client) Do(method, path string, payload, target interface{}) (*http.Res
 		resp.Status = res.Status
 		resp.StatusCode = res.StatusCode
 		resp.Header = res.Header
+	}
+
+	if resp.StatusCode == http.StatusTooManyRequests {
+		c.Warn("Throttling the request - '%s %s'", method, url)
+		time.Sleep(throttleSleep)
+		return c.Do(method, path, payload, target)
 	}
 
 	if err != nil {
@@ -92,13 +101,25 @@ func validateResponse(res *http.Response, t interface{}) error {
 			return err
 		}
 	} else {
-		err := json.NewDecoder(res.Body).Decode(&target.Error)
+		bodyBytes, err := io.ReadAll(res.Body)
 
 		if err != nil {
 			return err
 		}
 
-		return errors.APIResponseError(target.Error[0].String())
+		err = json.NewDecoder(bytes.NewReader(bodyBytes)).Decode(&target.ErrorList)
+
+		if err == nil {
+			return errors.APIResponseError(target.ErrorList[0].String())
+		}
+
+		err = json.NewDecoder(bytes.NewReader(bodyBytes)).Decode(&target.Error)
+
+		if err == nil {
+			return errors.APIResponseError(target.Error.String())
+		}
+
+		return err
 	}
 
 	return nil

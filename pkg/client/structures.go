@@ -23,8 +23,9 @@ type Client struct {
 
 // Response wraps the success and error response data.
 type Response struct {
-	Data  interface{}
-	Error []*ErrorResponse
+	Data      interface{}
+	ErrorList []*ErrorResponse
+	Error     *ErrorResponse
 }
 
 // ErrorResponse wraps the structure ultradns error response.
