@@ -15,9 +15,12 @@ type logLevelType int
 const (
 	LogOff logLevelType = iota
 	LogError
+	LogWarn
 	LogDebug
 	LogTrace
 )
+
+const defaultLogFlags = log.Ldate | log.Lmicroseconds | log.Lmsgprefix
 
 type logger struct {
 	logLevel logLevelType
@@ -28,6 +31,8 @@ func (l logger) getLogPrefix(logLevel logLevelType) string {
 	switch logLevel {
 	case LogError:
 		return "[ERROR] "
+	case LogWarn:
+		return "[WARN]"
 	case LogDebug:
 		return "[DEBUG] "
 	case LogTrace:
@@ -68,6 +73,10 @@ func (c *Client) Error(format string, v ...any) {
 	c.logger.logf(LogError, format, v...)
 }
 
+func (c *Client) Warn(format string, v ...any) {
+	c.logger.logf(LogWarn, format, v...)
+}
+
 func (c *Client) Debug(format string, v ...any) {
 	c.logger.logf(LogDebug, format, v...)
 }
@@ -76,12 +85,16 @@ func (c *Client) Trace(format string, v ...any) {
 	c.logger.logf(LogTrace, format, v...)
 }
 
+func (c *Client) EnableDefaultWarnLogger() {
+	c.EnableLogger(LogWarn, defaultLogFlags)
+}
+
 func (c *Client) EnableDefaultDebugLogger() {
-	c.EnableLogger(LogDebug, log.Ldate|log.Lmicroseconds|log.Lmsgprefix)
+	c.EnableLogger(LogDebug, defaultLogFlags)
 }
 
 func (c *Client) EnableDefaultTraceLogger() {
-	c.EnableLogger(LogTrace, log.Ldate|log.Lmicroseconds|log.Lmsgprefix)
+	c.EnableLogger(LogTrace, defaultLogFlags)
 }
 
 func (c *Client) EnableLogger(logLevel logLevelType, flags int) {
