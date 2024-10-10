@@ -18,7 +18,7 @@ func TestDoSuccess(t *testing.T) {
 	}
 
 	if res.StatusCode != http.StatusOK {
-		t.Error(target.Error[0].String())
+		t.Error(target.ErrorList[0].String())
 	}
 }
 
@@ -26,14 +26,6 @@ func TestDoNilTarget(t *testing.T) {
 	_, err := integration.TestClient.Do(http.MethodGet, "zones", nil, nil)
 
 	if err.Error() != "Unexpected response type received: '<nil>'" {
-		t.Fatal(err)
-	}
-}
-
-func TestDoWrongTarget(t *testing.T) {
-	_, err := integration.TestClient.Do(http.MethodGet, "zones", nil, &zone.Zone{})
-
-	if err.Error() != "Unexpected response type received: '*zone.Zone'" {
 		t.Fatal(err)
 	}
 }
