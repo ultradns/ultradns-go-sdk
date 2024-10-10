@@ -26,6 +26,7 @@ type Response struct {
 	Data      interface{}
 	ErrorList []*ErrorResponse
 	Error     *ErrorResponse
+	retry     int
 }
 
 // ErrorResponse wraps the structure ultradns error response.

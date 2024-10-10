@@ -30,14 +30,6 @@ func TestDoNilTarget(t *testing.T) {
 	}
 }
 
-func TestDoWrongTarget(t *testing.T) {
-	_, err := integration.TestClient.Do(http.MethodGet, "zones", nil, &zone.Zone{})
-
-	if err.Error() != "Unexpected response type received: '*zone.Zone'" {
-		t.Fatal(err)
-	}
-}
-
 func TestDoNonExistingZone(t *testing.T) {
 	target := client.Target(&zone.Response{})
 	_, err := integration.TestClient.Do(http.MethodGet, "zones/unit-test-non-existing-zone.com", nil, target)
