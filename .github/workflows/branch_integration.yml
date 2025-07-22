@@ -1,0 +1,38 @@
+name: Branch Integration Tests
+on:
+  push:
+    branches:
+      - '**'
+  workflow_dispatch:
+
+jobs:
+  integration_tests:
+    runs-on: ubuntu-latest
+    environment: test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetching GO version from repo
+        run: echo "GO_VERSION=$(cat .go-version)" >> $GITHUB_ENV
+      - name: Setup GO environment
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: Run integration tests
+        run: go test -v -coverpkg=./... -coverprofile=coverage.out ./...
+        env:
+          ULTRADNS_UNIT_TEST_USERNAME: ${{ secrets.ULTRADNS_UNIT_TEST_USERNAME }}
+          ULTRADNS_UNIT_TEST_PASSWORD: ${{ secrets.ULTRADNS_UNIT_TEST_PASSWORD }}
+          ULTRADNS_UNIT_TEST_HOST_URL: ${{ secrets.ULTRADNS_UNIT_TEST_HOST_URL }}
+          ULTRADNS_UNIT_TEST_USER_AGENT: ${{ secrets.ULTRADNS_UNIT_TEST_USER_AGENT }}
+          ULTRADNS_UNIT_TEST_NAME_SERVER: ${{ secrets.ULTRADNS_UNIT_TEST_NAME_SERVER }}
+          ULTRADNS_UNIT_TEST_SECONDARY_ZONE_NAME: ${{ secrets.ULTRADNS_UNIT_TEST_SECONDARY_ZONE_NAME }}
+          ULTRADNS_UNIT_TEST_ACCOUNT: ${{ secrets.ULTRADNS_UNIT_TEST_ACCOUNT }}
+          ULTRADNS_UNIT_TEST_ACCOUNT_MIGRATE: ${{ secrets.ULTRADNS_UNIT_TEST_ACCOUNT_MIGRATE }}
+      - name: Fetch code coverage
+        run: go tool cover -func coverage.out
+      - name: Fetch code coverage percentage
+        run: go tool cover -func coverage.out |
+             grep total |
+             awk '{print substr($3,1,length($3)-1)}' > percentage
+      - name: Check code coverage with threshold of 90%
+        run: if [[ $(cat percentage) < 90 ]]; then exit 1; fi 

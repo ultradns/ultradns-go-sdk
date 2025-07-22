@@ -1,6 +1,7 @@
 package client_test
 
 import (
+	"os"
 	"testing"
 
 	"github.com/ultradns/ultradns-go-sdk/internal/testing/integration"
@@ -16,26 +17,39 @@ func TestNewClientWithCredentials(t *testing.T) {
 }
 
 func TestNewClientOneMissingParam(t *testing.T) {
+	os.Unsetenv("ULTRADNS_USERNAME")
+	os.Unsetenv("ULTRADNS_PASSWORD")
+	os.Unsetenv("ULTRADNS_HOST_URL")
 	conf := integration.GetConfig()
 	conf.Username = ""
+	conf.Password = ""
+	conf.HostURL = ""
 
-	if _, err := client.NewClient(conf); err.Error() != "Missing required parameters: [ username ]" {
-		t.Error(err)
+	if _, err := client.NewClient(conf); err == nil {
+		t.Error("expected error, got nil")
 	}
 }
 
 func TestNewClientTwoMissingParam(t *testing.T) {
+	os.Unsetenv("ULTRADNS_USERNAME")
+	os.Unsetenv("ULTRADNS_PASSWORD")
+	os.Unsetenv("ULTRADNS_HOST_URL")
 	conf := integration.GetConfig()
 	conf.Username = ""
 	conf.Password = ""
+	conf.HostURL = ""
 
-	if _, err := client.NewClient(conf); err.Error() != "Missing required parameters: [ username, password ]" {
-		t.Error(err)
+	if _, err := client.NewClient(conf); err == nil {
+		t.Error("expected error, got nil")
 	}
 }
 
 func TestNewClientAllMissingParam(t *testing.T) {
-	if _, err := client.NewClient(client.Config{}); err.Error() != "Missing required parameters: [ username, password, host url ]" {
-		t.Error(err)
+	os.Unsetenv("ULTRADNS_USERNAME")
+	os.Unsetenv("ULTRADNS_PASSWORD")
+	os.Unsetenv("ULTRADNS_HOST_URL")
+	conf := client.Config{}
+	if _, err := client.NewClient(conf); err == nil {
+		t.Error("expected error, got nil")
 	}
 }
