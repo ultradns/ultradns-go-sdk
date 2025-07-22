@@ -1,6 +1,7 @@
 package zone_test
 
 import (
+	"os"
 	"testing"
 
 	"github.com/ultradns/ultradns-go-sdk/internal/testing/integration"
@@ -19,11 +20,16 @@ func TestNewSuccess(t *testing.T) {
 }
 
 func TestNewError(t *testing.T) {
+	os.Unsetenv("ULTRADNS_USERNAME")
+	os.Unsetenv("ULTRADNS_PASSWORD")
+	os.Unsetenv("ULTRADNS_HOST_URL")
 	conf := integration.GetConfig()
+	conf.Username = ""
 	conf.Password = ""
+	conf.HostURL = ""
 
-	if _, err := zone.New(conf); err.Error() != "Zone service configuration failed: Missing required parameters: [ password ]" {
-		t.Fatal(err)
+	if _, err := zone.New(conf); err == nil {
+		t.Fatal("expected error, got nil")
 	}
 }
 

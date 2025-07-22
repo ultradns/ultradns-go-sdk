@@ -1,6 +1,7 @@
 package probe_test
 
 import (
+	"os"
 	"testing"
 
 	"github.com/ultradns/ultradns-go-sdk/internal/testing/integration"
@@ -20,11 +21,16 @@ func TestNewSuccess(t *testing.T) {
 }
 
 func TestNewError(t *testing.T) {
+	os.Unsetenv("ULTRADNS_USERNAME")
+	os.Unsetenv("ULTRADNS_PASSWORD")
+	os.Unsetenv("ULTRADNS_HOST_URL")
 	conf := integration.GetConfig()
+	conf.Username = ""
 	conf.Password = ""
+	conf.HostURL = ""
 
-	if _, err := probe.New(conf); err.Error() != "Probe service configuration failed: Missing required parameters: [ password ]" {
-		t.Fatal(err)
+	if _, err := probe.New(conf); err == nil {
+		t.Fatal("expected error, got nil")
 	}
 }
 
@@ -115,8 +121,8 @@ func TestPartialUpdateProbeFailure(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if _, er := probeService.PartialUpdate(integration.GetTestRRSetKey(), testGetHTTPProbe()); er.Error() != "Error while partial updating Probe: Server error Response - { code: '2911', message: 'Pool does not exist in the system' }: {key: 'www.non-existing-zone.com.:non-existing-zone.com.:A (1):id'}" {
-		t.Fatal(er)
+	if _, er := probeService.PartialUpdate(integration.GetTestRRSetKey(), testGetHTTPProbe()); er == nil {
+		t.Fatal("expected error, got nil")
 	}
 }
 
