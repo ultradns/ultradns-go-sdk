@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/ultradns/ultradns-go-sdk/internal/version"
@@ -89,10 +90,26 @@ func (c *Client) validateResponse(res *http.Response, target *Response) error {
 			return nil
 		}
 
-		err := json.NewDecoder(res.Body).Decode(&target.Data)
-
+		bodyBytes, err := io.ReadAll(res.Body)
 		if err != nil {
 			return err
+		}
+
+		if len(bytes.TrimSpace(bodyBytes)) == 0 {
+			if _, ok := target.Data.(*SuccessResponse); ok {
+				return nil
+			}
+			return fmt.Errorf("empty response body with status %d (%s)", res.StatusCode, res.Status)
+		}
+
+		err = json.NewDecoder(bytes.NewReader(bodyBytes)).Decode(&target.Data)
+		if err != nil {
+			preview := string(bodyBytes)
+			if len(preview) > 512 {
+				preview = preview[:512]
+			}
+			preview = strings.ReplaceAll(preview, "\n", "\\n")
+			return fmt.Errorf("unable to decode success response (status %d): %w; body=%q", res.StatusCode, err, preview)
 		}
 	} else {
 		bodyBytes, err := io.ReadAll(res.Body)
@@ -117,6 +134,4 @@ func (c *Client) validateResponse(res *http.Response, target *Response) error {
 
 		return err
 	}
-
-	return nil
 }

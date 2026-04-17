@@ -85,6 +85,11 @@ func TestRecordResources(t *testing.T) {
 			it.Test = st
 			it.TestDirGroupIPResources(getDirGroupIP(groupNameIP), groupNameIP)
 		})
+	t.Run("TestCDNResources",
+		func(st *testing.T) {
+			it.Test = st
+			it.TestCDNResources(zoneName)
+		})
 	t.Run("TestDeleteZoneRecordResources",
 		func(st *testing.T) {
 			integration.TestClient.EnableDefaultTraceLogger()
