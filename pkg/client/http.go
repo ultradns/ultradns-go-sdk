@@ -134,4 +134,6 @@ func (c *Client) validateResponse(res *http.Response, target *Response) error {
 
 		return err
 	}
+
+	return nil
 }
