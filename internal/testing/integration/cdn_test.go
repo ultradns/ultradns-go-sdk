@@ -159,6 +159,7 @@ func getBYODCDNResource(name string) *cdnresource.Resource {
 						"mode":              "relative",
 						"relativeThreshold": 0.2,
 					},
+					"continents": map[string]interface{}{},
 				},
 				"enabledSubdivisionCountries": map[string]interface{}{
 					"continents": map[string]interface{}{
