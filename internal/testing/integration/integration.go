@@ -109,6 +109,14 @@ func GetZoneProperties(zoneName, zoneType string) *zone.Properties {
 	}
 }
 
+func GetZonePropertiesForAccount(zoneName, zoneType, account string) *zone.Properties {
+	return &zone.Properties{
+		Name:        zoneName,
+		AccountName: account,
+		Type:        zoneType,
+	}
+}
+
 func GetPrimaryZone(zoneName string) *zone.Zone {
 	restrictIP := &zone.RestrictIP{
 		SingleIP: testRestrictIP,
@@ -124,6 +132,25 @@ func GetPrimaryZone(zoneName string) *zone.Zone {
 
 	return &zone.Zone{
 		Properties:        GetZoneProperties(zoneName, zone.Primary),
+		PrimaryCreateInfo: primaryZone,
+	}
+}
+
+func GetPrimaryZoneForAccount(zoneName, account string) *zone.Zone {
+	restrictIP := &zone.RestrictIP{
+		SingleIP: testRestrictIP,
+	}
+	notifyAddress := &zone.NotifyAddress{
+		NotifyAddress: testNotifyIP,
+	}
+	primaryZone := &zone.PrimaryZone{
+		CreateType:      testPrimaryZoneCreateType,
+		RestrictIPList:  []*zone.RestrictIP{restrictIP},
+		NotifyAddresses: []*zone.NotifyAddress{notifyAddress},
+	}
+
+	return &zone.Zone{
+		Properties:        GetZonePropertiesForAccount(zoneName, zone.Primary, account),
 		PrimaryCreateInfo: primaryZone,
 	}
 }

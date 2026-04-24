@@ -20,6 +20,7 @@ func TestRecordResources(t *testing.T) {
 
 	it := IntegrationTest{}
 	zoneName := integration.GetRandomZoneName()
+	cdnZoneName := integration.GetRandomZoneName()
 
 	ownerNameSB := integration.GetRandomString()
 	ownerNameTC := integration.GetRandomString()
@@ -88,7 +89,9 @@ func TestRecordResources(t *testing.T) {
 	t.Run("TestCDNResources",
 		func(st *testing.T) {
 			it.Test = st
-			it.TestCDNResources(zoneName)
+			it.CreatePrimaryZoneForAccount(cdnZoneName, integration.TestAccountCDN, integration.TestClientCDN)
+			it.TestCDNResources(cdnZoneName)
+			it.DeleteZoneWithClient(cdnZoneName, integration.TestClientCDN)
 		})
 	t.Run("TestDeleteZoneRecordResources",
 		func(st *testing.T) {
