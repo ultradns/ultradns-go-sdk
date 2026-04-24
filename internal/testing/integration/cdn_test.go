@@ -38,24 +38,24 @@ func (t *IntegrationTest) TestCDNResources(zoneName string) {
 }
 
 func (t *IntegrationTest) CreateCDNResource(fqdn, name string) {
-	svc, err := cdnresource.Get(integration.TestClient)
+	svc, err := cdnresource.Get(integration.TestClientCDN)
 	if err != nil {
 		t.Test.Fatal(err)
 	}
 
 	payload := getBYODCDNResource(name)
-	if _, er := svc.Create(integration.TestAccount, fqdn, payload); er != nil {
+	if _, er := svc.Create(integration.TestAccountCDN, fqdn, payload); er != nil {
 		t.Test.Fatal(er)
 	}
 }
 
 func (t *IntegrationTest) ReadCDNResource(fqdn string) {
-	svc, err := cdnresource.Get(integration.TestClient)
+	svc, err := cdnresource.Get(integration.TestClientCDN)
 	if err != nil {
 		t.Test.Fatal(err)
 	}
 
-	_, res, er := svc.Read(integration.TestAccount, fqdn)
+	_, res, er := svc.Read(integration.TestAccountCDN, fqdn)
 	if er != nil {
 		t.Test.Fatal(er)
 	}
@@ -66,24 +66,24 @@ func (t *IntegrationTest) ReadCDNResource(fqdn string) {
 }
 
 func (t *IntegrationTest) UpdateCDNResource(fqdn, updatedName string) {
-	svc, err := cdnresource.Get(integration.TestClient)
+	svc, err := cdnresource.Get(integration.TestClientCDN)
 	if err != nil {
 		t.Test.Fatal(err)
 	}
 
 	payload := getBYODCDNResource(updatedName)
-	if _, er := svc.Update(integration.TestAccount, fqdn, payload); er != nil {
+	if _, er := svc.Update(integration.TestAccountCDN, fqdn, payload); er != nil {
 		t.Test.Fatal(er)
 	}
 }
 
 func (t *IntegrationTest) ListCDNResources() {
-	svc, err := cdnresource.Get(integration.TestClient)
+	svc, err := cdnresource.Get(integration.TestClientCDN)
 	if err != nil {
 		t.Test.Fatal(err)
 	}
 
-	_, res, er := svc.List(integration.TestAccount, &cdnresource.ListOptions{Page: 1, Size: 100})
+	_, res, er := svc.List(integration.TestAccountCDN, &cdnresource.ListOptions{Page: 1, Size: 100})
 	if er != nil {
 		t.Test.Fatal(er)
 	}
@@ -94,12 +94,12 @@ func (t *IntegrationTest) ListCDNResources() {
 }
 
 func (t *IntegrationTest) DeleteCDNResource(fqdn string) {
-	svc, err := cdnresource.Get(integration.TestClient)
+	svc, err := cdnresource.Get(integration.TestClientCDN)
 	if err != nil {
 		t.Test.Fatal(err)
 	}
 
-	if _, er := svc.Delete(integration.TestAccount, fqdn); er != nil {
+	if _, er := svc.Delete(integration.TestAccountCDN, fqdn); er != nil {
 		t.Test.Fatal(er)
 	}
 }

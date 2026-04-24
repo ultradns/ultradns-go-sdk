@@ -26,12 +26,16 @@ var (
 	TestUsername                         = os.Getenv("ULTRADNS_UNIT_TEST_USERNAME")
 	TestPassword                         = os.Getenv("ULTRADNS_UNIT_TEST_PASSWORD")
 	TestAccount                          = os.Getenv("ULTRADNS_UNIT_TEST_ACCOUNT")
+	TestUsernameCDN                      = os.Getenv("ULTRADNS_UNIT_TEST_USERNAME_CDN")
+	TestPasswordCDN                      = os.Getenv("ULTRADNS_UNIT_TEST_PASSWORD_CDN")
+	TestAccountCDN                       = os.Getenv("ULTRADNS_UNIT_TEST_ACCOUNT_CDN")
 	TestAccountMigrate                   = os.Getenv("ULTRADNS_UNIT_TEST_ACCOUNT_MIGRATE")
 	TestHost                             = os.Getenv("ULTRADNS_UNIT_TEST_HOST_URL")
 	TestUserAgent                        = os.Getenv("ULTRADNS_UNIT_TEST_USER_AGENT")
 	TestPrimaryNameServer                = os.Getenv("ULTRADNS_UNIT_TEST_NAME_SERVER")
 	TestSecondaryZoneName                = os.Getenv("ULTRADNS_UNIT_TEST_SECONDARY_ZONE_NAME")
 	TestClient            *client.Client = initializeTestClient()
+	TestClientCDN         *client.Client = initializeTestClientCDN()
 )
 
 func initializeTestClient() *client.Client {
@@ -40,10 +44,25 @@ func initializeTestClient() *client.Client {
 	return client
 }
 
+func initializeTestClientCDN() *client.Client {
+	client, _ := client.NewClient(GetCDNConfig())
+
+	return client
+}
+
 func GetConfig() client.Config {
 	return client.Config{
 		Username:  TestUsername,
 		Password:  TestPassword,
+		HostURL:   TestHost,
+		UserAgent: TestUserAgent,
+	}
+}
+
+func GetCDNConfig() client.Config {
+	return client.Config{
+		Username:  TestUsernameCDN,
+		Password:  TestPasswordCDN,
 		HostURL:   TestHost,
 		UserAgent: TestUserAgent,
 	}
