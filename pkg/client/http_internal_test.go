@@ -46,7 +46,7 @@ func TestDoRejectsEmptyBodyForNonSuccessResponseTarget(t *testing.T) {
 	}
 }
 
-func TestDoMalformedSuccessBodyIncludesPreview(t *testing.T) {
+func TestDoMalformedSuccessBodyNoPreviewByDefault(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("<html>gateway error</html>"))
@@ -66,7 +66,33 @@ func TestDoMalformedSuccessBodyIncludesPreview(t *testing.T) {
 	if !strings.Contains(err.Error(), "unable to decode success response (status 200)") {
 		t.Fatalf("expected decode context in error, got %q", err.Error())
 	}
+	if strings.Contains(err.Error(), "body=") {
+		t.Fatalf("did not expect body preview by default, got %q", err.Error())
+	}
+}
+
+func TestDoMalformedSuccessBodyIncludesPreviewWhenDebugEnabled(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("<html>gateway error</html>"))
+	}))
+	defer server.Close()
+
+	c := &Client{
+		httpClient: server.Client(),
+		baseURL:    server.URL,
+	}
+	c.EnableDefaultDebugLogger()
+
+	_, err := c.Do(http.MethodGet, "", nil, Target(&struct{}{}))
+	if err == nil {
+		t.Fatal("expected decode error for malformed success JSON body, got nil")
+	}
+
+	if !strings.Contains(err.Error(), "unable to decode success response (status 200)") {
+		t.Fatalf("expected decode context in error, got %q", err.Error())
+	}
 	if !strings.Contains(err.Error(), "body=\"<html>gateway error</html>\"") {
-		t.Fatalf("expected body preview in error, got %q", err.Error())
+		t.Fatalf("expected body preview in error when debug is enabled, got %q", err.Error())
 	}
 }

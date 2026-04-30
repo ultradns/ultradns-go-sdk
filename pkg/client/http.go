@@ -104,12 +104,16 @@ func (c *Client) validateResponse(res *http.Response, target *Response) error {
 		var previewBuf bytes.Buffer
 		err := json.NewDecoder(io.TeeReader(reader, &previewBuf)).Decode(&target.Data)
 		if err != nil {
-			preview := previewBuf.String()
-			if len(preview) > 512 {
-				preview = preview[:512]
+			if c.logger.logLevel >= LogDebug {
+				preview := previewBuf.String()
+				if len(preview) > 512 {
+					preview = preview[:512]
+				}
+				preview = strings.ReplaceAll(preview, "\n", "\\n")
+				return fmt.Errorf("unable to decode success response (status %d): %w; body=%q", res.StatusCode, err, preview)
 			}
-			preview = strings.ReplaceAll(preview, "\n", "\\n")
-			return fmt.Errorf("unable to decode success response (status %d): %w; body=%q", res.StatusCode, err, preview)
+
+			return fmt.Errorf("unable to decode success response (status %d): %w", res.StatusCode, err)
 		}
 	} else {
 		bodyBytes, err := io.ReadAll(res.Body)

@@ -8,11 +8,6 @@ type Provider struct {
 	Type        int    `json:"type,omitempty"`
 }
 
-// Response wraps single CDN provider read payload.
-type Response struct {
-	Provider *Provider `json:"provider,omitempty"`
-}
-
 // ResponseList wraps CDN provider list payload.
 type ResponseList struct {
 	Providers []*Provider `json:"providers,omitempty"`
