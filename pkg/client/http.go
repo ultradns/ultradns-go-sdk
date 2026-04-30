@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/ultradns/ultradns-go-sdk/internal/version"
@@ -119,7 +118,6 @@ func (c *Client) validateResponse(res *http.Response, target *Response) error {
 
 			if c.logger.logLevel >= LogDebug {
 				preview := previewBuf.String()
-				preview = strings.ReplaceAll(preview, "\n", "\\n")
 				return fmt.Errorf("unable to decode success response (status %d): %w; body=%q", res.StatusCode, err, preview)
 			}
 

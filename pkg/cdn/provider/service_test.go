@@ -54,12 +54,20 @@ func TestCreateWithEmptyClientCdnID(t *testing.T) {
 
 func TestCreateTrimsClientCdnIDBeforeRequest(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/accounts/acc1/cdn_providers/cdn-a" {
+		switch r.URL.Path {
+		case "/authorization/token":
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(`{"access_token":"test-token","token_type":"Bearer","expires_in":3600}`))
+			return
+		case "/accounts/acc1/cdn_providers/cdn-a":
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(`{"message":"ok"}`))
+			return
+		default:
 			t.Fatalf("expected trimmed request path, got %s", r.URL.Path)
 		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte(`{"message":"ok"}`))
 	}))
 	defer server.Close()
 

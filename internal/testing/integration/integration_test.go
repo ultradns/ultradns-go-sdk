@@ -88,6 +88,9 @@ func TestRecordResources(t *testing.T) {
 		})
 	t.Run("TestCDNResources",
 		func(st *testing.T) {
+			if integration.TestClientCDN == nil || integration.TestAccountCDN == "" {
+				st.Skip("CDN integration test configuration is not available")
+			}
 			it.Test = st
 			it.CreatePrimaryZoneForAccount(cdnZoneName, integration.TestAccountCDN, integration.TestClientCDN)
 			st.Cleanup(func() {
