@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/ultradns/ultradns-go-sdk/pkg/client"
 	"github.com/ultradns/ultradns-go-sdk/pkg/errors"
@@ -40,10 +41,25 @@ func (s *Service) Create(accountName string, payload *Provider) (*http.Response,
 		return nil, errors.ServiceError(serviceName)
 	}
 
+	s.c.Trace("%s create started", serviceName)
+
+	if payload == nil {
+		s.c.Error("%s create failed with error: missing payload", serviceName)
+		return nil, errors.ValidationError("payload")
+	}
+
+	if strings.TrimSpace(payload.ClientCdnID) == "" {
+		s.c.Error("%s create failed with error: missing clientCdnId", serviceName)
+		return nil, errors.ValidationError("clientCdnId")
+	}
+
 	res, err := s.c.Do(http.MethodPost, providerURI(accountName, payload.ClientCdnID), payload, target)
 	if err != nil {
+		s.c.Error("%s create failed with error: %v", serviceName, err)
 		return res, errors.CreateError(serviceName, providerID(accountName, payload.ClientCdnID), err)
 	}
+
+	s.c.Trace("%s create completed successfully", serviceName)
 
 	return res, nil
 }
@@ -55,10 +71,15 @@ func (s *Service) Read(accountName, clientCdnID string) (*http.Response, *Provid
 		return nil, nil, errors.ServiceError(serviceName)
 	}
 
+	s.c.Trace("%s read started", serviceName)
+
 	res, err := s.c.Do(http.MethodGet, providerURI(accountName, clientCdnID), nil, target)
 	if err != nil {
+		s.c.Error("%s read failed with error: %v", serviceName, err)
 		return res, nil, errors.ReadError(serviceName, providerID(accountName, clientCdnID), err)
 	}
+
+	s.c.Trace("%s read completed successfully", serviceName)
 
 	return res, target.Data.(*Provider), nil
 }
@@ -70,10 +91,15 @@ func (s *Service) Update(accountName, clientCdnID string, payload *Provider) (*h
 		return nil, errors.ServiceError(serviceName)
 	}
 
+	s.c.Trace("%s update started", serviceName)
+
 	res, err := s.c.Do(http.MethodPut, providerURI(accountName, clientCdnID), payload, target)
 	if err != nil {
+		s.c.Error("%s update failed with error: %v", serviceName, err)
 		return res, errors.UpdateError(serviceName, providerID(accountName, clientCdnID), err)
 	}
+
+	s.c.Trace("%s update completed successfully", serviceName)
 
 	return res, nil
 }
@@ -85,10 +111,15 @@ func (s *Service) Delete(accountName, clientCdnID string) (*http.Response, error
 		return nil, errors.ServiceError(serviceName)
 	}
 
+	s.c.Trace("%s delete started", serviceName)
+
 	res, err := s.c.Do(http.MethodDelete, providerURI(accountName, clientCdnID), nil, target)
 	if err != nil {
+		s.c.Error("%s delete failed with error: %v", serviceName, err)
 		return res, errors.DeleteError(serviceName, providerID(accountName, clientCdnID), err)
 	}
+
+	s.c.Trace("%s delete completed successfully", serviceName)
 
 	return res, nil
 }
@@ -100,11 +131,16 @@ func (s *Service) List(accountName string) (*http.Response, *ResponseList, error
 		return nil, nil, errors.ServiceError(serviceName)
 	}
 
+	s.c.Trace("%s list started", serviceName)
+
 	uri := fmt.Sprintf("accounts/%s/cdn_providers", url.PathEscape(accountName))
 	res, err := s.c.Do(http.MethodGet, uri, nil, target)
 	if err != nil {
+		s.c.Error("%s list failed with error: %v", serviceName, err)
 		return res, nil, errors.ListError(serviceName, uri, err)
 	}
+
+	s.c.Trace("%s list completed successfully", serviceName)
 
 	return res, target.Data.(*ResponseList), nil
 }

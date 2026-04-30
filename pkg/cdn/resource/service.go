@@ -40,10 +40,15 @@ func (s *Service) Create(accountName, fqdn string, payload *Resource) (*http.Res
 		return nil, errors.ServiceError(serviceName)
 	}
 
+	s.c.Trace("%s create started", serviceName)
+
 	res, err := s.c.Do(http.MethodPost, resourceURI(accountName, fqdn), payload, target)
 	if err != nil {
+		s.c.Error("%s create failed with error: %v", serviceName, err)
 		return res, errors.CreateError(serviceName, resourceID(accountName, fqdn), err)
 	}
+
+	s.c.Trace("%s create completed successfully", serviceName)
 
 	return res, nil
 }
@@ -55,8 +60,11 @@ func (s *Service) Read(accountName, fqdn string) (*http.Response, *Resource, err
 		return nil, nil, errors.ServiceError(serviceName)
 	}
 
+	s.c.Trace("%s read started", serviceName)
+
 	res, err := s.c.Do(http.MethodGet, resourceURI(accountName, fqdn), nil, target)
 	if err != nil {
+		s.c.Error("%s read failed with error: %v", serviceName, err)
 		return res, nil, errors.ReadError(serviceName, resourceID(accountName, fqdn), err)
 	}
 
@@ -68,6 +76,8 @@ func (s *Service) Read(accountName, fqdn string) (*http.Response, *Resource, err
 		result.FQDN = fqdn
 	}
 
+	s.c.Trace("%s read completed successfully", serviceName)
+
 	return res, result, nil
 }
 
@@ -78,10 +88,15 @@ func (s *Service) Update(accountName, fqdn string, payload *Resource) (*http.Res
 		return nil, errors.ServiceError(serviceName)
 	}
 
+	s.c.Trace("%s update started", serviceName)
+
 	res, err := s.c.Do(http.MethodPut, resourceURI(accountName, fqdn), payload, target)
 	if err != nil {
+		s.c.Error("%s update failed with error: %v", serviceName, err)
 		return res, errors.UpdateError(serviceName, resourceID(accountName, fqdn), err)
 	}
+
+	s.c.Trace("%s update completed successfully", serviceName)
 
 	return res, nil
 }
@@ -93,10 +108,15 @@ func (s *Service) Delete(accountName, fqdn string) (*http.Response, error) {
 		return nil, errors.ServiceError(serviceName)
 	}
 
+	s.c.Trace("%s delete started", serviceName)
+
 	res, err := s.c.Do(http.MethodDelete, resourceURI(accountName, fqdn), nil, target)
 	if err != nil {
+		s.c.Error("%s delete failed with error: %v", serviceName, err)
 		return res, errors.DeleteError(serviceName, resourceID(accountName, fqdn), err)
 	}
+
+	s.c.Trace("%s delete completed successfully", serviceName)
 
 	return res, nil
 }
@@ -107,6 +127,8 @@ func (s *Service) List(accountName string, opts *ListOptions) (*http.Response, *
 	if s.c == nil {
 		return nil, nil, errors.ServiceError(serviceName)
 	}
+
+	s.c.Trace("%s list started", serviceName)
 
 	if opts == nil {
 		opts = &ListOptions{}
@@ -121,8 +143,11 @@ func (s *Service) List(accountName string, opts *ListOptions) (*http.Response, *
 	uri := fmt.Sprintf("accounts/%s/zones/cdn/config?size=%d&page=%d", url.PathEscape(accountName), opts.Size, opts.Page)
 	res, err := s.c.Do(http.MethodGet, uri, nil, target)
 	if err != nil {
+		s.c.Error("%s list failed with error: %v", serviceName, err)
 		return res, nil, errors.ListError(serviceName, uri, err)
 	}
+
+	s.c.Trace("%s list completed successfully", serviceName)
 
 	return res, target.Data.(*ResponseList), nil
 }

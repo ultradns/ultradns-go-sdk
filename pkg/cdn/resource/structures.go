@@ -27,11 +27,11 @@ type Configs struct {
 // additional properties are inlined at the same level.
 func (c Configs) MarshalJSON() ([]byte, error) {
 	m := make(map[string]interface{})
-	if len(c.CDNs) > 0 {
-		m["cdns"] = c.CDNs
-	}
 	for k, v := range c.AdditionalProperties {
 		m[k] = v
+	}
+	if len(c.CDNs) > 0 {
+		m["cdns"] = c.CDNs
 	}
 	return json.Marshal(m)
 }
@@ -39,6 +39,9 @@ func (c Configs) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON deserializes Configs, pulling out "cdns" and leaving
 // everything else in AdditionalProperties.
 func (c *Configs) UnmarshalJSON(data []byte) error {
+	c.CDNs = nil
+	c.AdditionalProperties = nil
+
 	var m map[string]json.RawMessage
 	if err := json.Unmarshal(data, &m); err != nil {
 		return err

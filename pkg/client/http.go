@@ -1,6 +1,7 @@
 package client
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -90,21 +91,20 @@ func (c *Client) validateResponse(res *http.Response, target *Response) error {
 			return nil
 		}
 
-		bodyBytes, err := io.ReadAll(res.Body)
-		if err != nil {
-			return err
-		}
-
-		if len(bytes.TrimSpace(bodyBytes)) == 0 {
+		reader := bufio.NewReader(res.Body)
+		if _, err := reader.Peek(1); err == io.EOF {
 			if _, ok := target.Data.(*SuccessResponse); ok {
 				return nil
 			}
 			return fmt.Errorf("empty response body with status %d (%s)", res.StatusCode, res.Status)
+		} else if err != nil {
+			return err
 		}
 
-		err = json.NewDecoder(bytes.NewReader(bodyBytes)).Decode(&target.Data)
+		var previewBuf bytes.Buffer
+		err := json.NewDecoder(io.TeeReader(reader, &previewBuf)).Decode(&target.Data)
 		if err != nil {
-			preview := string(bodyBytes)
+			preview := previewBuf.String()
 			if len(preview) > 512 {
 				preview = preview[:512]
 			}
@@ -113,13 +113,11 @@ func (c *Client) validateResponse(res *http.Response, target *Response) error {
 		}
 	} else {
 		bodyBytes, err := io.ReadAll(res.Body)
-
 		if err != nil {
 			return err
 		}
 
 		err = json.NewDecoder(bytes.NewReader(bodyBytes)).Decode(&target.ErrorList)
-
 		if err == nil {
 			return errors.APIResponseError(target.ErrorList[0].String())
 		}
@@ -127,7 +125,6 @@ func (c *Client) validateResponse(res *http.Response, target *Response) error {
 		c.Warn("Unable to parse API error message: %s", err.Error())
 
 		err = json.NewDecoder(bytes.NewReader(bodyBytes)).Decode(&target.Error)
-
 		if err == nil {
 			return errors.APIResponseError(target.Error.String())
 		}

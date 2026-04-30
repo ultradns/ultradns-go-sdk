@@ -28,6 +28,28 @@ func TestCreateWithConfigError(t *testing.T) {
 	}
 }
 
+func TestCreateWithNilPayload(t *testing.T) {
+	svc, err := provider.New(client.Config{Username: "u", Password: "p", HostURL: "https://example.com"})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if _, err = svc.Create("acc1", nil); err == nil || err.Error() != "Missing required parameters: [payload ]" {
+		t.Fatal(err)
+	}
+}
+
+func TestCreateWithEmptyClientCdnID(t *testing.T) {
+	svc, err := provider.New(client.Config{Username: "u", Password: "p", HostURL: "https://example.com"})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if _, err = svc.Create("acc1", &provider.Provider{ClientCdnID: "  "}); err == nil || err.Error() != "Missing required parameters: [clientCdnId ]" {
+		t.Fatal(err)
+	}
+}
+
 func TestReadWithConfigError(t *testing.T) {
 	svc := provider.Service{}
 	if _, _, err := svc.Read("acc1", "cdn-a"); err == nil || err.Error() != serviceErrorString {
