@@ -90,8 +90,10 @@ func TestRecordResources(t *testing.T) {
 		func(st *testing.T) {
 			it.Test = st
 			it.CreatePrimaryZoneForAccount(cdnZoneName, integration.TestAccountCDN, integration.TestClientCDN)
+			st.Cleanup(func() {
+				it.DeleteZoneWithClient(cdnZoneName, integration.TestClientCDN)
+			})
 			it.TestCDNResources(cdnZoneName)
-			it.DeleteZoneWithClient(cdnZoneName, integration.TestClientCDN)
 		})
 	t.Run("TestDeleteZoneRecordResources",
 		func(st *testing.T) {

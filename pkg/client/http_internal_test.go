@@ -96,3 +96,30 @@ func TestDoMalformedSuccessBodyIncludesPreviewWhenDebugEnabled(t *testing.T) {
 		t.Fatalf("expected body preview in error when debug is enabled, got %q", err.Error())
 	}
 }
+
+func TestDoMalformedSuccessBodyPreviewIsBoundedWhenDebugEnabled(t *testing.T) {
+	largeBody := "<" + strings.Repeat("a", maxDecodePreviewBytes+100) + ">"
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(largeBody))
+	}))
+	defer server.Close()
+
+	c := &Client{
+		httpClient: server.Client(),
+		baseURL:    server.URL,
+	}
+	c.EnableDefaultDebugLogger()
+
+	_, err := c.Do(http.MethodGet, "", nil, Target(&struct{}{}))
+	if err == nil {
+		t.Fatal("expected decode error for malformed success JSON body, got nil")
+	}
+
+	if !strings.Contains(err.Error(), "body=") {
+		t.Fatalf("expected bounded body preview in error when debug is enabled, got %q", err.Error())
+	}
+	if strings.Contains(err.Error(), strings.Repeat("a", maxDecodePreviewBytes+50)) {
+		t.Fatalf("expected preview to be capped at %d bytes, got %q", maxDecodePreviewBytes, err.Error())
+	}
+}

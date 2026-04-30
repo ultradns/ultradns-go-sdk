@@ -17,6 +17,7 @@ import (
 const contentType = "application/json"
 const throttleSleep = 1 * time.Second
 const maxThrottleRetry = 3
+const maxDecodePreviewBytes = 512
 
 var (
 	defaultUserAgent = version.GetSDKVersion()
@@ -101,14 +102,16 @@ func (c *Client) validateResponse(res *http.Response, target *Response) error {
 			return err
 		}
 
-		var previewBuf bytes.Buffer
-		err := json.NewDecoder(io.TeeReader(reader, &previewBuf)).Decode(&target.Data)
+		decodeReader := io.Reader(reader)
+		previewBuf := &limitedPreviewBuffer{max: maxDecodePreviewBytes}
+		if c.logger.logLevel >= LogDebug {
+			decodeReader = io.TeeReader(reader, previewBuf)
+		}
+
+		err := json.NewDecoder(decodeReader).Decode(&target.Data)
 		if err != nil {
 			if c.logger.logLevel >= LogDebug {
 				preview := previewBuf.String()
-				if len(preview) > 512 {
-					preview = preview[:512]
-				}
 				preview = strings.ReplaceAll(preview, "\n", "\\n")
 				return fmt.Errorf("unable to decode success response (status %d): %w; body=%q", res.StatusCode, err, preview)
 			}
@@ -137,4 +140,26 @@ func (c *Client) validateResponse(res *http.Response, target *Response) error {
 	}
 
 	return nil
+}
+
+type limitedPreviewBuffer struct {
+	buf bytes.Buffer
+	max int
+}
+
+func (b *limitedPreviewBuffer) Write(p []byte) (int, error) {
+	originalLen := len(p)
+	remaining := b.max - b.buf.Len()
+	if remaining > 0 {
+		if len(p) > remaining {
+			p = p[:remaining]
+		}
+		_, _ = b.buf.Write(p)
+	}
+
+	return originalLen, nil
+}
+
+func (b *limitedPreviewBuffer) String() string {
+	return b.buf.String()
 }
