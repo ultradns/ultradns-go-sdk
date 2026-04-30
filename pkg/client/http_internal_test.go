@@ -46,6 +46,47 @@ func TestDoRejectsEmptyBodyForNonSuccessResponseTarget(t *testing.T) {
 	}
 }
 
+func TestDoAllowsWhitespaceOnlyBodyForSuccessResponseTarget(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("  \n\t  "))
+	}))
+	defer server.Close()
+
+	c := &Client{
+		httpClient: server.Client(),
+		baseURL:    server.URL,
+	}
+
+	_, err := c.Do(http.MethodGet, "", nil, Target(&SuccessResponse{}))
+	if err != nil {
+		t.Fatalf("expected nil error for whitespace-only body with SuccessResponse target, got %v", err)
+	}
+}
+
+func TestDoRejectsWhitespaceOnlyBodyForNonSuccessResponseTarget(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("  \n\t  "))
+	}))
+	defer server.Close()
+
+	c := &Client{
+		httpClient: server.Client(),
+		baseURL:    server.URL,
+	}
+
+	_, err := c.Do(http.MethodGet, "", nil, Target(&struct{}{}))
+	if err == nil {
+		t.Fatal("expected error for whitespace-only body with non-SuccessResponse target, got nil")
+	}
+
+	expected := "empty response body with status 200 (200 OK)"
+	if err.Error() != expected {
+		t.Fatalf("expected error %q, got %q", expected, err.Error())
+	}
+}
+
 func TestDoMalformedSuccessBodyNoPreviewByDefault(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)

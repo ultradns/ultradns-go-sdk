@@ -48,15 +48,17 @@ func (s *Service) Create(accountName string, payload *Provider) (*http.Response,
 		return nil, errors.ValidationError("payload")
 	}
 
-	if strings.TrimSpace(payload.ClientCdnID) == "" {
+	clientCdnID := strings.TrimSpace(payload.ClientCdnID)
+	if clientCdnID == "" {
 		s.c.Error("%s create failed with error: missing clientCdnId", serviceName)
 		return nil, errors.ValidationError("clientCdnId")
 	}
+	payload.ClientCdnID = clientCdnID
 
-	res, err := s.c.Do(http.MethodPost, providerURI(accountName, payload.ClientCdnID), payload, target)
+	res, err := s.c.Do(http.MethodPost, providerURI(accountName, clientCdnID), payload, target)
 	if err != nil {
 		s.c.Error("%s create failed with error: %v", serviceName, err)
-		return res, errors.CreateError(serviceName, providerID(accountName, payload.ClientCdnID), err)
+		return res, errors.CreateError(serviceName, providerID(accountName, clientCdnID), err)
 	}
 
 	s.c.Trace("%s create completed successfully", serviceName)

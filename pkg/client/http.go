@@ -110,6 +110,13 @@ func (c *Client) validateResponse(res *http.Response, target *Response) error {
 
 		err := json.NewDecoder(decodeReader).Decode(&target.Data)
 		if err != nil {
+			if err == io.EOF {
+				if _, ok := target.Data.(*SuccessResponse); ok {
+					return nil
+				}
+				return fmt.Errorf("empty response body with status %d (%s)", res.StatusCode, res.Status)
+			}
+
 			if c.logger.logLevel >= LogDebug {
 				preview := previewBuf.String()
 				preview = strings.ReplaceAll(preview, "\n", "\\n")

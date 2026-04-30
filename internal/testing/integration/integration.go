@@ -2,6 +2,7 @@ package integration
 
 import (
 	"crypto/rand"
+	"fmt"
 	"math/big"
 	"os"
 
@@ -45,7 +46,10 @@ func initializeTestClient() *client.Client {
 }
 
 func initializeTestClientCDN() *client.Client {
-	client, _ := client.NewClient(GetCDNConfig())
+	client, err := client.NewClient(GetCDNConfig())
+	if err != nil {
+		panic(fmt.Sprintf("failed to initialize CDN integration test client: %v", err))
+	}
 
 	return client
 }
