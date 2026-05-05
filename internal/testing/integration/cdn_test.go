@@ -9,7 +9,9 @@ import (
 
 // TestCDNResources orchestrates CRUD subtests for the CDN resource service.
 // It must be called after the zone for zoneName has been created, since the
-// REST API validates that the zone exists and supports GTD.
+// REST API validates that the zone exists. MultiCDN does not require the zone
+// to be GTD-enabled; GTD-related handling is managed separately by the
+// MultiCDN feature.
 func (t *IntegrationTest) TestCDNResources(zoneName string) {
 	fqdn := "www." + zoneName
 	name := "cdn-integ-" + integration.GetRandomString()
