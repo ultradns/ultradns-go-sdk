@@ -17,6 +17,8 @@ ultradns-go-sdk is able to do CRUD operations on UltraDNS resources:
 	`DNS`, `FTP`, `TCP`, `HTTP`, `PING`, `SMTP`, `SMTPSEND`
 * Directional Group Geo
 * Directional Group IP
+* CDN<br/>
+	`BYOD`, `SYNTHETIC`
 
 Other specific features:
 

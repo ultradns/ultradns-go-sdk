@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/ultradns/ultradns-go-sdk/internal/testing/integration"
+	"github.com/ultradns/ultradns-go-sdk/pkg/client"
 	"github.com/ultradns/ultradns-go-sdk/pkg/helper"
 	"github.com/ultradns/ultradns-go-sdk/pkg/zone"
 )
@@ -78,6 +79,11 @@ func (t *IntegrationTest) CreatePrimaryZone(zoneName string) {
 	t.CreateZone(zoneData)
 }
 
+func (t *IntegrationTest) CreatePrimaryZoneForAccount(zoneName, account string, testClient *client.Client) {
+	zoneData := integration.GetPrimaryZoneForAccount(zoneName, account)
+	t.CreateZoneWithClient(zoneData, testClient)
+}
+
 // func (t *IntegrationTest) CreateSecondaryZone(zoneName string) {
 // 	zoneData := integration.GetSecondaryZone(zoneName)
 // 	t.CreateZone(zoneData)
@@ -102,7 +108,11 @@ func (t *IntegrationTest) PartialUpdatePrimaryZone(zoneName string) {
 }
 
 func (t *IntegrationTest) CreateZone(zoneData *zone.Zone) {
-	zoneService, err := zone.Get(integration.TestClient)
+	t.CreateZoneWithClient(zoneData, integration.TestClient)
+}
+
+func (t *IntegrationTest) CreateZoneWithClient(zoneData *zone.Zone, testClient *client.Client) {
+	zoneService, err := zone.Get(testClient)
 
 	if err != nil {
 		t.Test.Fatal(err)
@@ -110,6 +120,18 @@ func (t *IntegrationTest) CreateZone(zoneData *zone.Zone) {
 
 	if _, er := zoneService.CreateZone(zoneData); er != nil {
 		t.Test.Fatal(er)
+	}
+}
+
+func (t *IntegrationTest) DeleteZoneWithClient(zoneName string, testClient *client.Client) {
+	zoneService, err := zone.Get(testClient)
+
+	if err != nil {
+		t.Test.Fatal(err)
+	}
+
+	if _, er := zoneService.DeleteZone(zoneName); er != nil {
+		t.Test.Fatalf("unable to delete zone - %s : error - %s", zoneName, er.Error())
 	}
 }
 
@@ -156,15 +178,7 @@ func (t *IntegrationTest) ReadZone(zoneName string) {
 }
 
 func (t *IntegrationTest) DeleteZone(zoneName string) {
-	zoneService, err := zone.Get(integration.TestClient)
-
-	if err != nil {
-		t.Test.Fatal(err)
-	}
-
-	if _, er := zoneService.DeleteZone(zoneName); er != nil {
-		t.Test.Fatalf("unable to delete zone - %s : error - %s", zoneName, er.Error())
-	}
+	t.DeleteZoneWithClient(zoneName, integration.TestClient)
 }
 
 func (t *IntegrationTest) ListZones() {

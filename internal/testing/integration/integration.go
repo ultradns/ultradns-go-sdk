@@ -26,12 +26,16 @@ var (
 	TestUsername                         = os.Getenv("ULTRADNS_UNIT_TEST_USERNAME")
 	TestPassword                         = os.Getenv("ULTRADNS_UNIT_TEST_PASSWORD")
 	TestAccount                          = os.Getenv("ULTRADNS_UNIT_TEST_ACCOUNT")
+	TestUsernameCDN                      = os.Getenv("ULTRADNS_UNIT_TEST_USERNAME_CDN")
+	TestPasswordCDN                      = os.Getenv("ULTRADNS_UNIT_TEST_PASSWORD_CDN")
+	TestAccountCDN                       = os.Getenv("ULTRADNS_UNIT_TEST_ACCOUNT_CDN")
 	TestAccountMigrate                   = os.Getenv("ULTRADNS_UNIT_TEST_ACCOUNT_MIGRATE")
 	TestHost                             = os.Getenv("ULTRADNS_UNIT_TEST_HOST_URL")
 	TestUserAgent                        = os.Getenv("ULTRADNS_UNIT_TEST_USER_AGENT")
 	TestPrimaryNameServer                = os.Getenv("ULTRADNS_UNIT_TEST_NAME_SERVER")
 	TestSecondaryZoneName                = os.Getenv("ULTRADNS_UNIT_TEST_SECONDARY_ZONE_NAME")
 	TestClient            *client.Client = initializeTestClient()
+	TestClientCDN         *client.Client = initializeTestClientCDN()
 )
 
 func initializeTestClient() *client.Client {
@@ -40,10 +44,28 @@ func initializeTestClient() *client.Client {
 	return client
 }
 
+func initializeTestClientCDN() *client.Client {
+	client, err := client.NewClient(GetCDNConfig())
+	if err != nil {
+		return nil
+	}
+
+	return client
+}
+
 func GetConfig() client.Config {
 	return client.Config{
 		Username:  TestUsername,
 		Password:  TestPassword,
+		HostURL:   TestHost,
+		UserAgent: TestUserAgent,
+	}
+}
+
+func GetCDNConfig() client.Config {
+	return client.Config{
+		Username:  TestUsernameCDN,
+		Password:  TestPasswordCDN,
 		HostURL:   TestHost,
 		UserAgent: TestUserAgent,
 	}
@@ -90,6 +112,14 @@ func GetZoneProperties(zoneName, zoneType string) *zone.Properties {
 	}
 }
 
+func GetZonePropertiesForAccount(zoneName, zoneType, account string) *zone.Properties {
+	return &zone.Properties{
+		Name:        zoneName,
+		AccountName: account,
+		Type:        zoneType,
+	}
+}
+
 func GetPrimaryZone(zoneName string) *zone.Zone {
 	restrictIP := &zone.RestrictIP{
 		SingleIP: testRestrictIP,
@@ -105,6 +135,25 @@ func GetPrimaryZone(zoneName string) *zone.Zone {
 
 	return &zone.Zone{
 		Properties:        GetZoneProperties(zoneName, zone.Primary),
+		PrimaryCreateInfo: primaryZone,
+	}
+}
+
+func GetPrimaryZoneForAccount(zoneName, account string) *zone.Zone {
+	restrictIP := &zone.RestrictIP{
+		SingleIP: testRestrictIP,
+	}
+	notifyAddress := &zone.NotifyAddress{
+		NotifyAddress: testNotifyIP,
+	}
+	primaryZone := &zone.PrimaryZone{
+		CreateType:      testPrimaryZoneCreateType,
+		RestrictIPList:  []*zone.RestrictIP{restrictIP},
+		NotifyAddresses: []*zone.NotifyAddress{notifyAddress},
+	}
+
+	return &zone.Zone{
+		Properties:        GetZonePropertiesForAccount(zoneName, zone.Primary, account),
 		PrimaryCreateInfo: primaryZone,
 	}
 }

@@ -20,6 +20,7 @@ func TestRecordResources(t *testing.T) {
 
 	it := IntegrationTest{}
 	zoneName := integration.GetRandomZoneName()
+	cdnZoneName := integration.GetRandomZoneName()
 
 	ownerNameSB := integration.GetRandomString()
 	ownerNameTC := integration.GetRandomString()
@@ -84,6 +85,18 @@ func TestRecordResources(t *testing.T) {
 		func(st *testing.T) {
 			it.Test = st
 			it.TestDirGroupIPResources(getDirGroupIP(groupNameIP), groupNameIP)
+		})
+	t.Run("TestCDNResources",
+		func(st *testing.T) {
+			if integration.TestClientCDN == nil || integration.TestAccountCDN == "" {
+				st.Skip("CDN integration test configuration is not available")
+			}
+			it.Test = st
+			it.CreatePrimaryZoneForAccount(cdnZoneName, integration.TestAccountCDN, integration.TestClientCDN)
+			st.Cleanup(func() {
+				it.DeleteZoneWithClient(cdnZoneName, integration.TestClientCDN)
+			})
+			it.TestCDNResources(cdnZoneName)
 		})
 	t.Run("TestDeleteZoneRecordResources",
 		func(st *testing.T) {

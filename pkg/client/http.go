@@ -1,6 +1,7 @@
 package client
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -15,6 +16,7 @@ import (
 const contentType = "application/json"
 const throttleSleep = 1 * time.Second
 const maxThrottleRetry = 3
+const maxDecodePreviewBytes = 512
 
 var (
 	defaultUserAgent = version.GetSDKVersion()
@@ -89,20 +91,45 @@ func (c *Client) validateResponse(res *http.Response, target *Response) error {
 			return nil
 		}
 
-		err := json.NewDecoder(res.Body).Decode(&target.Data)
-
-		if err != nil {
+		reader := bufio.NewReader(res.Body)
+		if _, err := reader.Peek(1); err == io.EOF {
+			if _, ok := target.Data.(*SuccessResponse); ok {
+				return nil
+			}
+			return fmt.Errorf("empty response body with status %d (%s)", res.StatusCode, res.Status)
+		} else if err != nil {
 			return err
+		}
+
+		decodeReader := io.Reader(reader)
+		previewBuf := &limitedPreviewBuffer{max: maxDecodePreviewBytes}
+		if c.logger.logLevel >= LogDebug {
+			decodeReader = io.TeeReader(reader, previewBuf)
+		}
+
+		err := json.NewDecoder(decodeReader).Decode(&target.Data)
+		if err != nil {
+			if err == io.EOF {
+				if _, ok := target.Data.(*SuccessResponse); ok {
+					return nil
+				}
+				return fmt.Errorf("empty response body with status %d (%s)", res.StatusCode, res.Status)
+			}
+
+			if c.logger.logLevel >= LogDebug {
+				preview := previewBuf.String()
+				return fmt.Errorf("unable to decode success response (status %d): %w; body=%q", res.StatusCode, err, preview)
+			}
+
+			return fmt.Errorf("unable to decode success response (status %d): %w", res.StatusCode, err)
 		}
 	} else {
 		bodyBytes, err := io.ReadAll(res.Body)
-
 		if err != nil {
 			return err
 		}
 
 		err = json.NewDecoder(bytes.NewReader(bodyBytes)).Decode(&target.ErrorList)
-
 		if err == nil {
 			return errors.APIResponseError(target.ErrorList[0].String())
 		}
@@ -110,7 +137,6 @@ func (c *Client) validateResponse(res *http.Response, target *Response) error {
 		c.Warn("Unable to parse API error message: %s", err.Error())
 
 		err = json.NewDecoder(bytes.NewReader(bodyBytes)).Decode(&target.Error)
-
 		if err == nil {
 			return errors.APIResponseError(target.Error.String())
 		}
@@ -119,4 +145,26 @@ func (c *Client) validateResponse(res *http.Response, target *Response) error {
 	}
 
 	return nil
+}
+
+type limitedPreviewBuffer struct {
+	buf bytes.Buffer
+	max int
+}
+
+func (b *limitedPreviewBuffer) Write(p []byte) (int, error) {
+	originalLen := len(p)
+	remaining := b.max - b.buf.Len()
+	if remaining > 0 {
+		if len(p) > remaining {
+			p = p[:remaining]
+		}
+		_, _ = b.buf.Write(p)
+	}
+
+	return originalLen, nil
+}
+
+func (b *limitedPreviewBuffer) String() string {
+	return b.buf.String()
 }
