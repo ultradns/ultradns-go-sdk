@@ -11,6 +11,8 @@ ultradns-go-sdk is able to do CRUD operations on UltraDNS resources:
 	`Primary Zone`, `Secondary Zone`, `Alias Zone`
 * Records<br/>
 	`A`, `NS`, `CNAME`, `SOA`, `PTR`, `HINFO`, `MX`, `TXT`, `RP`, `AAAA`, `SRV`, `NAPTR`, `DS`, `SSHFP`, `TLSA`, `SVCB`, `HTTPS`, `SPF`, `CAA`, `APEXALIAS`
+* Web Forwards<br/>
+	`HTTP redirects` (`HTTP_301_REDIRECT`, `HTTP_302_REDIRECT`, `FRAMED`)
 * Pools<br/>
 	`Simple Failover(SF) Pool`, `Simple Load Balancing(SLB) Pool`, `Resource Distribution(RD) Pool`, `Directional(Dir) Pool`, `Sitebacker Pool(SB) Pool`, `Traffic Controller(TC) Pool`
 * Probes<br/>
