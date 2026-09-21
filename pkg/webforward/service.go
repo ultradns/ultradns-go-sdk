@@ -11,9 +11,10 @@ import (
 )
 
 const (
-	serviceName    = "WebForward"
-	basePath       = "zones/"
-	webForwardPath = "/webforwards"
+	serviceName           = "WebForward"
+	basePath              = "zones/"
+	webForwardPath        = "/webforwards"
+	accountWebForwardPath = "accounts/webforwards"
 )
 
 // Service wraps the Ultradns web forward service.
@@ -177,6 +178,32 @@ func (s *Service) List(zoneName string, queryInfo *helper.QueryInfo) (*http.Resp
 	webForwardListResponse := target.Data.(*ResponseList)
 
 	s.c.Trace("%s list completed successfully", serviceName)
+
+	return res, webForwardListResponse, nil
+}
+
+// ListAccount returns all web forwards configured at the account level,
+// across every zone of the account. Each returned web forward includes
+// its zoneName and accountName.
+func (s *Service) ListAccount() (*http.Response, *ResponseList, error) {
+	target := client.Target(&ResponseList{})
+
+	if s.c == nil {
+		return nil, nil, errors.ServiceError(serviceName)
+	}
+
+	s.c.Trace("%s account list started", serviceName)
+
+	res, err := s.c.Do(http.MethodGet, accountWebForwardPath, nil, target)
+
+	if err != nil {
+		s.c.Error("%s account list failed with error: %v", serviceName, err)
+		return res, nil, errors.ListError(serviceName, accountWebForwardPath, err)
+	}
+
+	webForwardListResponse := target.Data.(*ResponseList)
+
+	s.c.Trace("%s account list completed successfully", serviceName)
 
 	return res, webForwardListResponse, nil
 }
