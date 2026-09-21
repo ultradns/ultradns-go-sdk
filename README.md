@@ -14,6 +14,8 @@ ultradns-go-sdk is able to do CRUD operations on UltraDNS resources:
 * Web Forwards<br/>
 	`HTTP and HTTPS redirects` (`HTTP_301_REDIRECT`, `HTTP_302_REDIRECT`, `HTTP_303_REDIRECT`, `HTTP_307_REDIRECT`, `Framed`)
 
+Web forwards can be listed for a single zone or across the whole account.
+
 HTTPS web forwards require the account-level HTTPS Redirect feature and a
 certificate. Set `RequestTo` to an `https://` URL and provide either
 `CertificateID` for a certificate already present in the account (this SDK does

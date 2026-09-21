@@ -73,6 +73,14 @@ func TestListWithConfigError(t *testing.T) {
 	}
 }
 
+func TestListAccountWithConfigError(t *testing.T) {
+	webForwardService := webforward.Service{}
+
+	if _, _, err := webForwardService.ListAccount(); err.Error() != serviceErrorString {
+		t.Fatal(err)
+	}
+}
+
 func TestHTTPSWebForwardCRUDUsesExistingServiceEndpoints(t *testing.T) {
 	const (
 		zoneName = "example.com."
@@ -154,5 +162,55 @@ func TestHTTPSWebForwardCRUDUsesExistingServiceEndpoints(t *testing.T) {
 
 	if _, err := service.Delete(zoneName, guid); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestListAccountSuccess(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.URL.Path == "/authorization/token":
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = io.WriteString(w, `{"access_token":"test-token","token_type":"Bearer","expires_in":3600}`)
+		case r.Method == http.MethodGet && r.URL.Path == "/accounts/webforwards":
+			if r.URL.RawQuery != "" {
+				t.Errorf("unexpected query string on account list: %q", r.URL.RawQuery)
+			}
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = io.WriteString(w, `{"webForwards":[{"guid":"0908486E5BFC7DE1","requestTo":"*.zone.com/domain","defaultRedirectTo":"http://amazon.in/*","defaultForwardType":"HTTP_302_REDIRECT","defaultRedirectType":"HTTP","zoneName":"zone.com.","accountName":"teamrest","certificateId":"certificate-guid","certificateName":"TestCert","expirationDays":""}],"queryInfo":{"sort":"REQUEST_TO","reverse":false,"limit":100},"resultInfo":{"totalCount":1,"offset":0,"returnedCount":1}}`)
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer server.Close()
+
+	service, err := webforward.New(client.Config{
+		Username: "username",
+		Password: "password",
+		HostURL:  server.URL,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	res, list, err := service.ListAccount()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if res.StatusCode != http.StatusOK {
+		t.Fatalf("status code mismatched expected - %d : found - %d", http.StatusOK, res.StatusCode)
+	}
+	if list.ResultInfo == nil || list.ResultInfo.TotalCount != 1 {
+		t.Fatalf("result info mismatched: %+v", list.ResultInfo)
+	}
+	if len(list.WebForwards) != 1 {
+		t.Fatalf("web forward count mismatched expected - 1 : found - %d", len(list.WebForwards))
+	}
+
+	webForward := list.WebForwards[0]
+	if webForward.GUID != "0908486E5BFC7DE1" ||
+		webForward.ZoneName != "zone.com." ||
+		webForward.AccountName != "teamrest" ||
+		webForward.DefaultRedirectType != webforward.HTTPRedirect {
+		t.Fatalf("account-level web forward mismatched: %+v", webForward)
 	}
 }

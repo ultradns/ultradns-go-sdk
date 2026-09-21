@@ -42,7 +42,7 @@ type Rule struct {
 }
 
 // ResponseList wraps the result of a web forward list operation
-// (GET /zones/{zoneName}/webforwards).
+// (GET /zones/{zoneName}/webforwards and GET /accounts/webforwards).
 type ResponseList struct {
 	WebForwards []*WebForward      `json:"webForwards,omitempty"`
 	QueryInfo   *helper.QueryInfo  `json:"queryInfo,omitempty"`

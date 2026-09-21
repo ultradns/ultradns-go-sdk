@@ -57,6 +57,15 @@ func main() {
 		}
 	}
 
+	// listing all web forwards across the account
+	if _, res, err := webForwardService.ListAccount(); err != nil {
+		log.Fatalf("Unable to list account web forwards : error - %v", err)
+	} else {
+		for _, v := range res.WebForwards {
+			fmt.Println(v.RequestTo)
+		}
+	}
+
 	// To create an HTTPS forward, use an https:// requestTo and either an
 	// uploaded certificate ID or webforward.EECertificateManagedType:
 	//
