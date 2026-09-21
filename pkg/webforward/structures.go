@@ -4,19 +4,23 @@ import "github.com/ultradns/ultradns-go-sdk/pkg/helper"
 
 // WebForward wraps the structure of a web forward resource.
 type WebForward struct {
-	GUID                   string   `json:"guid,omitempty"`
-	RequestTo              string   `json:"requestTo,omitempty"`
-	DefaultRedirectTo      string   `json:"defaultRedirectTo,omitempty"`
-	DefaultForwardType     string   `json:"defaultForwardType,omitempty"`
-	RelativeForwardType    string   `json:"relativeForwardType,omitempty"`
-	DefaultRedirectType    string   `json:"defaultRedirectType,omitempty"`
-	CertificateID          string   `json:"certificateId,omitempty"`
-	CertificateManagedType string   `json:"certificateManagedType,omitempty"`
-	CertificateName        string   `json:"certificateName,omitempty"`
-	State                  string   `json:"state,omitempty"`
-	ErrorDescription       string   `json:"errorDescription,omitempty"`
-	ExpirationDays         string   `json:"expirationDays,omitempty"`
-	Records                []Record `json:"records,omitempty"`
+	GUID                   string `json:"guid,omitempty"`
+	RequestTo              string `json:"requestTo,omitempty"`
+	DefaultRedirectTo      string `json:"defaultRedirectTo,omitempty"`
+	DefaultForwardType     string `json:"defaultForwardType,omitempty"`
+	RelativeForwardType    string `json:"relativeForwardType,omitempty"`
+	DefaultRedirectType    string `json:"defaultRedirectType,omitempty"`
+	CertificateID          string `json:"certificateId,omitempty"`
+	CertificateManagedType string `json:"certificateManagedType,omitempty"`
+	CertificateName        string `json:"certificateName,omitempty"`
+	ZoneName               string `json:"zoneName,omitempty"`
+	AccountName            string `json:"accountName,omitempty"`
+	State                  string `json:"state,omitempty"`
+	ErrorDescription       string `json:"errorDescription,omitempty"`
+	// ExpirationDays is documented as an integer in the DTO table but is
+	// returned as a string in the API's HTTPS response examples.
+	ExpirationDays string   `json:"expirationDays,omitempty"`
+	Records        []Record `json:"records,omitempty"`
 }
 
 // Record wraps a rule entry of an advanced web forward. Records specify where
@@ -46,6 +50,14 @@ type ResponseList struct {
 }
 
 const (
+	// HTTPRedirect identifies a web forward that serves HTTP traffic.
+	HTTPRedirect = "HTTP"
+	// HTTPSRedirect identifies a web forward that serves HTTPS traffic.
+	HTTPSRedirect = "HTTPS"
+	// EECertificateManagedType selects an UltraDNS-managed Encryption Everywhere
+	// certificate for an HTTPS web forward.
+	EECertificateManagedType = "EE"
+
 	// HTTP301Redirect keeps the redirect permanent.
 	HTTP301Redirect = "HTTP_301_REDIRECT"
 	// HTTP302Redirect keeps the redirect temporary.

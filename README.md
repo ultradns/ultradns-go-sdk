@@ -12,7 +12,16 @@ ultradns-go-sdk is able to do CRUD operations on UltraDNS resources:
 * Records<br/>
 	`A`, `NS`, `CNAME`, `SOA`, `PTR`, `HINFO`, `MX`, `TXT`, `RP`, `AAAA`, `SRV`, `NAPTR`, `DS`, `SSHFP`, `TLSA`, `SVCB`, `HTTPS`, `SPF`, `CAA`, `APEXALIAS`
 * Web Forwards<br/>
-	`HTTP redirects` (`HTTP_301_REDIRECT`, `HTTP_302_REDIRECT`, `FRAMED`)
+	`HTTP and HTTPS redirects` (`HTTP_301_REDIRECT`, `HTTP_302_REDIRECT`, `HTTP_303_REDIRECT`, `HTTP_307_REDIRECT`, `Framed`)
+
+HTTPS web forwards require the account-level HTTPS Redirect feature and a
+certificate. Set `RequestTo` to an `https://` URL and provide either
+`CertificateID` for a certificate already present in the account (this SDK does
+not manage certificates) or
+`CertificateManagedType: webforward.EECertificateManagedType` for an UltraDNS
+managed certificate, but not both. The response includes certificate status,
+expiration, and error fields while the certificate is being validated.
+
 * Pools<br/>
 	`Simple Failover(SF) Pool`, `Simple Load Balancing(SLB) Pool`, `Resource Distribution(RD) Pool`, `Directional(Dir) Pool`, `Sitebacker Pool(SB) Pool`, `Traffic Controller(TC) Pool`
 * Probes<br/>

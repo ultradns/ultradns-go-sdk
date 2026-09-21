@@ -57,5 +57,15 @@ func main() {
 		}
 	}
 
+	// To create an HTTPS forward, use an https:// requestTo and either an
+	// uploaded certificate ID or webforward.EECertificateManagedType:
+	//
+	// httpsWebForwardData := &webforward.WebForward{
+	// 	RequestTo:          "https://secure.example.com",
+	// 	DefaultRedirectTo:  "https://example.com/",
+	// 	DefaultForwardType: webforward.HTTP301Redirect,
+	// 	CertificateID:      "<certificate GUID>",
+	// }
+
 	fmt.Println("Completed")
 }

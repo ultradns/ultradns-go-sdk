@@ -1,9 +1,14 @@
 package webforward_test
 
 import (
+	"encoding/json"
+	"io"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/ultradns/ultradns-go-sdk/internal/testing/integration"
+	"github.com/ultradns/ultradns-go-sdk/pkg/client"
 	"github.com/ultradns/ultradns-go-sdk/pkg/helper"
 	"github.com/ultradns/ultradns-go-sdk/pkg/webforward"
 )
@@ -64,6 +69,90 @@ func TestListWithConfigError(t *testing.T) {
 	webForwardService := webforward.Service{}
 
 	if _, _, err := webForwardService.List("", &helper.QueryInfo{}); err.Error() != serviceErrorString {
+		t.Fatal(err)
+	}
+}
+
+func TestHTTPSWebForwardCRUDUsesExistingServiceEndpoints(t *testing.T) {
+	const (
+		zoneName = "example.com."
+		guid     = "09084E85FE7773E2"
+	)
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.URL.Path == "/authorization/token":
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = io.WriteString(w, `{"access_token":"test-token","token_type":"Bearer","expires_in":3600}`)
+		case r.Method == http.MethodPost && r.URL.Path == "/zones/example.com./webforwards":
+			var payload webforward.WebForward
+			if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+				t.Errorf("decode create payload: %v", err)
+			}
+			if payload.RequestTo != "https://source.example.com" ||
+				payload.CertificateID != "certificate-guid" {
+				t.Errorf("unexpected HTTPS create payload: %+v", payload)
+			}
+			w.WriteHeader(http.StatusCreated)
+			_, _ = io.WriteString(w, `{"guid":"`+guid+`"}`)
+		case r.Method == http.MethodGet && r.URL.Path == "/zones/example.com./webforwards":
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = io.WriteString(w, `{"webForwards":[{"guid":"`+guid+`","requestTo":"https://source.example.com","defaultRedirectTo":"https://target.example.com","defaultForwardType":"HTTP_301_REDIRECT","defaultRedirectType":"HTTPS","certificateId":"certificate-guid","expirationDays":"45"}]}`)
+		case r.Method == http.MethodPut && r.URL.Path == "/zones/example.com./webforwards/"+guid:
+			var payload webforward.WebForward
+			if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+				t.Errorf("decode update payload: %v", err)
+			}
+			if payload.DefaultRedirectTo != "https://updated.example.com" {
+				t.Errorf("unexpected HTTPS update payload: %+v", payload)
+			}
+			w.WriteHeader(http.StatusOK)
+		case r.Method == http.MethodDelete && r.URL.Path == "/zones/example.com./webforwards/"+guid:
+			w.WriteHeader(http.StatusNoContent)
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer server.Close()
+
+	service, err := webforward.New(client.Config{
+		Username: "username",
+		Password: "password",
+		HostURL:  server.URL,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	payload := &webforward.WebForward{
+		RequestTo:          "https://source.example.com",
+		DefaultRedirectTo:  "https://target.example.com",
+		DefaultForwardType: webforward.HTTP301Redirect,
+		CertificateID:      "certificate-guid",
+	}
+
+	if _, created, err := service.Create(zoneName, payload); err != nil {
+		t.Fatal(err)
+	} else if created.GUID != guid {
+		t.Fatalf("guid mismatched expected - %s : found - %s", guid, created.GUID)
+	}
+
+	if _, read, err := service.Read(zoneName, guid); err != nil {
+		t.Fatal(err)
+	} else if read.DefaultRedirectType != webforward.HTTPSRedirect {
+		t.Fatalf("defaultRedirectType mismatched expected - HTTPS : found - %s", read.DefaultRedirectType)
+	}
+
+	if _, err := service.Update(zoneName, guid, &webforward.WebForward{
+		RequestTo:          "https://source.example.com",
+		DefaultRedirectTo:  "https://updated.example.com",
+		DefaultForwardType: webforward.HTTP302Redirect,
+		CertificateID:      "certificate-guid",
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	if _, err := service.Delete(zoneName, guid); err != nil {
 		t.Fatal(err)
 	}
 }
