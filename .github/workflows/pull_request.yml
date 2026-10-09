@@ -11,13 +11,13 @@ jobs:
     steps:
       - 
         name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - 
         name: Fetching GO version from repo
         run: echo "GO_VERSION=$(cat .go-version)" >> $GITHUB_ENV
       - 
         name: Setup GO environment
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version: ${{ env.GO_VERSION }}
       - 
