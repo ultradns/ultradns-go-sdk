@@ -69,32 +69,47 @@ func (s *Service) Create(zoneName string, webForwardData *WebForward) (*http.Res
 
 // Read returns a web forward by guid. The API exposes no single-item read
 // endpoint, so the zone's web forwards are listed and matched by guid.
+// Pages are followed until the guid is found or every forward is scanned.
 func (s *Service) Read(zoneName, guid string) (*http.Response, *WebForward, error) {
-	zoneName = url.PathEscape(zoneName)
-
 	if s.c == nil {
 		return nil, nil, errors.ServiceError(serviceName)
 	}
 
 	s.c.Trace("%s read started", serviceName)
 
-	res, listResponse, err := s.List(zoneName, nil)
+	var res *http.Response
+	var listResponse *ResponseList
+	var err error
 
-	if err != nil {
-		if res != nil && res.StatusCode == http.StatusNotFound {
-			s.c.Error("%s read failed with error: web forward not found", serviceName)
-			return res, nil, errors.ResourceTypeNotFoundError(serviceName, "webForward", guid)
+	for offset := 0; ; {
+		res, listResponse, err = s.List(zoneName, &helper.QueryInfo{Offset: offset})
+
+		if err != nil {
+			if res != nil && res.StatusCode == http.StatusNotFound {
+				s.c.Error("%s read failed with error: web forward not found", serviceName)
+				return res, nil, errors.ResourceTypeNotFoundError(serviceName, "webForward", guid)
+			}
+
+			s.c.Error("%s read failed with error: %v", serviceName, err)
+			return res, nil, errors.ReadError(serviceName, guid, err)
 		}
 
-		s.c.Error("%s read failed with error: %v", serviceName, err)
-		return res, nil, errors.ReadError(serviceName, guid, err)
-	}
-
-	for _, webForward := range listResponse.WebForwards {
-		if strings.EqualFold(webForward.GUID, guid) {
-			s.c.Trace("%s read completed successfully", serviceName)
-			return res, webForward, nil
+		for _, webForward := range listResponse.WebForwards {
+			if strings.EqualFold(webForward.GUID, guid) {
+				s.c.Trace("%s read completed successfully", serviceName)
+				return res, webForward, nil
+			}
 		}
+
+		resultInfo := listResponse.ResultInfo
+
+		if resultInfo == nil ||
+			resultInfo.ReturnedCount == 0 ||
+			offset+resultInfo.ReturnedCount >= resultInfo.TotalCount {
+			break
+		}
+
+		offset += resultInfo.ReturnedCount
 	}
 
 	s.c.Error("%s read failed with error: web forward not found", serviceName)
@@ -112,6 +127,15 @@ func (s *Service) Update(zoneName, guid string, webForwardData *WebForward) (*ht
 	}
 
 	s.c.Trace("%s update started", serviceName)
+
+	// Table 95 of the REST API User Guide documents the guid as required
+	// in the update body, so it is set from the path parameter. Preserve the
+	// existing nil-payload behavior and avoid mutating the caller's struct.
+	if webForwardData != nil {
+		updateData := *webForwardData
+		updateData.GUID = guid
+		webForwardData = &updateData
+	}
 
 	res, err := s.c.Do(http.MethodPut, basePath+zoneName+webForwardPath+"/"+guid, webForwardData, target)
 

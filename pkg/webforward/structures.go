@@ -10,6 +10,7 @@ type WebForward struct {
 	DefaultForwardType     string   `json:"defaultForwardType,omitempty"`
 	RelativeForwardType    string   `json:"relativeForwardType,omitempty"`
 	DefaultRedirectType    string   `json:"defaultRedirectType,omitempty"`
+	RedirectType           string   `json:"redirectType,omitempty"` // zone-level list responses return this name
 	CertificateID          string   `json:"certificateId,omitempty"`
 	CertificateManagedType string   `json:"certificateManagedType,omitempty"`
 	CertificateName        string   `json:"certificateName,omitempty"`
